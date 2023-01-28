@@ -6,3 +6,4 @@ Project exists for practicing OOP principles, with polymorphism and encapsulatio
 Allows you to name your character, select a class (supports Fighter and Paladin at the moment), and roll stats.  
 Can select from rerolling 1s, 1s and 2s (my house rule), or no rerolls.  
 Adds all statistics to an encapsulated class in a separate file.  
+Demonstrates proficiency in Strategy Design Pattern, having encapsulated individual pieces  
