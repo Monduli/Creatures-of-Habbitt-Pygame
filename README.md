@@ -10,4 +10,15 @@ Demonstrates proficiency in Strategy Design Pattern, having encapsulated individ
   
 2/6/2023  
 Added two more classes (Wizard/Ranger) and added spread function that designates which stats are supposed to be prioritized by each class based on your rolls.  
-Added stat allocating function to Character super class.
+Added stat allocating function to Character super class.  
+  
+2/7/2023  
+Added stat priorities to this README. This project may be morphed for a fantasy game I'm going to make, just noting that down now.  
+  
+=======  
+  
+STAT PRIORITIES:  
+Fighter - STR, CON, DEX, WIS, CHA, INT  
+Paladin - CHA, STR, CON, DEX, WIS, INT  
+Wizard - INT, CON, DEX, WIS, CHA, STR  
+Ranger - DEX, WIS, CON, STR, CHA, INT  
