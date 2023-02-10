@@ -8,7 +8,7 @@ def sleep():
 def manual_entry(attribute):
     while True:
         print("Please type in the character's " + attribute + " value.")
-        a = input()
+        a = t_input()
         try:
             a = int(a)
         except ValueError:
@@ -20,6 +20,12 @@ def manual_entry(attribute):
             sleep()
         else:
             return a
+
+def t_input():
+    get = input()
+    if get in ["quit", "Quit", "q", "Q"]:
+        quit()
+    return get
 
 def roll_values(x, y):
     s = random.randint(x, y)
@@ -33,28 +39,22 @@ def roll_values(x, y):
 
 def assign_stats(character, li):
     character.set_str(li[0])
-    character.set_dex(li[0])
-    character.set_con(li[0])
-    character.set_int(li[0])
-    character.set_wis(li[0])
-    character.set_cha(li[0])
+    character.set_dex(li[1])
+    character.set_con(li[2])
+    character.set_int(li[3])
+    character.set_wis(li[4])
+    character.set_cha(li[5])
 
-def generation():
-    print("Welcome to my character generator.")
-    sleep()
-
-    print("Please enter your character's name.")
-    name = input()
-    print("Your character's name is " + name + ". Welcome to the world, " + name + "!")
-    sleep()
-
+def select_class_generate_character(name):
     class_select = None
     valid_choices = ["Fighter", "fighter", "F", "f", "Paladin", "paladin", "P", "p"]
     fighters = ["Fighter", "fighter", "F", "f"]
     paladins = ["Paladin", "paladin", "P", "p"]
+    wizards = ["Wizard", "wizard", "W", "w"]
+    rangers = ["Ranger", "ranger", "R", "r"]
     while class_select not in valid_choices:
         print("Please select a class for " + name + ". (Choices: Fighter, Paladin)")
-        class_select = input()
+        class_select = t_input()
         if class_select not in valid_choices:
             print("You have made an invalid selection.")
             sleep()
@@ -64,14 +64,17 @@ def generation():
         character = Fighter()
     elif class_select in paladins:
         character = Paladin()
+    elif class_select in wizards:
+        character = Wizard()
+    elif class_select in rangers:
+        character = Ranger()
+    return character
 
+def roll_stats(character, y_answers, n_answers):
     choice = None
-    y_answers = ["Yes", "yes", "y", "Y"]
-    n_answers = ["No", "no", "n", "N"]
-
     while choice not in y_answers and choice not in n_answers:
         print("Would you like me to roll stats for you? (Yes or No)")
-        choice = input()
+        choice = t_input()
         if choice not in y_answers and choice not in n_answers:
             print("Please answer 'yes' or 'no'.")
             sleep()
@@ -80,7 +83,7 @@ def generation():
         loop = 0
         while loop ==  0:
             print("Choose a reroll setting:\n(Note: In the parentheses is the potential stat range.)\n1) Reroll 1s (6-19)\n2) Reroll 1s and 2s (9-18) (T'Lass Standard)\n3) Reroll nothing (3-18)")
-            reroll = input()
+            reroll = t_input()
             valid_reroll = ["1", "2", "3"]
             if reroll not in valid_reroll:
                 print("That is not a valid input. Please try again.")
@@ -104,7 +107,7 @@ def generation():
             tree = None
             while tree == None:
                 print("Are you happy with these stats?")
-                choice = input()
+                choice = t_input()
                 if choice in y_answers:
                     print("Great! Moving on.")
                     sleep()
@@ -133,7 +136,7 @@ def generation():
             loop = 0
             while loop == 0:
                 print("Are you happy with these numbers?")
-                answer = input()
+                answer = t_input()
                 if answer in y_answers:
                     print("Cool. Moving on...")
                     sleep()
@@ -147,7 +150,60 @@ def generation():
                 else:
                     print("That's not a valid answer.")
                     sleep()
+    
     assign_stats(character, li)
+
+def choose_background(character, y, n):
+    backgrounds = ["Acolyte", "acolyte", "Soldier", "soldier", "more", "More"]
+    print("We will now select your character's background.")
+    print("Your choices at present are as follows:")
+    print("Acolyte")
+    print("Soldier")
+    sleep()
+    ahead = 0
+    while ahead == 0:
+        print("Please select a background.")
+        background = t_input()
+        if background not in backgrounds:
+            print("I'm afraid you've made an error in your selection.")
+            sleep()
+            if background == "s" or background == "S":
+                print("Did you mean soldier? Please type 'soldier' or 'Soldier'.")
+                sleep()
+            elif background == "a" or background == "A":
+                print("Did you mean acolyte? Please type 'acolyte' or 'Acolyte'.")
+                sleep()
+        if background == "soldier" or background == "Soldier":
+            print("Great. You have chosen the soldier background.")
+            sleep()
+            character.set_background("Soldier")
+            return character
+        elif background == "acolyte" or background == "Acolyte":
+            print("Great. You have chosen the acolyte background.")
+            sleep()
+            character.set_background("Acolyte")
+            return character
+        elif background == "more" or background == "More":
+            print("More backgrounds will be available later on.")
+            sleep()
+    
+
+def generation():
+    y_answers = ["Yes", "yes", "y", "Y"]
+    n_answers = ["No", "no", "n", "N"]
+
+    print("Welcome to my character generator.")
+    sleep()
+    print("Please enter your character's name.")
+    name = t_input()
+    print("Your character's name is " + name + ". Welcome to the world, " + name + "!")
+    sleep()
+
+    character = select_class_generate_character(name)
+    
+    roll_stats(character, y_answers, n_answers)
+    choose_background(character, y_answers, n_answers)
+
     print("End test.")
     end = input()
 

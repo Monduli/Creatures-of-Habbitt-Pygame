@@ -15,6 +15,7 @@ class Character:
         self.wisdom = 0
         self.charisma = 0
         self.name = ""
+        self.background = ""
     
     def get_hp(self):
         return self.hp
@@ -37,6 +38,9 @@ class Character:
     def get_cha(self):
         return self.charisma
 
+    def get_background(self):
+        return self.background
+
     def set_str(self, value):
         self.strength = value
 
@@ -54,6 +58,9 @@ class Character:
 
     def set_cha(self, value):
         self.charisma = value
+
+    def set_background(self, value):
+        self.background = value
 
     def distribute_stats(self, spread, stats):
         temp = stats
