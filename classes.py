@@ -85,7 +85,7 @@ class Character:
                 stats.remove(max(temp))
 
 
-class Fighter(Character):
+class Martial(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.stats = stats
@@ -101,7 +101,7 @@ class Paladin(Character):
     def spread(stats):
         Character.distribute_stats(["cha", "str", "con", "dex", "wis", "int"], stats)
 
-class Wizard(Character):
+class Bookish(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.stats = stats

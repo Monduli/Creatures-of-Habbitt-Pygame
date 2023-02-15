@@ -1,5 +1,6 @@
 import sys, pygame
 import dialog as dia
+import classes
 
 def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False, input=False):
     rect = pygame.Rect(rect)
@@ -139,28 +140,40 @@ def in_dialog():
     i = 0
     advance = 0
     exit_next = 0
+    move = True
 
     while True:
         screen.fill(black)
         screen.blit(background, (width+i,0))
         screen.blit(background, (i, 0))
 
-        if (i == -width):
-            screen.blit(background, (width+i, 0))
-            i=0
-        i-=1
+        if move == True:
+            if (i == -width):
+                screen.blit(background, (width+i, 0))
+                i=0
+            i-=1
+        else:
+            screen.blit(background, (width, 0))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if dialog_rect.collidepoint(event.pos):
+                    background, move = determine_background(user_text[0][advance], background, move)
                     if exit_next == 1:
                         sys.exit()
                     elif user_text[0][advance] == "Please select an option.":
-                        choice = dialog_options(screen, user_text[0][advance+1], user_text[0][advance+2], user_text[1], user_text[2])
+                        choice = dialog_options(screen, user_text[0][advance+1], user_text[0][advance+2], user_text[1], user_text[2], background)
+                        proceed = sort_options(choice)
                         user_text = dia.determine_dialog(choice)
                         advance = 0
                     elif user_text[0][advance] == "Please type into the box.":
-                        user_text = input_box(user_text[1])
+                        array = input_box(user_text[1], background)
+                        temp = user_text[1]
+                        user_text, name = array[0], array[1]
+                        global name_global
+                        name_global = name
+                        sort_options(temp)
                         advance = 0
                     elif 0 <= advance+1 < len(user_text[0]):
                         advance += 1
@@ -178,15 +191,12 @@ def in_dialog():
         pygame.display.update()
         clock.tick(60)
 
-def dialog_options(screen, text_left, text_right, target_left, target_right):
+def dialog_options(screen, text_left, text_right, target_left, target_right, background):
     size = width, height = 1600, 900
     clock = pygame.time.Clock()
     black = 0, 0, 0
 
     screen = pygame.display.set_mode(size)
-
-    background = pygame.image.load("cave.png")
-    background = pygame.transform.scale(background,(1600,900))
 
     base_font = pygame.font.Font("VCR.001.ttf", 32)
 
@@ -229,15 +239,13 @@ def dialog_options(screen, text_left, text_right, target_left, target_right):
         pygame.display.update()
         clock.tick(60)
 
-def input_box(target):
+
+def input_box(target, background):
     size = width, height = 1600, 900
     clock = pygame.time.Clock()
     black = 0, 0, 0
 
     screen = pygame.display.set_mode(size)
-
-    background = pygame.image.load("cave.png")
-    background = pygame.transform.scale(background,(1600,900))
 
     base_font = pygame.font.Font("VCR.001.ttf", 32)
 
@@ -298,7 +306,7 @@ def input_box(target):
                     user_text += event.unicode
                 
                 if event.key == pygame.K_RETURN:
-                    return dia.determine_dialog(target, user_text[:-1])
+                    return [dia.determine_dialog(target, user_text[:-1]), user_text[:-1]]
     
         if active:
             color = color_active
@@ -325,7 +333,30 @@ def input_box(target):
         # 60 frames should be passed.
         clock.tick(60)
 
+def sort_options(choice):
+    if choice == "martial_choice":
+        prof = classes.Martial([12,10,10,10,10,10])
+        prof.set_name = name_global 
+        return ["class", prof]
+    elif choice == "bookish_choice":
+        prof = classes.Bookish([10,10,10,12,10,10])
+        prof.set_name(name_global )
+        return ["class", prof]
+
+def determine_background(dialog, bg, move):
+    if dialog == "Regardless of your choice, I'm taking you outside.":
+        background = pygame.image.load("forest.png")
+        background = pygame.transform.scale(background,(1600,900))
+        return background, True
+    if dialog == "Maybe you should just follow that road over there until you run into something.":
+        background = pygame.image.load("village.jpg")
+        background = pygame.transform.scale(background,(1600,900))
+        return background, False
+    else:
+        return bg, move
+
 def controller():
+    global name_global
     while True:
         option = start_screen()
         if option == "dialog":
