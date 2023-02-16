@@ -141,6 +141,8 @@ def in_dialog():
     advance = 0
     exit_next = 0
     move = True
+    global progress
+    progress = 0
 
     while True:
         screen.fill(black)
@@ -162,10 +164,24 @@ def in_dialog():
                     background, move = determine_background(user_text[0][advance], background, move)
                     if exit_next == 1:
                         sys.exit()
+                    elif user_text[0][advance] == "Please select a destination.":
+                        progress = 1
+                        if progress < 2:
+                            choice = town_options(screen, "Inn", "???", "inn", None, "???", "???", None, None, background)
+                            if choice == "inn":
+                                user_text = dia.determine_dialog(choice, progress)
+                                progress += 1
+                                advance = 0
+                        elif progress < 3:
+                            choice = town_options(screen, "Inn", "Smithy", "inn", "blacksmith", "???", "???", None, None, background)
+                            if choice == "inn" or choice == "blacksmith":
+                                user_text = dia.determine_dialog(choice, progress)
+                                progress += 1
+                                advance = 0
                     elif user_text[0][advance] == "Please select an option.":
                         choice = dialog_options(screen, user_text[0][advance+1], user_text[0][advance+2], user_text[1], user_text[2], background)
                         proceed = sort_options(choice)
-                        user_text = dia.determine_dialog(choice)
+                        user_text = dia.determine_dialog(choice, progress)
                         advance = 0
                     elif user_text[0][advance] == "Please type into the box.":
                         array = input_box(user_text[1], background)
@@ -240,6 +256,72 @@ def dialog_options(screen, text_left, text_right, target_left, target_right, bac
         clock.tick(60)
 
 
+def town_options(screen, text_top_left, text_top_right, target_top_left, target_top_right, 
+    text_bot_left, text_bot_right, target_bot_left, target_bot_right, background):
+    size = width, height = 1600, 900
+    clock = pygame.time.Clock()
+    black = 0, 0, 0
+
+    screen = pygame.display.set_mode(size)
+
+    base_font = pygame.font.Font("VCR.001.ttf", 32)
+
+    color_passive = pygame.Color('black')
+
+    top_left_rect = pygame.Rect(width-1550,height-350,700,50)
+    top_right_rect = pygame.Rect(width-750,height-350,700,50)
+    bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
+    bot_right_rect = pygame.Rect(width-750,height-250,700,50)
+
+    i = 0
+
+    while True:
+        screen.fill(black)
+        screen.blit(background, (width+i,0))
+        screen.blit(background, (i, 0))
+        color_top_left = color_passive
+        color_top_right = color_passive
+        color_bot_left = color_passive
+        color_bot_right = color_passive
+
+        if (i == -width):
+            screen.blit(background, (width+i, 0))
+            i=0
+        i-=1
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if top_left_rect.collidepoint(event.pos):
+                    return target_top_left
+                if top_right_rect.collidepoint(event.pos):
+                    return target_top_right
+                if bot_left_rect.collidepoint(event.pos):
+                    return target_bot_left
+                if bot_right_rect.collidepoint(event.pos):
+                    return target_bot_right
+
+        if top_left_rect.collidepoint(pygame.mouse.get_pos()):
+            color_top_left = pygame.Color(200,0,0)
+        if top_right_rect.collidepoint(pygame.mouse.get_pos()):
+            color_top_right = pygame.Color(200,0,0) 
+        if bot_left_rect.collidepoint(pygame.mouse.get_pos()):
+            color_bot_left = pygame.Color(200,0,0)
+        if bot_right_rect.collidepoint(pygame.mouse.get_pos()):
+            color_bot_right = pygame.Color(200,0,0)
+
+        pygame.draw.rect(screen, color_top_left, top_left_rect)
+        drawText(screen, text_top_left, (255,255,255), top_left_rect, base_font)
+        pygame.draw.rect(screen, color_top_right, top_right_rect)
+        drawText(screen, text_top_right, (255,255,255), top_right_rect, base_font)
+        pygame.draw.rect(screen, color_bot_left, bot_left_rect)
+        drawText(screen, text_bot_left, (255,255,255), bot_left_rect, base_font)
+        pygame.draw.rect(screen, color_bot_right, bot_right_rect)
+        drawText(screen, text_bot_right, (255,255,255), bot_right_rect, base_font)
+
+        pygame.display.update()
+        clock.tick(60)
+
+
 def input_box(target, background):
     size = width, height = 1600, 900
     clock = pygame.time.Clock()
@@ -306,7 +388,7 @@ def input_box(target, background):
                     user_text += event.unicode
                 
                 if event.key == pygame.K_RETURN:
-                    return [dia.determine_dialog(target, user_text[:-1]), user_text[:-1]]
+                    return [dia.determine_dialog(target, 0, user_text[:-1]), user_text[:-1]]
     
         if active:
             color = color_active

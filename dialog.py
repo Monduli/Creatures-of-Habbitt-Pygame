@@ -6,7 +6,7 @@
 #############
 name = "Default"
 
-def determine_dialog(target, name="Default"):
+def determine_dialog(target, progress, name="Default"):
     match target:
         case "dialog_start_2":
             dialog_start_2[0][0] = "Your name is "+ name +"."
@@ -16,12 +16,17 @@ def determine_dialog(target, name="Default"):
             return outside_cave_1
         case "martial_choice":
             outside_cave_2[0][0] = "You have chosen a Martial background."
-            outside_cave_2[0][1] = "Let me guess. You only have one brain cell, and it only fire sometimes. But that's okay, I guess."
+            outside_cave_2[0][1] = "Let me guess. You only have one brain cell, and it only fires sometimes. But that's okay, I guess."
             return outside_cave_2
         case "bookish_choice":
             outside_cave_2[0][0] = "You have chosen a Bookish background."
             outside_cave_2[0][1] = "What are you, some kind of nerd? Do books keep you company at night? Make those lonely nights warm or what?"
             return outside_cave_2
+        case "inn":
+            if progress < 2:
+                return inn_dialog_1
+            else:
+                return outside_cave_1
 
 dialog_start = [[
     """Dan's game version 0.0""",
@@ -58,5 +63,12 @@ outside_cave_2 = [[
     "Maybe you should just follow that road over there until you run into something.",
     "Ah, here we are. Some kind of city.",
     "I'll leave you to figuring out where you should be going.",
-    "Please choose a destination."
+    "Please select a destination."
 ], "town_choices"]
+
+inn_dialog_1 = [[
+    "You walk into an inn.",
+    "There is only woman standing at the bar, and the rest of the inn is deserted.",
+    "Well, look who we have here!",
+    "[Not yet written.]"
+]]
