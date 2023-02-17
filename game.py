@@ -1,51 +1,7 @@
 import sys, pygame
 import dialog as dia
 import classes
-
-def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False, input=False):
-    rect = pygame.Rect(rect)
-    y = rect.top
-    lineSpacing = 0
-    image = None
-
-    # get the height of the font
-    fontHeight = font.size("Tg")[1]
-
-    while text:
-        i = 1
-
-        # determine if the row of text will be outside our area
-        if y + fontHeight > rect.bottom:
-            break
-
-        # determine maximum width of line
-        while font.size(text[:i])[0] < rect.width and i < len(text):
-            i += 1
-
-        # if we've wrapped the text, then adjust the wrap to the last word      
-        if i < len(text): 
-            i = text.rfind(" ", 0, i) + 1
-
-        # render the line and blit it to the surface
-        if bkg:
-            image = font.render(text[:i], 1, color, bkg)
-            image.set_colorkey(bkg)
-        else:
-            image = font.render(text[:i], aa, color)
-        text_rect = image.get_rect()
-        if center == True:
-            text_rect.center = rect.center
-            surface.blit(image, text_rect)
-        else:
-            surface.blit(image, (rect.left+20, y+10))
-        y += fontHeight + lineSpacing
-
-        # remove the text we just blitted
-        text = text[i:]
-
-    if input == True:
-        return image
-    return text
+from helpers import *
 
 def start_screen():
 
@@ -64,11 +20,11 @@ def start_screen():
 
     color_passive = pygame.Color('black')
 
-    background = pygame.image.load("cave.png")
-    background = pygame.transform.scale(background,(1600,900))
+    background = retrieve_background("cave")
 
     title_rect = pygame.Rect(width-1000,height-800,400,50)
     start_rect = pygame.Rect(width-900,height-550,200,50)
+    town_start_rect = pygame.Rect(width-900,height-480,200,50)
     options_rect = pygame.Rect(width-900,height-400,200,50)
     exit_rect = pygame.Rect(width-850,height-250,100,50)
 
@@ -76,27 +32,29 @@ def start_screen():
 
     while True:
         screen.fill(black)
-        screen.fill(black)
         screen.blit(background, (width+i,0))
         screen.blit(background, (i, 0))
-        color_start = pygame.Color('black')
-        color_options = pygame.Color('black')
-        color_exit = pygame.Color('black')
+        color_start, color_town_start, color_options, color_exit = color_passive
 
         if (i == -width):
             screen.blit(background, (width+i, 0))
             i=0
         i-=1
+
         for event in pygame.event.get():                  
             if event.type == pygame.QUIT: sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_rect.collidepoint(event.pos):
                     return "dialog"
+                if town_start_rect.collidepoint(event.pos):
+                    return "dialog skip"
                 if exit_rect.collidepoint(event.pos):
                     return "exit"
 
         if start_rect.collidepoint(pygame.mouse.get_pos()):
             color_start = pygame.Color(200,0,0)
+        if town_start_rect.collidepoint(pygame.mouse.get_pos()):
+            color_town_start = pygame.Color(200,0,0)
         if options_rect.collidepoint(pygame.mouse.get_pos()):
             color_options = pygame.Color(200,0,0)
         if exit_rect.collidepoint(pygame.mouse.get_pos()):
@@ -105,19 +63,21 @@ def start_screen():
         # Draw buttons
         pygame.draw.rect(screen, color_passive, title_rect)
         pygame.draw.rect(screen, color_start, start_rect)
+        pygame.draw.rect(screen, color_town_start, town_start_rect)
         pygame.draw.rect(screen, color_options, options_rect)
         pygame.draw.rect(screen, color_exit, exit_rect)
         
         # Draw the text onto the buttons
-        drawText(screen, "Dan's Game v.00", pygame.Color(255,255,255,0), title_rect, base_font, False, None, center=True)
+        drawText(screen, "Creatures of Habbitt v.01", pygame.Color(255,255,255,0), title_rect, base_font, False, None, center=True)
         drawText(screen, "Wake Up", pygame.Color(255,255,255,0), start_rect, base_font, False, None, center=True)
+        drawText(screen, "Skip to Town", pygame.Color(255,255,255,0), town_start_rect, base_font, False, None, center=True)
         drawText(screen, "Options", pygame.Color(255,255,255,0), options_rect, base_font, False, None, center=True)
         drawText(screen, "Exit", pygame.Color(255,255,255,0), exit_rect, base_font, False, None, center=True)
 
         pygame.display.update()
         clock.tick(60)
 
-def in_dialog():
+def in_dialog(skip=None):
 
     #### SETUP ####
     size = width, height = 1600, 900
@@ -128,8 +88,7 @@ def in_dialog():
 
     screen = pygame.display.set_mode(size)
 
-    background = pygame.image.load("cave.png")
-    background = pygame.transform.scale(background,(1600,900))
+    background = retrieve_background("cave")
 
     base_font = pygame.font.Font("VCR.001.ttf", 32)
     user_text = dia.dialog_start
@@ -144,18 +103,21 @@ def in_dialog():
     global progress
     progress = 0
 
+    if skip:
+        user_text = [["To Town"]]
+
     while True:
         screen.fill(black)
-        screen.blit(background, (width+i,0))
-        screen.blit(background, (i, 0))
-
+        
         if move == True:
+            screen.blit(background, (width+i,0))
+            screen.blit(background, (i, 0))
             if (i == -width):
                 screen.blit(background, (width+i, 0))
                 i=0
             i-=1
         else:
-            screen.blit(background, (width, 0))
+            screen.blit(background, (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
@@ -164,7 +126,7 @@ def in_dialog():
                     background, move = determine_background(user_text[0][advance], background, move)
                     if exit_next == 1:
                         sys.exit()
-                    elif user_text[0][advance] == "Please select a destination.":
+                    elif user_text[0][advance] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
                         progress = 1
                         if progress < 2:
                             choice = town_options(screen, "Inn", "???", "inn", None, "???", "???", None, None, background)
@@ -258,6 +220,7 @@ def dialog_options(screen, text_left, text_right, target_left, target_right, bac
 
 def town_options(screen, text_top_left, text_top_right, target_top_left, target_top_right, 
     text_bot_left, text_bot_right, target_bot_left, target_bot_right, background):
+
     size = width, height = 1600, 900
     clock = pygame.time.Clock()
     black = 0, 0, 0
@@ -273,21 +236,14 @@ def town_options(screen, text_top_left, text_top_right, target_top_left, target_
     bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
     bot_right_rect = pygame.Rect(width-750,height-250,700,50)
 
-    i = 0
-
     while True:
         screen.fill(black)
-        screen.blit(background, (width+i,0))
-        screen.blit(background, (i, 0))
+        screen.blit(background, (0,0))
         color_top_left = color_passive
         color_top_right = color_passive
         color_bot_left = color_passive
         color_bot_right = color_passive
 
-        if (i == -width):
-            screen.blit(background, (width+i, 0))
-            i=0
-        i-=1
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -427,13 +383,9 @@ def sort_options(choice):
 
 def determine_background(dialog, bg, move):
     if dialog == "Regardless of your choice, I'm taking you outside.":
-        background = pygame.image.load("forest.png")
-        background = pygame.transform.scale(background,(1600,900))
-        return background, True
-    if dialog == "Maybe you should just follow that road over there until you run into something.":
-        background = pygame.image.load("village.jpg")
-        background = pygame.transform.scale(background,(1600,900))
-        return background, False
+        return retrieve_background("forest"), True
+    if dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
+        return retrieve_background("village"), False
     else:
         return bg, move
 
@@ -443,6 +395,8 @@ def controller():
         option = start_screen()
         if option == "dialog":
             in_dialog()
+        elif option == "dialog skip":
+            in_dialog("To Town")
         elif option == "exit":
             sys.exit()
 

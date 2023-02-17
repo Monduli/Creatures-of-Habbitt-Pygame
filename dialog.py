@@ -70,5 +70,5 @@ inn_dialog_1 = [[
     "You walk into an inn.",
     "There is only woman standing at the bar, and the rest of the inn is deserted.",
     "Well, look who we have here!",
-    "[Not yet written.]"
+    "[Returning to town.]"
 ]]
