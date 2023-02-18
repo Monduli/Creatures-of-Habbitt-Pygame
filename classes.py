@@ -8,6 +8,7 @@
 class Character:
     def __init__(self) -> None:
         self.hp = 0
+        self.current_hp = 0
         self.strength = 0
         self.dexterity = 0
         self.constitution = 0
@@ -19,6 +20,9 @@ class Character:
     
     def get_hp(self):
         return self.hp
+    
+    def get_current_hp(self):
+        return self.current_hp
 
     def get_str(self):
         return self.strength
@@ -40,6 +44,9 @@ class Character:
 
     def get_background(self):
         return self.background
+    
+    def get_name(self):
+        return self.name
 
     def set_str(self, value):
         self.strength = value
@@ -61,6 +68,9 @@ class Character:
 
     def set_background(self, value):
         self.background = value
+
+    def set_name(self, value):
+        self.name = value
 
     def distribute_stats(self, spread, stats):
         temp = stats
@@ -97,6 +107,8 @@ class Paladin(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.stats = stats
+        self.hp = 50
+        self.current_hp = 50
 
     def spread(stats):
         Character.distribute_stats(["cha", "str", "con", "dex", "wis", "int"], stats)
@@ -105,6 +117,8 @@ class Bookish(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.stats = stats
+        self.hp = 20
+        self.current_hp = 20
 
     def spread(stats):
         Character.distribute_stats(["int", "con", "dex", "wis", "cha", "str"], stats)
@@ -116,3 +130,27 @@ class Ranger(Character):
 
     def spread(stats):
         Character.distribute_stats(["dex", "wis", "con", "str", "cha", "int"], stats)
+
+
+class Enemy():
+    def __init__(self, name, health, att, gua):
+        self.name = name
+        self.hp = health
+        self.chp = health
+        self.attack = att
+        self.guard = gua
+
+    def get_name(self):
+        return self.name
+    
+    def get_hp(self):
+        return self.hp
+    
+    def get_chp(self):
+        return self.chp
+    
+    def get_attack(self):
+        return self.attack
+    
+    def get_guard(self):
+        return self.guard 

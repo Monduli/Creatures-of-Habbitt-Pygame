@@ -1,18 +1,26 @@
 import pygame
 
 def retrieve_background(choice):
+    folder = "images/"
     if choice == "cave":
-        background = pygame.image.load("cave.png")
+        background = pygame.image.load(folder + "cave.png")
         background = pygame.transform.scale(background,(1600,900))
         return background
     elif choice == "forest":
-        background = pygame.image.load("forest.png")
+        background = pygame.image.load(folder + "forest.png")
         background = pygame.transform.scale(background,(1600,900))
         return background
     elif choice == "village":
-        background = pygame.image.load("village.jpg")
+        background = pygame.image.load(folder + "village.jpg")
         background = pygame.transform.scale(background,(1600,900))
         return background
+    
+def retrieve_character(choice):
+    folder = "images/"
+    if choice == "N. Steen":
+        character = pygame.image.load(folder + "bear.png")
+        #character = pygame.transform.scale(character,(1600,900))
+        return character
 
 def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False, input=False):
     rect = pygame.Rect(rect)
@@ -44,10 +52,12 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False,
             image.set_colorkey(bkg)
         else:
             image = font.render(text[:i], aa, color)
+
         text_rect = image.get_rect()
+        
         if center == True:
             text_rect.center = rect.center
-            surface.blit(image, text_rect)
+            surface.blit(image, (text_rect.left, y+10))
         else:
             surface.blit(image, (rect.left+20, y+10))
         y += fontHeight + lineSpacing
