@@ -24,7 +24,7 @@ color_passive = pygame.Color('black')
 background = retrieve_background("cave")
 
 PUZZLE_COLUMNS = 10
-PUZZLE_ROWS = 10
+PUZZLE_ROWS = 9
 SHAPE_WIDTH = 100
 SHAPE_HEIGHT = 100
 MARGIN = 2
@@ -197,7 +197,7 @@ class Game(object):
     def start(self):
         self.board.randomize()
         self.cursor = [0,0]
-        self.swap_time = 0.0
+        self.swap_time = 1
 
     def quit(self):
         pygame.quit()
@@ -209,7 +209,7 @@ class Game(object):
             gobble = Enemy("Gobble", 10, 5, 5)
             enemy = [gobble]
 
-            self.draw(party, enemy)
+            return_rect = self.draw(party, enemy)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
             self.swap_time += dt
             for event in pygame.event.get():
@@ -217,6 +217,9 @@ class Game(object):
                     self.input(event.key)
                 elif event.type == QUIT:
                     self.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if return_rect.collidepoint(event.pos):
+                        return
             self.board.tick(dt)
     
     def input(self, key):
@@ -239,8 +242,10 @@ class Game(object):
 
     def draw(self, party, enemy):
         self.board.draw(self.display)
+        color_return = BLACK
         #self.draw_time()
         self.draw_cursor()
+        return_rect = pygame.Rect(width-600,height-50,300,50)
         party_1_rect = pygame.Rect(width-300,height-900,300,50)
         party_1_hp_rect = pygame.Rect(width-300,height-850,300,50)
         party_1_portrait_rect = pygame.Rect(width-400,height-900,100,100)
@@ -254,6 +259,10 @@ class Game(object):
         party_4_hp_rect = pygame.Rect(width-300,height-400,300,50)
         party_4_portrait_rect = pygame.Rect(width-400,height-450,100,100)
 
+        if return_rect.collidepoint(pygame.mouse.get_pos()):
+            color_return = pygame.Color(200,0,0)
+
+        pygame.draw.rect(screen, color_return, return_rect)
         pygame.draw.rect(screen, color_passive, party_1_rect)
         pygame.draw.rect(screen, color_passive, party_1_hp_rect)
         pygame.draw.rect(screen, color_passive, party_1_portrait_rect)
@@ -300,9 +309,12 @@ class Game(object):
         pygame.draw.rect(screen, color_passive, enemy_1_portrait_rect)
 
         drawText(self.display, enemy[0].get_name(), WHITE, enemy_1_rect, self.font, center=True)
-        drawText(self.display, "HEALTH: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), WHITE, enemy_1_hp_rect, self.font, center=True)   
+        drawText(self.display, "HEALTH: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), WHITE, enemy_1_hp_rect, self.font, center=True) 
+
+        drawText(self.display, "Return", WHITE, return_rect, self.font, center=True)  
             
         pygame.display.update()
+        return return_rect
 
     def draw_time(self):
         s = int(self.swap_time)

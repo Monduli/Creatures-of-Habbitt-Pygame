@@ -74,3 +74,8 @@ inn_dialog_1 = [[
     [None, "[Bear N. Steen has joined your party.]"],
     [None, "[Returning to town.]"]
 ]]
+
+nsteen_neutral = [[
+    ["N. Steen", "Hey, how's it going?"],
+    ["inn"]
+]]
