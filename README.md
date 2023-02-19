@@ -30,8 +30,10 @@ Added many more features, including:
 - Full party combat integrated into match 3, with enemies and PCs having turns  
 - Overhauled UI
 - Further connected match 3 segment to dialog segment  
+  
 Current Bugs:  
 - Game majorly lags whenever a match is made due to enemy turns being taken  
+  
 Would like to implement:
 - Better match 3 system. Preferably with clicking and dragging like an actual modern game instead of this horizontal stuff.
 - More characters. I need at least 4 to have a functional party but plan to have a solid number more for "support conversations".
