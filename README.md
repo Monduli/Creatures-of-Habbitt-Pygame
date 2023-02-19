@@ -23,7 +23,19 @@ Added:
 - Radish Rabbit as a party member
 - Connected existing dialog system and map to match 3 game, which reflects which party members you have
 - Added who is talking to the dialog system, which also can pull up pictures based on who is talking
-- Added background choosing utility
+- Added background choosing utility  
+  
+2/19/2023  
+Added many more features, including:  
+- Full party combat integrated into match 3, with enemies and PCs having turns  
+- Overhauled UI
+- Further connected match 3 segment to dialog segment  
+Current Bugs:  
+- Game majorly lags whenever a match is made due to enemy turns being taken  
+Would like to implement:
+- Better match 3 system. Preferably with clicking and dragging like an actual modern game instead of this horizontal stuff.
+- More characters. I need at least 4 to have a functional party but plan to have a solid number more for "support conversations".
+- Actual story. This can wait until the match 3 system is perfected.
   
 =======  
   
