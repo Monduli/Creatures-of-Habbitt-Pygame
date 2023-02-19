@@ -46,7 +46,7 @@ BLACK = (0, 0, 0)
 
 MINIMUM_MATCH = 3
 
-FPS = 120
+FPS = 30
 EXPLOSION_SPEED = 15
 REFILL_SPEED = 10
 
@@ -56,9 +56,10 @@ class Cell(object):
     'image' - a 'Surface' object containing the sprite to draw
     'offset' - vertical offset in pixels for drawing the cell
     """
-    def __init__(self, image):
+    def __init__(self, image, shape):
         self.offset = 0.0
         self.image = image
+        self.shape = shape
 
     def tick(self, dt):
         self.offset = max(0.0, self.offset - dt * REFILL_SPEED)
@@ -77,7 +78,11 @@ class Board(object):
     def __init__(self, width, height, background):
         self.explosion = [pygame.image.load('images/explosion{}.png'.format(i)) for i in range(1, 1)]
         shapes = 'red blue purple green orange yellow'
-        self.shapes = [pygame.image.load('images/{}_gem.png'.format(shape)) for shape in shapes.split()]
+        self.shapes = []
+        self.type_shape = []
+        for shape in shapes.split():
+            self.shapes.append(pygame.image.load('images/{}_gem.png'.format(shape)))
+            self.type_shape.append(shape)
         for shape in self.shapes:
             shape = pygame.transform.scale(shape,(50,50))
         self.background = background
@@ -85,9 +90,11 @@ class Board(object):
         self.w = width
         self.h = height
         self.size = width*height
-        self.board = [Cell(self.blank) for _ in range(self.size)]
+        self.board = [Cell(self.blank, None) for _ in range(self.size)]
         self.matches = []
         self.refill = []
+        global curr_match
+        curr_match = []
         
 
     def randomize(self):
@@ -95,7 +102,8 @@ class Board(object):
         replace whole board
         """
         for i in range(self.size):
-            self.board[i] = Cell(random.choice(self.shapes))
+            c = random.randint(0, 5)
+            self.board[i] = Cell(self.shapes[c], self.type_shape[c])
 
     def pos(self, i, j):
         assert(0 <= i < self.w)
@@ -155,6 +163,8 @@ class Board(object):
     def update_matches(self,image):
         for match in self.matches:
             for position in match:
+                global curr_match
+                curr_match.append(self.board[position])
                 self.board[position].image = image
 
     def refill_columns(self):
@@ -170,7 +180,9 @@ class Board(object):
             offset = 1 + (target - pos) // self.w
             for pos in range(target, -1, -self.w):
                 c = self.board[pos]
-                c.image = random.choice(self.shapes)
+                ran = random.randint(0, 5)
+                c.image = self.shapes[ran]
+                c.shape = self.type_shape[ran]
                 c.offset = offset
                 yield c
 
@@ -181,6 +193,18 @@ def get_portrait(character):
         return portrait
     if character == "Radish":
         portrait = pygame.image.load("images/rabbit_portrait.png")
+        portrait = pygame.transform.scale(portrait,(100,100))
+        return portrait
+    if character in ["Gobble"]:
+        portrait = pygame.image.load("images/goblin.png")
+        portrait = pygame.transform.scale(portrait,(100,100))
+        return portrait
+    if character in ["Goobble"]:
+        portrait = pygame.image.load("images/goobble.png")
+        portrait = pygame.transform.scale(portrait,(100,100))
+        return portrait
+    if character in ["Gabble"]:
+        portrait = pygame.image.load("images/gabble.png")
         portrait = pygame.transform.scale(portrait,(100,100))
         return portrait
     
@@ -203,23 +227,53 @@ class Game(object):
         pygame.quit()
         sys.exit()
 
-    def play(self, party):
+    def play(self, party, dungeon):
         self.start()
+        for member in party:
+            member.set_chp(member.get_hp())
+        enemy = dungeon
+        turns = turn_order(party, enemy)
+        current = 0
+        global curr_match
+        matches = True
+        while matches:
+            if len(self.board.find_matches()) > 0:
+                self.board.randomize()
+            else:
+                matches = False
         while True:
-            gobble = Enemy("Gobble", 10, 5, 5)
-            enemy = [gobble]
-
-            return_rect = self.draw(party, enemy)
+            active = turns[current]
+            update_text = "It is " + active[0].get_name() + "'s turn."
+            return_rect = self.draw(party, enemy, active, update_text)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
             self.swap_time += dt
-            for event in pygame.event.get():
-                if event.type == KEYUP:
-                    self.input(event.key)
-                elif event.type == QUIT:
-                    self.quit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if return_rect.collidepoint(event.pos):
-                        return
+            if active[2] == "p":
+                for event in pygame.event.get():
+                    if event.type == KEYUP:
+                        self.input(event.key)
+                    elif event.type == QUIT:
+                        self.quit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if return_rect.collidepoint(event.pos):
+                            return "RAN"
+            if active[2] == "p":
+                if len(curr_match) > 0:
+                    state = self.process_action(curr_match[0], party, enemy, active)
+                    if state == "WIN":
+                        return "WIN"
+                    if current+1 < len(turns)-1:
+                        current += 1
+                    else:
+                        current = 0
+            elif active[2] == "e":
+                state = self.enemy_attack(party, enemy, active)
+                if state == "DEAD":
+                    return "DEAD"
+                if current+1 < len(turns )-1:
+                        current += 1
+                else:
+                    current = 0
+            curr_match = []
             self.board.tick(dt)
     
     def input(self, key):
@@ -240,24 +294,24 @@ class Game(object):
         self.swap_time = 0.0
         self.board.swap(self.cursor)
 
-    def draw(self, party, enemy):
+    def draw(self, party, enemy, active, update_text=None):
         self.board.draw(self.display)
         color_return = BLACK
         #self.draw_time()
         self.draw_cursor()
-        return_rect = pygame.Rect(width-600,height-50,300,50)
-        party_1_rect = pygame.Rect(width-300,height-900,300,50)
-        party_1_hp_rect = pygame.Rect(width-300,height-850,300,50)
-        party_1_portrait_rect = pygame.Rect(width-400,height-900,100,100)
-        party_2_rect = pygame.Rect(width-300,height-750,300,50)
-        party_2_hp_rect = pygame.Rect(width-300,height-700,300,50)
-        party_2_portrait_rect = pygame.Rect(width-400,height-750,100,100)
-        party_3_rect = pygame.Rect(width-300,height-600,300,50)
-        party_3_hp_rect = pygame.Rect(width-300,height-550,300,50)
-        party_3_portrait_rect = pygame.Rect(width-400,height-600,100,100)
-        party_4_rect = pygame.Rect(width-300,height-450,300,50)
-        party_4_hp_rect = pygame.Rect(width-300,height-400,300,50)
-        party_4_portrait_rect = pygame.Rect(width-400,height-450,100,100)
+        return_rect = pygame.Rect(width-600,height-50,600,50)
+        party_1_rect = pygame.Rect(width-500,height-900,500,50)
+        party_1_hp_rect = pygame.Rect(width-500,height-850,500,50)
+        party_1_portrait_rect = pygame.Rect(width-600,height-900,100,100)
+        party_2_rect = pygame.Rect(width-500,height-800,500,50)
+        party_2_hp_rect = pygame.Rect(width-500,height-750,500,50)
+        party_2_portrait_rect = pygame.Rect(width-600,height-800,100,100)
+        party_3_rect = pygame.Rect(width-500,height-700,500,50)
+        party_3_hp_rect = pygame.Rect(width-500,height-650,500,50)
+        party_3_portrait_rect = pygame.Rect(width-600,height-700,100,100)
+        party_4_rect = pygame.Rect(width-500,height-600,500,50)
+        party_4_hp_rect = pygame.Rect(width-500,height-550,500,50)
+        party_4_portrait_rect = pygame.Rect(width-600,height-600,100,100)
 
         if return_rect.collidepoint(pygame.mouse.get_pos()):
             color_return = pygame.Color(200,0,0)
@@ -265,56 +319,92 @@ class Game(object):
         pygame.draw.rect(screen, color_return, return_rect)
         pygame.draw.rect(screen, color_passive, party_1_rect)
         pygame.draw.rect(screen, color_passive, party_1_hp_rect)
-        pygame.draw.rect(screen, color_passive, party_1_portrait_rect)
+        #pygame.draw.rect(screen, color_passive, party_1_portrait_rect)
         if len(party) > 1:
+            pass
             pygame.draw.rect(screen, color_passive, party_2_rect)
             pygame.draw.rect(screen, color_passive, party_2_hp_rect)
-            pygame.draw.rect(screen, color_passive, party_2_portrait_rect)
+            #pygame.draw.rect(screen, color_passive, party_2_portrait_rect)
         if len(party) > 2:
+            pass
             pygame.draw.rect(screen, color_passive, party_3_rect)
             pygame.draw.rect(screen, color_passive, party_3_hp_rect)
-            pygame.draw.rect(screen, color_passive, party_3_portrait_rect)
+            #pygame.draw.rect(screen, color_passive, party_3_portrait_rect)
         if len(party) > 3:
+            pass
             pygame.draw.rect(screen, color_passive, party_4_rect)
             pygame.draw.rect(screen, color_passive, party_4_hp_rect)
-            pygame.draw.rect(screen, color_passive, party_4_portrait_rect)
+            #pygame.draw.rect(screen, color_passive, party_4_portrait_rect)
 
         port1 = get_portrait(party[0].get_name())
         self.display.blit(port1, party_1_portrait_rect)
 
         drawText(self.display, party[0].get_name(), WHITE, party_1_rect, self.font, center=True)
-        drawText(self.display, "HEALTH: " + str(party[0].get_current_hp()) + "/" + str(party[0].get_hp()), WHITE, party_1_hp_rect, self.font, center=True)
+        drawText(self.display, "HEALTH: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), WHITE, party_1_hp_rect, self.font, center=True)
         
         if len(party) > 1:
             port2 = get_portrait(party[1].get_name())
             self.display.blit(port2, party_2_portrait_rect)
             drawText(self.display, party[1].get_name(), WHITE, party_2_rect, self.font, center=True)
-            drawText(self.display, "HEALTH: " + str(party[1].get_current_hp()) + "/" + str(party[1].get_hp()), WHITE, party_2_hp_rect, self.font, center=True)
+            drawText(self.display, "HEALTH: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), WHITE, party_2_hp_rect, self.font, center=True)
         
         if len(party) > 2:
             drawText(self.display, party[2].get_name(), WHITE, party_3_rect, self.font, center=True)
-            drawText(self.display, "HEALTH: " + str(party[2].get_current_hp()) + "/" + str(party[2].get_hp()), WHITE, party_3_hp_rect, self.font, center=True)
+            drawText(self.display, "HEALTH: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), WHITE, party_3_hp_rect, self.font, center=True)
         
         if len(party) > 3:
             drawText(self.display, party[3].get_name(), WHITE, party_4_rect, self.font, center=True)
-            drawText(self.display, "HEALTH: " + str(party[3].get_current_hp()) + "/" + str(party[3].get_hp()), WHITE, party_4_hp_rect, self.font, center=True)
+            drawText(self.display, "HEALTH: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), WHITE, party_4_hp_rect, self.font, center=True)
 
         # Enemies
-        enemy_1_rect = pygame.Rect(width-300,height-100,300,50)
-        enemy_1_hp_rect = pygame.Rect(width-300,height-50,300,50)
-        enemy_1_portrait_rect = pygame.Rect(width-300,height-50,300,50)
+        enemy_1_rect = pygame.Rect(width-300,height-150,300,50)
+        enemy_1_hp_rect = pygame.Rect(width-300,height-100,300,50)
+        enemy_1_portrait_rect = pygame.Rect(width-400,height-150,100,100)
+
+        next_rect = pygame.Rect(width-500,height-300,100,100)
+        enemy_2_rect = pygame.Rect(width-300,height-300,300,50)
+        enemy_2_hp_rect = pygame.Rect(width-300,height-250,300,50)
+        enemy_2_portrait_rect = pygame.Rect(width-500,height-150,100,100)
+        enemy_3_portrait_rect = pygame.Rect(width-600,height-150,100,100)
 
         pygame.draw.rect(screen, color_passive, enemy_1_rect)
         pygame.draw.rect(screen, color_passive, enemy_1_hp_rect)
-        pygame.draw.rect(screen, color_passive, enemy_1_portrait_rect)
+        #pygame.draw.rect(screen, color_passive, enemy_1_portrait_rect)
 
+        port_e1 = get_portrait(enemy[0].get_name())
+        self.display.blit(port_e1, enemy_1_portrait_rect)
         drawText(self.display, enemy[0].get_name(), WHITE, enemy_1_rect, self.font, center=True)
         drawText(self.display, "HEALTH: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), WHITE, enemy_1_hp_rect, self.font, center=True) 
+        
+        if len(enemy) > 1:
+            #pygame.draw.rect(screen, color_passive, next_rect)
+            port_e2 = get_portrait(enemy[1].get_name())
+            #pygame.draw.rect(screen, color_passive, enemy_2_rect)
+            #pygame.draw.rect(screen, color_passive, enemy_2_hp_rect)
+            #pygame.draw.rect(screen, color_passive, enemy_2_portrait_rect)
+            self.display.blit(port_e2, enemy_2_portrait_rect)
+            #drawText(self.display, enemy[1].get_name(), WHITE, enemy_2_rect, self.font, center=True)
+            #drawText(self.display, "HEALTH: " + str(enemy[1].get_chp()) + "/" + str(enemy[1].get_hp()), WHITE, enemy_2_hp_rect, self.font, center=True)
+            #drawText(self.display, "NEXT", WHITE, next_rect, self.font, center=True)
+
+        if len(enemy) > 2:
+            #pygame.draw.rect(screen, color_passive, next_rect)
+            port_e3 = get_portrait(enemy[2].get_name())
+            #pygame.draw.rect(screen, color_passive, enemy_2_rect)
+            #pygame.draw.rect(screen, color_passive, enemy_2_hp_rect)
+            #pygame.draw.rect(screen, color_passive, enemy_3_portrait_rect)
+            self.display.blit(port_e3, enemy_3_portrait_rect)
 
         drawText(self.display, "Return", WHITE, return_rect, self.font, center=True)  
-            
+        if update_text != None:    
+            self.update_box(update_text)
         pygame.display.update()
         return return_rect
+    
+    def update_box(self, text):
+        box = pygame.Rect(width-600,height-350,600,200)
+        pygame.draw.rect(screen, color_passive, box)
+        drawText(self.display, text, WHITE, box, self.font, center=True)
 
     def draw_time(self):
         s = int(self.swap_time)
@@ -330,6 +420,104 @@ class Game(object):
         pygame.draw.lines(self.display, WHITE, True,
                         [topLeft, topRight, bottomRight, bottomLeft], 3)
         
+    def process_action(self, item, party, enemy, active):
+        action = item.shape
+        if action == "red":
+            # do physical damage
+            att = party[0].get_str()
+            gua = enemy[0].get_guard()
+            dmg = att - gua
+            if dmg < 0:
+                dmg = 0
+            enemy[0].set_chp(enemy[0].get_chp() - dmg)
+            update_text = active[0].get_name() + " attacked " + enemy[0].get_name() + " for " + str(dmg) + " damage!"
+            self.draw(party, enemy, active, update_text)
+            self.pyg_wait(3)
+            if enemy[0].get_chp() <= 0:
+                enemy.remove(enemy[0])
+                if len(enemy) == 0:
+                    return "WIN"
+        elif action == "blue":
+            # deal magic damage
+            att = party[0].get_magic()
+            gua = enemy[0].get_guard()
+            dmg = att - gua
+            if dmg < 0:
+                dmg = 0
+            enemy[0].set_chp(enemy[0].get_chp() - dmg)
+            update_text = active[0].get_name() + " attacked " + enemy[0].get_name() + " for " + str(dmg) + " damage!"
+            self.draw(party, enemy, active, update_text)
+            self.pyg_wait(3)
+            if enemy[0].get_chp() <= 0:
+                update_text = enemy[0].get_name() + " has fallen!"
+                self.draw(party, enemy, active, update_text)
+                self.pyg_wait(3)
+                enemy.remove(enemy[0])
+                if len(enemy) == 0:
+                    update_text = active[0].get_name() + "'s party is victorious!"
+                    return "WIN"
+        elif action == "green":
+            # heal active party member
+            heal = party[0].get_magic()
+            if party[0].get_hp() < party[0].get_chp() + heal:
+                party[0].set_chp(party[0].get_hp())
+            else:
+                party[0].set_chp(party[0].get_chp() + heal)
+            update_text = active[0].get_name() + " healed for " + str(heal) + " damage."
+            self.draw(party, enemy, active, update_text)
+            self.pyg_wait(3)
+        elif action == "orange":
+            pass
+            # grant support points with this unit
+        elif action == "purple":
+            pass
+            # grant support points with next in line?
+        elif action == "yellow":
+            pass
+            # recover action points
+
+    def enemy_attack(self, party, enemy, active):
+        # enemy goes
+        self.pyg_wait(3)
+        e_attack = enemy[0].get_attack()
+        p_defense = party[0].get_defense()
+        if e_attack > p_defense:
+            dmg = e_attack - p_defense
+            party[0].set_chp(party[0].get_chp() - (dmg))
+            update_text = active[0].get_name() + " attacked " + party[0].get_name() + " for " + str(dmg) + " damage!"
+            self.draw(party, enemy, active, update_text)
+            self.pyg_wait(3)
+            if party[0].get_chp() == 0:
+                update_text = party[0].get_name() + " has fallen!"
+                self.draw(party, enemy, active, update_text)
+                self.pyg_wait(3)
+            for member in party:
+                if member.get_chp() <= 0:
+                    continue
+                else:
+                    return
+            update_text = "Your whole party has been defeated."
+            self.draw(party, enemy, active, update_text)
+            self.pyg_wait(3)
+            return "DEAD"
         
+    def pyg_wait(self, seconds):
+        last = pygame.time.get_ticks()
+        ahead = 0
+        while ahead == 0:
+            dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
+            self.swap_time += dt
+            self.board.tick(dt)
+            pygame.display.update()
+            now = pygame.time.get_ticks()
+            if now - last > (seconds * 300):
+                ahead = 1
+
 if __name__ == '__main__':
-    Game().play()
+    party = []
+    nsteen = Paladin([15, 10, 10, 10, 10, 10])
+    nsteen.set_name("N. Steen")
+    #rabby = Bookish([10,10,10,15,10,10])
+    #rabby.set_name("Radish")
+    party.append(nsteen)
+    Game().play(party, get_dungeon("cave"))

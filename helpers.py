@@ -1,4 +1,6 @@
 import pygame
+from classes import *
+import random
 
 def retrieve_background(choice):
     folder = "images/"
@@ -68,3 +70,27 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False,
     if input == True:
         return image
     return text
+
+def get_dungeon(dungeon):
+    if dungeon == "cave":
+        return [
+            Enemy("Gobble", 10, 5, 5, 5),
+            Enemy("Goobble", 10, 5, 5, 5),
+            Enemy("Gabble", 10, 5, 5, 5)
+        ]
+
+def turn_order(party, enemy):
+    turns = []
+    #for character in party:
+        #roll = random.randint(0, character.get_dex())
+        #turns.append((character, roll, "p"))
+    for character in party:
+        roll = 20
+        turns.append((character, roll, "p"))
+    for character in enemy:
+        #roll = random.randint(0, character.get_dex())
+        roll = 0
+        turns.append((character, roll, "e"))
+    turns = sorted(turns, key=lambda turn:turn[1], reverse=True)
+    print(turns)
+    return turns

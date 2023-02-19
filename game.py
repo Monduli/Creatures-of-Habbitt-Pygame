@@ -108,9 +108,9 @@ def in_dialog(skip=None):
     global party
     party = []
 
-    curr_text = user_text[0][advance][0]
+    curr_text = user_text[0][advance][1]
     if curr_text in ["inn"]:
-        choice = inn_menu()
+        choice = inn_menu(screen, progress, background)
 
     if skip:
         user_text = [[[None, "To Town"]]]
@@ -139,28 +139,48 @@ def in_dialog(skip=None):
                         add_party_member("nsteen")
                         advance += 1
                     elif user_text[0][advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
-                        progress = 1
                         if progress == 1:
-                            choice = town_options(screen, "Inn", "???", "inn", None, "???", "???", None, None, "Leave", "leave", background)
+                            choice = town_options(screen, "Inn", "???", "inn", None, "???", "Add Party", None, "party_debug", "Venture Out", "leave", background)
+                            if choice == "party_debug":
+                                add_party_member("nsteen")
+                                add_party_member("radish")
+                                add_party_member("nsteen")
+                                add_party_member("radish")
+                                user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
+                                progress += 1
+                                advance = 0
                             if choice == "inn":
                                 user_text = dia.determine_dialog(choice, progress)
                                 progress += 1
                                 advance = 0
                             if choice == "leave":
+                                user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
+                                advance = 0
+                        elif progress == 2:
+                            choice = town_options(screen, "Inn", "Smithy", "inn", "blacksmith", "???", "???", None, None, "Venture Out", "leave", background)
+                            if choice == "blacksmith":
+                                user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
+                                advance = 0
+                            elif choice == "inn":
+                                choice = inn_menu(screen, progress, background)
+                                user_text = dia.determine_dialog(choice, progress)
+                                advance = 0
+                            elif choice == "leave":
                                 if len(party) > 0:
                                 # Should go to location menu
-                                    match.Game().play(party)
-                                    user_text = [[[None, "[Returning to town.]"]]]
+                                    dungeon = "cave"
+                                    state = match.Game().play(party, get_dungeon(dungeon))
+                                    if state == "WIN":
+                                        user_text = [[[None, "Your party was victorious!"],[None, "[Returning to town.]"]]]
+                                    elif state == "DEAD":
+                                        user_text = [[[None, "Your party was wiped out..."],[None, "[Returning to town.]"]]]
+                                    elif state == "RAN":
+                                        user_text = [[[None, "[Returning to town.]"]]]
                                     advance = 0
-                                else:
-                                    user_text = [[[None, "You can't go out alone."], [None, "[Returning to town.]"]]]
-                                    advance = 0
-                        elif progress == 2:
-                            choice = town_options(screen, "Inn", "Smithy", "inn", "blacksmith", "???", "???", None, None, "Leave", "leave", background)
-                            if choice == "inn" or choice == "blacksmith":
-                                user_text = dia.determine_dialog(choice, progress)
-                                progress += 1
-                                advance = 0
+                    elif user_text[0][advance][1] == "[You leave him to his devices.]":
+                        choice = inn_menu(screen, progress, background)
+                        user_text = dia.determine_dialog(choice, progress)
+                        advance = 0
                     elif user_text[0][advance][1] == "Please select an option.":
                         choice = dialog_options(screen, user_text[0][advance+1][1], user_text[0][advance+2][1], user_text[1], user_text[2], background)
                         proceed = sort_options(choice)
@@ -313,8 +333,7 @@ def town_options(screen, text_top_left, text_top_right, target_top_left, target_
         pygame.display.update()
         clock.tick(60)
 
-def inn_menu(screen, text_top_left, text_top_right, text_bot_left, text_bot_right, text_leave,
-     target_top_left, target_top_right, target_bot_left, target_bot_right, target_leave, background):
+def inn_menu(screen, progress, background):
 
     size = width, height = 1600, 900
     clock = pygame.time.Clock()
@@ -326,6 +345,7 @@ def inn_menu(screen, text_top_left, text_top_right, text_bot_left, text_bot_righ
 
     color_passive = pygame.Color('black')
 
+    title_rect = pygame.Rect(width-1500,height-800,1400,50)
     top_left_rect = pygame.Rect(width-1550,height-350,700,50)
     top_right_rect = pygame.Rect(width-750,height-350,700,50)
     bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
@@ -345,15 +365,16 @@ def inn_menu(screen, text_top_left, text_top_right, text_bot_left, text_bot_righ
             if event.type == pygame.QUIT: sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if top_left_rect.collidepoint(event.pos):
-                    return target_top_left
+                    return "nsteen"
                 if top_right_rect.collidepoint(event.pos):
-                    return target_top_right
+                    if progress >= 3:
+                        return "radish"
                 if bot_left_rect.collidepoint(event.pos):
-                    return target_bot_left
+                    pass
                 if bot_right_rect.collidepoint(event.pos):
-                    return target_bot_right
+                    pass
                 if leave_rect.collidepoint(event.pos):
-                    return target_leave
+                    return "town"
 
         if top_left_rect.collidepoint(pygame.mouse.get_pos()):
             color_top_left = pygame.Color(200,0,0)
@@ -366,16 +387,28 @@ def inn_menu(screen, text_top_left, text_top_right, text_bot_left, text_bot_righ
         if leave_rect.collidepoint(pygame.mouse.get_pos()):
             color_leave = pygame.Color(200,0,0)
 
+        global party
+        pygame.draw.rect(screen, color_passive, title_rect)
+        drawText(screen, "Who would you like to speak to?", (255,255,255), title_rect, base_font)
         pygame.draw.rect(screen, color_top_left, top_left_rect)
-        drawText(screen, text_top_left, (255,255,255), top_left_rect, base_font)
+        drawText(screen, "Bear N. Steen", (255,255,255), top_left_rect, base_font)
         pygame.draw.rect(screen, color_top_right, top_right_rect)
-        drawText(screen, text_top_right, (255,255,255), top_right_rect, base_font)
+        if in_party("Radish"):
+            drawText(screen, "Radish Rabbit", (255,255,255), top_right_rect, base_font)
+        else:
+            drawText(screen, "???", (255,255,255), top_right_rect, base_font)
         pygame.draw.rect(screen, color_bot_left, bot_left_rect)
-        drawText(screen, text_bot_left, (255,255,255), bot_left_rect, base_font)
+        if in_party("Name"):
+            drawText(screen, "Not Found", (255,255,255), bot_left_rect, base_font)
+        else:
+            drawText(screen, "???", (255,255,255), bot_left_rect, base_font)
         pygame.draw.rect(screen, color_bot_right, bot_right_rect)
-        drawText(screen, text_bot_right, (255,255,255), bot_right_rect, base_font)
+        if in_party("Name"):
+            drawText(screen, "Not Found", (255,255,255), bot_right_rect, base_font)
+        else:
+            drawText(screen, "???", (255,255,255), bot_right_rect, base_font)
         pygame.draw.rect(screen, color_leave, leave_rect)
-        drawText(screen, text_leave, (255,255,255), leave_rect, base_font)
+        drawText(screen, "Leave", (255,255,255), leave_rect, base_font)
 
 
         pygame.display.update()
@@ -494,17 +527,27 @@ def add_party_member(name):
         #rabby = Bookish([10,10,10,15,10,10])
         #rabby.set_name("Radish")
         party.append(nsteen)
+    if name == "radish":
+        radish = Bookish([15, 10, 10, 10, 10, 10])
+        radish.set_name("Radish")
+        party.append(radish)
+
+def in_party(name):
+    global party
+    for member in party:
+        if member.get_name() == name:
+            return True
+    return False
 
 def controller():
     global name_global
     global progress
+    progress = 1
     while True:
         option = start_screen()
         if option == "dialog":
-            progress = 0
             in_dialog()
         elif option == "dialog skip":
-            progress = 0
             name_global = "Dan"
             in_dialog("To Town")
         elif option == "exit":

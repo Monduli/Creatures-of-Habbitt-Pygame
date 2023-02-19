@@ -27,6 +27,11 @@ def determine_dialog(target, progress, name="Default"):
                 return inn_dialog_1
             else:
                 return outside_cave_1
+        case "town":
+            return [[[None, "[Returning to town.]"]]]
+        case "nsteen":
+            if progress >= 2:
+                return nsteen_neutral
 
 dialog_start = [[
     [None, """You find yourself in a dark cave."""],
@@ -77,5 +82,5 @@ inn_dialog_1 = [[
 
 nsteen_neutral = [[
     ["N. Steen", "Hey, how's it going?"],
-    ["inn"]
+    [None, "[You leave him to his devices.]"]
 ]]
