@@ -49,7 +49,7 @@ BLACK = (0, 0, 0)
 
 MINIMUM_MATCH = 3
 
-FPS = 120
+FPS = 60
 EXPLOSION_SPEED = 15
 REFILL_SPEED = 10
 
@@ -320,6 +320,23 @@ class Game(object):
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if return_rect.collidepoint(event.pos):
                         return "RAN"
+                #elif event.type == pygame.MOUSEBUTTONDOWN:
+                #    if event.button == 1:            
+                #        if rectangle.collidepoint(event.pos):
+                #            rectangle_dragging = True
+                #            mouse_x, mouse_y = event.pos
+                #            offset_x = rectangle.x - mouse_x
+                #            offset_y = rectangle.y - mouse_y
+
+                #elif event.type == pygame.MOUSEBUTTONUP:
+                #    if event.button == 1:            
+                #        rectangle_dragging = False
+
+                #elif event.type == pygame.MOUSEMOTION:
+                #    if rectangle_dragging:
+                #        mouse_x, mouse_y = event.pos
+                #        rectangle.x = mouse_x + offset_x
+                #        rectangle.y = mouse_y + offset_y
                     
             if len(curr_match) > 0:
                 for item in curr_match:
@@ -327,6 +344,8 @@ class Game(object):
                     state = self.process_action(curr_match[0], party, enemy, player_active, enemy_active, party_turns, enemy_turns)
                     curr_match.remove(curr_match[0])
                     if state == "WIN":
+                        self.draw(party, enemy, player_active, "Your party was victorious!", "Your enemies skulk away.", flash_red)
+                        self.pyg_wait(5)
                         return "WIN"
                 if len(curr_match) == 0:
                     if party_current+1 < len(party_turns):
@@ -340,9 +359,18 @@ class Game(object):
 
             if now - timer > TIME:
                 enemy_active = enemy_turns[enemy_current][0]
-                state = self.enemy_attack(party, enemy, player_active, enemy_active)
-                flash_red = party_current
+                target = player_active
+                while target.get_chp() == 0:
+                    i = party.index(target)
+                    if i+1 < len(party):
+                        target = party[i+1]
+                    else:
+                        target = party[0]
+                state = self.enemy_attack(party, enemy, target, enemy_active)
+                flash_red = party.index(target)
                 if state == "DEAD":
+                    self.draw(party, enemy, player_active, "Your party dead!", "Your party was wiped out...", flash_red)
+                    self.pyg_wait(5)
                     return "DEAD"
                 
                 timer = pygame.time.get_ticks()
@@ -402,6 +430,16 @@ class Game(object):
         self.board.swap(self.cursor)
 
     def draw(self, party, enemy, active, p_text, e_text, flash_red, update_text=None):
+        if p_text == "Your party was victorious!":
+            self.display.blit(background, (0,0))
+            victory_rect = pygame.Rect(width-1600,height-450,1600,50)
+            drawText(self.display, p_text, WHITE, victory_rect, self.font, center=True)
+            return "WIN"
+        if e_text == "Your party was wiped out...":
+            self.display.blit(background, (0,0))
+            victory_rect = pygame.Rect(width-1600,height-450,1600,50)
+            drawText(self.display, e_text, WHITE, victory_rect, self.font, center=True)
+            return "WIN"
         color_0 = color_passive
         color_1 = color_passive
         color_2 = color_passive
@@ -563,9 +601,11 @@ class Game(object):
     def process_action(self, item, party, enemy, player_active, enemy_active, turns, enemy_turns):
         action = item
         update_text = None
+        if enemy_active not in enemy:
+            enemy_active = enemy[0]
         if action == "red":
             # do physical damage
-            self.red_attack(player_active, enemy_active, enemy, turns)
+            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
         elif action == "blue":
             # deal magic damage
             att = player_active.get_magic()
@@ -579,8 +619,10 @@ class Game(object):
             if enemy_active.get_chp() <= 0:
                 update_text = enemy_active.get_name() + " has fallen!"
                 self.party_text.append(update_text)
-                find_and_remove_from_turn(enemy_turns, enemy_active)
+                enemy_turns = find_and_remove_from_turn(enemy_turns, enemy_active)
                 enemy.remove(enemy_active)
+                print(enemy_turns)
+                print(enemy)
                 if len(enemy) == 0:
                     update_text = player_active.get_name() + "'s party is victorious!"
                     self.party_text.append(update_text)
@@ -595,17 +637,17 @@ class Game(object):
             update_text = player_active.get_name() + " healed for " + str(heal) + " damage."
             self.party_text.append(update_text)
         elif action == "orange":
-            self.red_attack(player_active, enemy_active, enemy, turns)
+            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
             # grant support points with this unit
         elif action == "purple":
-            self.red_attack(player_active, enemy_active, enemy, turns)
+            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
             # grant support points with next in line?
         elif action == "yellow":
-            self.red_attack(player_active, enemy_active, enemy, turns)
+            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
             # recover action points
         return update_text
     
-    def red_attack(self, player_active, enemy_active, enemy, turns):
+    def red_attack(self, player_active, enemy_active, enemy, enemy_turns):
         att = player_active.get_str()
         gua = enemy_active.get_guard()
         dmg = att - gua
@@ -617,7 +659,11 @@ class Game(object):
         if enemy_active.get_chp() <= 0:
             update_text = enemy_active.get_name() + " has fallen!"
             self.party_text.append(update_text)
-            find_and_remove_from_turn(turns, enemy_active)
+            enemy_turns = find_and_remove_from_turn(enemy_turns, enemy_active)
+            print(enemy)
+            enemy.remove(enemy_active)
+            print(enemy_turns)
+            print(enemy)
             if len(enemy) == 0:
                 return "WIN"
 
@@ -658,4 +704,5 @@ class Game(object):
 
 if __name__ == '__main__':
     party = fill_party()
-    Game().play(party, get_dungeon("cave"))
+    state = Game().play(party, get_dungeon("cave"))
+    print("Your final result was: " + state)

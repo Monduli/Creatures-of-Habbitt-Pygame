@@ -91,7 +91,7 @@ def find_and_remove_from_turn(turns, character):
     for nest in turns:
         if nest[0] == character:
             turns.remove(nest)
-            return
+            return turns
         
 def add_party_member(name):
     if name == "nsteen":
