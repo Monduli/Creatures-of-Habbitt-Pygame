@@ -136,16 +136,16 @@ def in_dialog(skip=None):
                     if exit_next == 1:
                         sys.exit()
                     elif user_text[0][advance][1] == "[Bear N. Steen has joined your party.]":
-                        add_party_member("nsteen")
+                        party.append(add_party_member("nsteen"))
                         advance += 1
                     elif user_text[0][advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
                         if progress == 1:
                             choice = town_options(screen, "Inn", "???", "inn", None, "???", "Add Party", None, "party_debug", "Venture Out", "leave", background)
                             if choice == "party_debug":
-                                add_party_member("nsteen")
-                                add_party_member("radish")
-                                add_party_member("nsteen")
-                                add_party_member("radish")
+                                party.append(add_party_member("nsteen"))
+                                party.append(add_party_member("radish"))
+                                party.append(add_party_member("toffee"))
+                                party.append(add_party_member("grapefart"))
                                 user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                                 progress += 1
                                 advance = 0
@@ -520,17 +520,7 @@ def determine_background(dialog, bg, move):
     else:
         return bg, move
 
-def add_party_member(name):
-    if name == "nsteen":
-        nsteen = Paladin([15, 10, 10, 10, 10, 10])
-        nsteen.set_name("N. Steen")
-        #rabby = Bookish([10,10,10,15,10,10])
-        #rabby.set_name("Radish")
-        party.append(nsteen)
-    if name == "radish":
-        radish = Bookish([15, 10, 10, 10, 10, 10])
-        radish.set_name("Radish")
-        party.append(radish)
+
 
 def in_party(name):
     global party

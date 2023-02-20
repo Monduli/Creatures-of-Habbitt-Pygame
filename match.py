@@ -29,6 +29,9 @@ SHAPE_WIDTH = 100
 SHAPE_HEIGHT = 100
 MARGIN = 2
 
+# Amount of time before enemy makes a decision
+TIME = 5000
+
 RED = pygame.image.load("images/red_gem.png")
 BLUE = pygame.image.load("images/blue_gem.png")
 PURPLE = pygame.image.load("images/purple_gem.png")
@@ -46,7 +49,7 @@ BLACK = (0, 0, 0)
 
 MINIMUM_MATCH = 3
 
-FPS = 30
+FPS = 120
 EXPLOSION_SPEED = 15
 REFILL_SPEED = 10
 
@@ -104,6 +107,10 @@ class Board(object):
         for i in range(self.size):
             c = random.randint(0, 5)
             self.board[i] = Cell(self.shapes[c], self.type_shape[c])
+        #row = self.board
+        #print("["+row[0].shape+"]["+row[1].shape+"]["+row[2].shape+"]["+row[3].shape+"]["+row[4].shape+"]["+row[5].shape+"]["+row[6].shape+"]["+row[7].shape+"]["+row[8].shape+"]["+row[9].shape+"]")
+        #print("["+row[10].shape+"]["+row[11].shape+"]["+row[12].shape+"]["+row[13].shape+"]["+row[14].shape+"]["+row[15].shape+"]["+row[16].shape+"]["+row[17].shape+"]["+row[18].shape+"]["+row[19].shape+"]")
+        #print("["+row[20].shape+"]["+row[21].shape+"]["+row[22].shape+"]["+row[23].shape+"]["+row[24].shape+"]["+row[25].shape+"]["+row[26].shape+"]["+row[27].shape+"]["+row[28].shape+"]["+row[29].shape+"]")
 
     def pos(self, i, j):
         assert(0 <= i < self.w)
@@ -162,9 +169,11 @@ class Board(object):
     
     def update_matches(self,image):
         for match in self.matches:
+            global curr_match
+            print(match[0])
+            curr_match.append(self.board[match[0]].shape)
+            print(curr_match)
             for position in match:
-                global curr_match
-                curr_match.append(self.board[position])
                 self.board[position].image = image
 
     def refill_columns(self):
@@ -195,6 +204,14 @@ def get_portrait(character):
         portrait = pygame.image.load("images/rabbit_portrait.png")
         portrait = pygame.transform.scale(portrait,(100,100))
         return portrait
+    if character == "Toffee":
+        portrait = pygame.image.load("images/toffee_portrait.png")
+        portrait = pygame.transform.scale(portrait,(100,100))
+        return portrait
+    if character == "Grapefart":
+        portrait = pygame.image.load("images/grapefart_portrait.png")
+        portrait = pygame.transform.scale(portrait,(100,100))
+        return portrait
     if character in ["Gobble"]:
         portrait = pygame.image.load("images/goblin.png")
         portrait = pygame.transform.scale(portrait,(100,100))
@@ -217,6 +234,8 @@ class Game(object):
                                                pygame.RESIZABLE)
         self.board = Board(PUZZLE_COLUMNS, PUZZLE_ROWS, background)
         self.font = pygame.font.Font('font/VCR.001.ttf', FONT_SIZE)
+        self.party_text = []
+        self.enemy_text = []
 
     def start(self):
         self.board.randomize()
@@ -229,51 +248,137 @@ class Game(object):
 
     def play(self, party, dungeon):
         self.start()
+
+        # Set all party member HPs to max before beginning.
         for member in party:
             member.set_chp(member.get_hp())
+
+        # The list of enemies in this particular dungeon.
         enemy = dungeon
-        turns = turn_order(party, enemy)
-        current = 0
+
+        # The turn order for the party.
+        party_turns = turn_order(party)
+
+        # The turn order for the enemy squad.
+        enemy_turns = turn_order(enemy)
+
+        # The index of the current party member.
+        party_current = 0
+
+        # The index of the current turn enemy.
+        enemy_current = 0
+
+        # The enemy whose turn it is.
+        enemy_active = enemy_turns[enemy_current][0]
+
+        # Governs the current matches that exist on the board.
         global curr_match
+        
+        # Determines if there are matches on the board, for randomization.
         matches = True
+
+        # Determines which portrait will flash red when damage is taken.
+        flash_red = False
+
+        # Timer for enemy attacks.
+        timer = pygame.time.get_ticks()
+
+        # Timer for going through text.
+        text_timer = pygame.time.get_ticks()
+
+        # The current active party member (object).
+        player_active = party_turns[party_current][0]
+
+        # Set text to whose turn it is
+        self.party_text.append("It is " + player_active.get_name() + "'s turn.")
+        self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
+
+        # These hold the current text to update the status text boxes with.
+        p_text = self.party_text[0]
+        e_text = self.enemy_text[0]
+
+        hold = 0
+
         while matches:
             if len(self.board.find_matches()) > 0:
                 self.board.randomize()
             else:
                 matches = False
+
         while True:
-            active = turns[current]
-            update_text = "It is " + active[0].get_name() + "'s turn."
-            return_rect = self.draw(party, enemy, active, update_text)
-            dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
+            now = pygame.time.get_ticks()
+            return_rect = self.draw(party, enemy, player_active, p_text, e_text, flash_red)
+            flash_red = None
+            dt = min(self.clock.tick(FPS) / 100.0, 1.0 / FPS)
             self.swap_time += dt
-            if active[2] == "p":
-                for event in pygame.event.get():
-                    if event.type == KEYUP:
-                        self.input(event.key)
-                    elif event.type == QUIT:
-                        self.quit()
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
-                        if return_rect.collidepoint(event.pos):
-                            return "RAN"
-            if active[2] == "p":
-                if len(curr_match) > 0:
-                    state = self.process_action(curr_match[0], party, enemy, active)
+
+            for event in pygame.event.get():
+                if event.type == KEYUP:
+                    self.input(event.key)
+                elif event.type == QUIT:
+                    self.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if return_rect.collidepoint(event.pos):
+                        return "RAN"
+                    
+            if len(curr_match) > 0:
+                for item in curr_match:
+                    print(curr_match)
+                    state = self.process_action(curr_match[0], party, enemy, player_active, enemy_active, party_turns, enemy_turns)
+                    curr_match.remove(curr_match[0])
                     if state == "WIN":
                         return "WIN"
-                    if current+1 < len(turns)-1:
-                        current += 1
+                if len(curr_match) == 0:
+                    if party_current+1 < len(party_turns):
+                        party_current += 1
                     else:
-                        current = 0
-            elif active[2] == "e":
-                state = self.enemy_attack(party, enemy, active)
+                        party_current = 0
+
+                    player_active = party_turns[party_current][0]
+                    self.party_text.append("It is " + player_active.get_name() + "'s turn.")
+                    curr_match = []
+
+            if now - timer > TIME:
+                enemy_active = enemy_turns[enemy_current][0]
+                state = self.enemy_attack(party, enemy, player_active, enemy_active)
+                flash_red = party_current
                 if state == "DEAD":
                     return "DEAD"
-                if current+1 < len(turns )-1:
-                        current += 1
+                
+                timer = pygame.time.get_ticks()
+                if enemy_current+1 < len(enemy_turns):
+                    enemy_current += 1
                 else:
-                    current = 0
-            curr_match = []
+                    enemy_current = 0
+
+                self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
+            
+            p_text = self.party_text[0]
+            e_text = self.enemy_text[0]
+
+            if now - text_timer > 1000:
+                if len(self.party_text) > 1:
+                    self.party_text.remove(p_text)
+                    if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
+                        self.party_text.remove(self.party_text[0])
+                    text_timer = pygame.time.get_ticks()
+            if now - text_timer < 2000:
+                if now - text_timer > 1000 and hold == 0:
+                    if len(self.enemy_text) > 1:
+                        self.enemy_text.remove(e_text)
+                        hold = 1
+            else:
+                if len(self.enemy_text) > 1:
+                    self.enemy_text.remove(e_text)
+                    text_timer = pygame.time.get_ticks()
+                    hold = 0
+
+            if self.party_text[0:5] == "It is" and len(self.party_text) > 1:
+                self.party_text.remove(self.party_text[0])
+                text_timer = pygame.time.get_ticks()
+            if self.enemy_text[0:5] == "It is" and len(self.enemy_text) > 1:
+                self.enemy_text.remove(self.enemy_text[0])
+                text_timer = pygame.time.get_ticks()
             self.board.tick(dt)
     
     def input(self, key):
@@ -289,12 +394,29 @@ class Game(object):
             self.cursor[1] -= 1
         elif key == K_SPACE and not self.board.busy():
             self.swap()
+        elif key == K_r:
+            pygame.display.set_mode((1600, 900), pygame.FULLSCREEN)
 
     def swap(self):
         self.swap_time = 0.0
         self.board.swap(self.cursor)
 
-    def draw(self, party, enemy, active, update_text=None):
+    def draw(self, party, enemy, active, p_text, e_text, flash_red, update_text=None):
+        color_0 = color_passive
+        color_1 = color_passive
+        color_2 = color_passive
+        color_3 = color_passive
+
+        if flash_red != None:
+            if flash_red == 0:
+                color_0 = pygame.Color('Red') 
+            if flash_red == 1:
+                color_1 = pygame.Color('Red') 
+            if flash_red == 2:
+                color_2 = pygame.Color('Red') 
+            if flash_red == 3:
+                color_3 = pygame.Color('Red')    
+
         self.board.draw(self.display)
         color_return = BLACK
         #self.draw_time()
@@ -313,29 +435,31 @@ class Game(object):
         party_4_hp_rect = pygame.Rect(width-500,height-550,500,50)
         party_4_portrait_rect = pygame.Rect(width-600,height-600,100,100)
 
+
         if return_rect.collidepoint(pygame.mouse.get_pos()):
             color_return = pygame.Color(200,0,0)
 
         pygame.draw.rect(screen, color_return, return_rect)
-        pygame.draw.rect(screen, color_passive, party_1_rect)
-        pygame.draw.rect(screen, color_passive, party_1_hp_rect)
+        pygame.draw.rect(screen, color_0, party_1_rect)
+        pygame.draw.rect(screen, color_0, party_1_hp_rect)
         #pygame.draw.rect(screen, color_passive, party_1_portrait_rect)
         if len(party) > 1:
             pass
-            pygame.draw.rect(screen, color_passive, party_2_rect)
-            pygame.draw.rect(screen, color_passive, party_2_hp_rect)
+            pygame.draw.rect(screen, color_1, party_2_rect)
+            pygame.draw.rect(screen, color_1, party_2_hp_rect)
             #pygame.draw.rect(screen, color_passive, party_2_portrait_rect)
         if len(party) > 2:
             pass
-            pygame.draw.rect(screen, color_passive, party_3_rect)
-            pygame.draw.rect(screen, color_passive, party_3_hp_rect)
+            pygame.draw.rect(screen, color_2, party_3_rect)
+            pygame.draw.rect(screen, color_2, party_3_hp_rect)
             #pygame.draw.rect(screen, color_passive, party_3_portrait_rect)
         if len(party) > 3:
             pass
-            pygame.draw.rect(screen, color_passive, party_4_rect)
-            pygame.draw.rect(screen, color_passive, party_4_hp_rect)
+            pygame.draw.rect(screen, color_3, party_4_rect)
+            pygame.draw.rect(screen, color_3, party_4_hp_rect)
             #pygame.draw.rect(screen, color_passive, party_4_portrait_rect)
 
+        
         port1 = get_portrait(party[0].get_name())
         self.display.blit(port1, party_1_portrait_rect)
 
@@ -349,10 +473,14 @@ class Game(object):
             drawText(self.display, "HEALTH: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), WHITE, party_2_hp_rect, self.font, center=True)
         
         if len(party) > 2:
+            port3 = get_portrait(party[2].get_name())
+            self.display.blit(port3, party_3_portrait_rect)
             drawText(self.display, party[2].get_name(), WHITE, party_3_rect, self.font, center=True)
             drawText(self.display, "HEALTH: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), WHITE, party_3_hp_rect, self.font, center=True)
         
         if len(party) > 3:
+            port4 = get_portrait(party[3].get_name())
+            self.display.blit(port4, party_4_portrait_rect)
             drawText(self.display, party[3].get_name(), WHITE, party_4_rect, self.font, center=True)
             drawText(self.display, "HEALTH: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), WHITE, party_4_hp_rect, self.font, center=True)
 
@@ -361,9 +489,9 @@ class Game(object):
         enemy_1_hp_rect = pygame.Rect(width-300,height-100,300,50)
         enemy_1_portrait_rect = pygame.Rect(width-400,height-150,100,100)
 
-        next_rect = pygame.Rect(width-500,height-300,100,100)
-        enemy_2_rect = pygame.Rect(width-300,height-300,300,50)
-        enemy_2_hp_rect = pygame.Rect(width-300,height-250,300,50)
+        #next_rect = pygame.Rect(width-500,height-300,100,100)
+        #enemy_2_rect = pygame.Rect(width-300,height-300,300,50)
+        #enemy_2_hp_rect = pygame.Rect(width-300,height-250,300,50)
         enemy_2_portrait_rect = pygame.Rect(width-500,height-150,100,100)
         enemy_3_portrait_rect = pygame.Rect(width-600,height-150,100,100)
 
@@ -395,14 +523,26 @@ class Game(object):
             #pygame.draw.rect(screen, color_passive, enemy_3_portrait_rect)
             self.display.blit(port_e3, enemy_3_portrait_rect)
 
-        drawText(self.display, "Return", WHITE, return_rect, self.font, center=True)  
-        if update_text != None:    
-            self.update_box(update_text)
+        drawText(self.display, "Return", WHITE, return_rect, self.font, center=True) 
+        party_box = pygame.Rect(width-600,height-450,600,100) 
+        enemy_box = pygame.Rect(width-600,height-350,600,100)
+        self.update_box(p_text, party_box)
+        self.update_box(e_text, enemy_box)
+
+        #Highlight whose turn it is
+        if party[0] == active:
+            drawStyleRect(screen, width-500, height-900)
+        elif party[1] == active:
+            drawStyleRect(screen, width-500, height-800)
+        elif party[2] == active:
+            drawStyleRect(screen, width-500, height-700)
+        elif party[3] == active:
+            drawStyleRect(screen, width-500, height-600)
+
         pygame.display.update()
         return return_rect
     
-    def update_box(self, text):
-        box = pygame.Rect(width-600,height-350,600,200)
+    def update_box(self, text, box):
         pygame.draw.rect(screen, color_passive, box)
         drawText(self.display, text, WHITE, box, self.font, center=True)
 
@@ -420,85 +560,88 @@ class Game(object):
         pygame.draw.lines(self.display, WHITE, True,
                         [topLeft, topRight, bottomRight, bottomLeft], 3)
         
-    def process_action(self, item, party, enemy, active):
-        action = item.shape
+    def process_action(self, item, party, enemy, player_active, enemy_active, turns, enemy_turns):
+        action = item
+        update_text = None
         if action == "red":
             # do physical damage
-            att = party[0].get_str()
-            gua = enemy[0].get_guard()
-            dmg = att - gua
-            if dmg < 0:
-                dmg = 0
-            enemy[0].set_chp(enemy[0].get_chp() - dmg)
-            update_text = active[0].get_name() + " attacked " + enemy[0].get_name() + " for " + str(dmg) + " damage!"
-            self.draw(party, enemy, active, update_text)
-            self.pyg_wait(3)
-            if enemy[0].get_chp() <= 0:
-                enemy.remove(enemy[0])
-                if len(enemy) == 0:
-                    return "WIN"
+            self.red_attack(player_active, enemy_active, enemy, turns)
         elif action == "blue":
             # deal magic damage
-            att = party[0].get_magic()
-            gua = enemy[0].get_guard()
+            att = player_active.get_magic()
+            gua = enemy_active.get_maggua()
             dmg = att - gua
             if dmg < 0:
                 dmg = 0
-            enemy[0].set_chp(enemy[0].get_chp() - dmg)
-            update_text = active[0].get_name() + " attacked " + enemy[0].get_name() + " for " + str(dmg) + " damage!"
-            self.draw(party, enemy, active, update_text)
-            self.pyg_wait(3)
-            if enemy[0].get_chp() <= 0:
-                update_text = enemy[0].get_name() + " has fallen!"
-                self.draw(party, enemy, active, update_text)
-                self.pyg_wait(3)
-                enemy.remove(enemy[0])
+            enemy_active.set_chp(enemy_active.get_chp() - dmg)
+            update_text = player_active.get_name() + " attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
+            self.party_text.append(update_text)
+            if enemy_active.get_chp() <= 0:
+                update_text = enemy_active.get_name() + " has fallen!"
+                self.party_text.append(update_text)
+                find_and_remove_from_turn(enemy_turns, enemy_active)
+                enemy.remove(enemy_active)
                 if len(enemy) == 0:
-                    update_text = active[0].get_name() + "'s party is victorious!"
+                    update_text = player_active.get_name() + "'s party is victorious!"
+                    self.party_text.append(update_text)
                     return "WIN"
         elif action == "green":
             # heal active party member
-            heal = party[0].get_magic()
-            if party[0].get_hp() < party[0].get_chp() + heal:
-                party[0].set_chp(party[0].get_hp())
+            heal = player_active.get_magic()
+            if player_active.get_hp() < player_active.get_chp() + heal:
+                player_active.set_chp(player_active.get_hp())
             else:
-                party[0].set_chp(party[0].get_chp() + heal)
-            update_text = active[0].get_name() + " healed for " + str(heal) + " damage."
-            self.draw(party, enemy, active, update_text)
-            self.pyg_wait(3)
+                player_active.set_chp(player_active.get_chp() + heal)
+            update_text = player_active.get_name() + " healed for " + str(heal) + " damage."
+            self.party_text.append(update_text)
         elif action == "orange":
-            pass
+            self.red_attack(player_active, enemy_active, enemy, turns)
             # grant support points with this unit
         elif action == "purple":
-            pass
+            self.red_attack(player_active, enemy_active, enemy, turns)
             # grant support points with next in line?
         elif action == "yellow":
-            pass
+            self.red_attack(player_active, enemy_active, enemy, turns)
             # recover action points
+        return update_text
+    
+    def red_attack(self, player_active, enemy_active, enemy, turns):
+        att = player_active.get_str()
+        gua = enemy_active.get_guard()
+        dmg = att - gua
+        if dmg < 0:
+            dmg = 0
+        enemy_active.set_chp(enemy_active.get_chp() - dmg)
+        update_text = player_active.get_name() + " attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
+        self.party_text.append(update_text)
+        if enemy_active.get_chp() <= 0:
+            update_text = enemy_active.get_name() + " has fallen!"
+            self.party_text.append(update_text)
+            find_and_remove_from_turn(turns, enemy_active)
+            if len(enemy) == 0:
+                return "WIN"
 
-    def enemy_attack(self, party, enemy, active):
+    def enemy_attack(self, party, enemy, player_active, enemy_active):
         # enemy goes
-        self.pyg_wait(3)
-        e_attack = enemy[0].get_attack()
-        p_defense = party[0].get_defense()
+        e_attack = enemy_active.get_attack()
+        p_defense = player_active.get_defense()
+        attacker = enemy_active
+        target = player_active
         if e_attack > p_defense:
             dmg = e_attack - p_defense
-            party[0].set_chp(party[0].get_chp() - (dmg))
-            update_text = active[0].get_name() + " attacked " + party[0].get_name() + " for " + str(dmg) + " damage!"
-            self.draw(party, enemy, active, update_text)
-            self.pyg_wait(3)
-            if party[0].get_chp() == 0:
-                update_text = party[0].get_name() + " has fallen!"
-                self.draw(party, enemy, active, update_text)
-                self.pyg_wait(3)
+            target.set_chp(target.get_chp() - (dmg))
+            enemy_text = attacker.get_name() + " attacked " + target.get_name() + " for " + str(dmg) + " damage!"
+            self.enemy_text.append(enemy_text)
+            if target.get_chp() == 0:
+                update_text = target.get_name() + " has fallen!"
+                self.party_text.append(update_text)
             for member in party:
                 if member.get_chp() <= 0:
                     continue
                 else:
-                    return
+                    return enemy_text
             update_text = "Your whole party has been defeated."
-            self.draw(party, enemy, active, update_text)
-            self.pyg_wait(3)
+            self.draw(party, enemy, player_active, update_text, enemy_text)
             return "DEAD"
         
     def pyg_wait(self, seconds):
@@ -514,10 +657,5 @@ class Game(object):
                 ahead = 1
 
 if __name__ == '__main__':
-    party = []
-    nsteen = Paladin([15, 10, 10, 10, 10, 10])
-    nsteen.set_name("N. Steen")
-    #rabby = Bookish([10,10,10,15,10,10])
-    #rabby.set_name("Radish")
-    party.append(nsteen)
+    party = fill_party()
     Game().play(party, get_dungeon("cave"))

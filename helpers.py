@@ -74,23 +74,61 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False,
 def get_dungeon(dungeon):
     if dungeon == "cave":
         return [
-            Enemy("Gobble", 10, 5, 5, 5),
-            Enemy("Goobble", 10, 5, 5, 5),
-            Enemy("Gabble", 10, 5, 5, 5)
+            Enemy("Gobble", 10, 5, 5, 5, 5),
+            Enemy("Goobble", 10, 5, 5, 5, 5),
+            Enemy("Gabble", 10, 5, 5, 5, 5)
         ]
 
-def turn_order(party, enemy):
+def turn_order(group):
     turns = []
-    #for character in party:
-        #roll = random.randint(0, character.get_dex())
-        #turns.append((character, roll, "p"))
-    for character in party:
-        roll = 20
+    for character in group:
+        roll = random.randint(0, character.get_dex())
         turns.append((character, roll, "p"))
-    for character in enemy:
-        #roll = random.randint(0, character.get_dex())
-        roll = 0
-        turns.append((character, roll, "e"))
     turns = sorted(turns, key=lambda turn:turn[1], reverse=True)
-    print(turns)
     return turns
+
+def find_and_remove_from_turn(turns, character):
+    for nest in turns:
+        if nest[0] == character:
+            turns.remove(nest)
+            return
+        
+def add_party_member(name):
+    if name == "nsteen":
+        nsteen = Paladin([15, 10, 10, 10, 10, 10])
+        nsteen.set_name("N. Steen")
+        #rabby = Bookish([10,10,10,15,10,10])
+        #rabby.set_name("Radish")
+        return nsteen
+    if name == "radish":
+        radish = Bookish([15, 10, 10, 10, 10, 10])
+        radish.set_name("Radish")
+        return radish
+    if name == "toffee":
+        toffee = Martial([20, 20, 20, 20, 20, 20])
+        toffee.set_name("Toffee")
+        return toffee
+    if name == "grapefart":
+        grapefart = Ranger([20, 20, 20, 20, 20, 20])
+        grapefart.set_name("Grapefart")
+        return grapefart
+    
+def fill_party():
+    nsteen = Paladin([15, 10, 10, 10, 10, 10])
+    nsteen.set_name("N. Steen")
+    #rabby = Bookish([10,10,10,15,10,10])
+    #rabby.set_name("Radish")
+    radish = Bookish([15, 10, 10, 10, 10, 10])
+    radish.set_name("Radish")
+    toffee = Martial([20, 20, 20, 20, 20, 20])
+    toffee.set_name("Toffee")
+    grapefart = Ranger([20, 20, 20, 20, 20, 20])
+    grapefart.set_name("Grapefart")
+    party = [nsteen, radish, toffee, grapefart]
+    for char in party:
+        char.print_stats()
+    return party
+
+def drawStyleRect(surface, x, y):
+    for i in range(4):
+        pygame.draw.rect(surface, (255,255,255), (x-i,y-i,500,100), 1)

@@ -70,7 +70,7 @@ class Character:
     def set_con(self, value):
         self.constitution = value
 
-    def set_int(self, value):
+    def set_mag(self, value):
         self.magic = value
 
     def set_wis(self, value):
@@ -97,8 +97,8 @@ class Character:
             elif spread[i] == "con":
                 self.set_con(max(temp))
                 stats.remove(max(temp))
-            elif spread[i] == "int":
-                self.set_int(max(temp))
+            elif spread[i] == "mag":
+                self.set_mag(max(temp))
                 stats.remove(max(temp))
             elif spread[i] == "wis":
                 self.set_wis(max(temp))
@@ -107,14 +107,27 @@ class Character:
                 self.set_cha(max(temp))
                 stats.remove(max(temp))
 
+    def print_stats(self):
+        print("STR: " + str(self.strength) +
+              " DEX: " + str(self.dexterity) +
+                " MAG: " + str(self.magic) +
+                 " CON: " + str(self.constitution) +
+                  " WIS: " + str(self.wisdom) +
+                   " CHA: " + str(self.charisma))
+
 
 class Martial(Character):
     def __init__(self, stats) -> None:
         super().__init__()
-        self.stats = stats
+        self.spread(stats)
+        self.hp = 60
+        self.current_hp = 60
 
     def spread(self, stats):
-        Character.distribute_stats(["str", "con", "dex", "wis", "cha", "int"], stats)
+        Character.distribute_stats(self, ["str", "con", "dex", "wis", "cha", "mag"], stats)
+
+    def get_magic(self):
+        return self.get_mag()
 
 class Paladin(Character):
     def __init__(self, stats) -> None:
@@ -124,7 +137,7 @@ class Paladin(Character):
         self.current_hp = 50
 
     def spread(self, stats):
-        Character.distribute_stats(self, ["cha", "str", "con", "dex", "wis", "int"], stats)
+        Character.distribute_stats(self, ["cha", "str", "con", "dex", "wis", "mag"], stats)
 
     def get_magic(self):
         return self.get_cha()
@@ -132,30 +145,38 @@ class Paladin(Character):
 class Bookish(Character):
     def __init__(self, stats) -> None:
         super().__init__()
-        self.stats = stats
+        self.spread(stats)
         self.hp = 20
         self.current_hp = 20
 
     def spread(self, stats):
-        Character.distribute_stats(["int", "con", "dex", "wis", "cha", "str"], stats)
+        Character.distribute_stats(self, ["mag", "con", "dex", "wis", "cha", "str"], stats)
+
+    def get_magic(self):
+        return self.get_mag()
 
 class Ranger(Character):
     def __init__(self, stats) -> None:
         super().__init__()
-        self.stats = stats
+        self.spread(stats)
+        self.hp = 30
+        self.current_hp = 30
 
     def spread(self, stats):
-        Character.distribute_stats(["dex", "wis", "con", "str", "cha", "int"], stats)
-
+        Character.distribute_stats(self, ["dex", "wis", "con", "str", "cha", "mag"], stats)
+        
+    def get_magic(self):
+        return self.get_dex()
 
 class Enemy():
-    def __init__(self, name, health, att, gua, dex):
+    def __init__(self, name, health, att, gua, dex, maggua):
         self.name = name
         self.hp = health #Max Health
         self.chp = health
         self.attack = att
         self.guard = gua
         self.dex = dex
+        self.magguard = maggua
 
     def get_name(self):
         return self.name
@@ -174,6 +195,9 @@ class Enemy():
     
     def get_dex(self):
         return self.dex
+    
+    def get_maggua(self):
+        return self.magguard
     
     def set_chp(self, value):
         self.chp = value
