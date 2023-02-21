@@ -169,7 +169,7 @@ class Ranger(Character):
         return self.get_dex()
 
 class Enemy():
-    def __init__(self, name, health, att, gua, dex, maggua):
+    def __init__(self, name, health, att, gua, dex, maggua, xp):
         self.name = name
         self.hp = health #Max Health
         self.chp = health
@@ -177,6 +177,7 @@ class Enemy():
         self.guard = gua
         self.dex = dex
         self.magguard = maggua
+        self.xp = xp
 
     def get_name(self):
         return self.name
@@ -198,6 +199,9 @@ class Enemy():
     
     def get_maggua(self):
         return self.magguard
+    
+    def get_xp(self):
+        return self.xp
     
     def set_chp(self, value):
         self.chp = value

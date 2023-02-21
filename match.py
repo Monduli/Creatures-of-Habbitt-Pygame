@@ -10,6 +10,8 @@ from helpers import *
 import itertools
 import os
 from classes import *
+import math as Math
+import varname
 
 size = width, height = 1600, 900
 black = 0, 0, 0
@@ -59,13 +61,23 @@ class Cell(object):
     'image' - a 'Surface' object containing the sprite to draw
     'offset' - vertical offset in pixels for drawing the cell
     """
-    def __init__(self, image, shape):
+    def __init__(self, image, shape, location):
         self.offset = 0.0
         self.image = image
         self.shape = shape
+        self.rect = None
+        self.x = None
+        self.y = None
+        self.location = location
 
     def tick(self, dt):
         self.offset = max(0.0, self.offset - dt * REFILL_SPEED)
+
+    def get_i(self):
+        return self.location
+    
+    def set_i(self, value):
+        self.location = value
 
 class Board(object):
     """
@@ -80,6 +92,8 @@ class Board(object):
 
     def __init__(self, width, height, background):
         self.explosion = [pygame.image.load('images/explosion{}.png'.format(i)) for i in range(1, 1)]
+        for explode in self.explosion:
+            pygame.transform.scale(explode,(50,50))
         shapes = 'red blue purple green orange yellow'
         self.shapes = []
         self.type_shape = []
@@ -93,7 +107,7 @@ class Board(object):
         self.w = width
         self.h = height
         self.size = width*height
-        self.board = [Cell(self.blank, None) for _ in range(self.size)]
+        self.board = [Cell(self.blank, None, _) for _ in range(self.size)]
         self.matches = []
         self.refill = []
         global curr_match
@@ -106,7 +120,7 @@ class Board(object):
         """
         for i in range(self.size):
             c = random.randint(0, 5)
-            self.board[i] = Cell(self.shapes[c], self.type_shape[c])
+            self.board[i] = Cell(self.shapes[c], self.type_shape[c], i)
         #row = self.board
         #print("["+row[0].shape+"]["+row[1].shape+"]["+row[2].shape+"]["+row[3].shape+"]["+row[4].shape+"]["+row[5].shape+"]["+row[6].shape+"]["+row[7].shape+"]["+row[8].shape+"]["+row[9].shape+"]")
         #print("["+row[10].shape+"]["+row[11].shape+"]["+row[12].shape+"]["+row[13].shape+"]["+row[14].shape+"]["+row[15].shape+"]["+row[16].shape+"]["+row[17].shape+"]["+row[18].shape+"]["+row[19].shape+"]")
@@ -141,14 +155,28 @@ class Board(object):
     def draw(self, display):
         display.blit(self.background, (0,0))
         for i, c in enumerate(self.board):
-            display.blit(c.image,
-                        (MARGIN + SHAPE_WIDTH * (i % self.w),
-                        MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset)))
+            rectangle = pygame.Rect(MARGIN + SHAPE_WIDTH * (i % self.w),
+                        MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset), SHAPE_WIDTH, SHAPE_HEIGHT)
+            c.rect = rectangle
+            if c.x == None:
+                c.x = MARGIN + SHAPE_WIDTH * (i % self.w)
+            if c.y == None:
+                c.y = MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset)
+            display.blit(c.image, (c.x,c.y))
             
-    def swap(self, cursor):
+    def swap_old(self, cursor):
         i = self.pos(*cursor)
         b = self.board
         b[i], b[i+1] = b[i+1], b[i]
+        self.matches = self.find_matches()
+
+    def swap(self, i, j):
+        b = self.board
+        b[i], b[j] = b[j], b[i]
+        b[i].set_i(i)
+        b[j].set_i(j)
+        for cell_num in range(len(self.board)):
+            self.board[cell_num].set_i(cell_num)
         self.matches = self.find_matches()
 
     def find_matches(self):
@@ -184,6 +212,7 @@ class Board(object):
                     c = self.board[target]
                     c.image = self.board[pos].image
                     c.offset = (target - pos) // self.w
+                    c.set_i(target)
                     target -= self.w
                     yield c
             offset = 1 + (target - pos) // self.w
@@ -192,38 +221,9 @@ class Board(object):
                 ran = random.randint(0, 5)
                 c.image = self.shapes[ran]
                 c.shape = self.type_shape[ran]
+                c.set_i(pos)
                 c.offset = offset
                 yield c
-
-def get_portrait(character):
-    if character == "N. Steen":
-        portrait = pygame.image.load("images/bear_portrait.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
-    if character == "Radish":
-        portrait = pygame.image.load("images/rabbit_portrait.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
-    if character == "Toffee":
-        portrait = pygame.image.load("images/toffee_portrait.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
-    if character == "Grapefart":
-        portrait = pygame.image.load("images/grapefart_portrait.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
-    if character in ["Gobble"]:
-        portrait = pygame.image.load("images/goblin.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
-    if character in ["Goobble"]:
-        portrait = pygame.image.load("images/goobble.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
-    if character in ["Gabble"]:
-        portrait = pygame.image.load("images/gabble.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
-        return portrait
     
 class Game(object):
 
@@ -236,6 +236,7 @@ class Game(object):
         self.font = pygame.font.Font('font/VCR.001.ttf', FONT_SIZE)
         self.party_text = []
         self.enemy_text = []
+        self.i = 0
 
     def start(self):
         self.board.randomize()
@@ -254,7 +255,8 @@ class Game(object):
             member.set_chp(member.get_hp())
 
         # The list of enemies in this particular dungeon.
-        enemy = dungeon
+        enemy = dungeon[0]
+        exp = dungeon[1]
 
         # The turn order for the party.
         party_turns = turn_order(party)
@@ -296,8 +298,11 @@ class Game(object):
         # These hold the current text to update the status text boxes with.
         p_text = self.party_text[0]
         e_text = self.enemy_text[0]
+        cell_to_drag = None
+        cell_dragging = False
 
         hold = 0
+        reset = 0
 
         while matches:
             if len(self.board.find_matches()) > 0:
@@ -309,7 +314,7 @@ class Game(object):
             now = pygame.time.get_ticks()
             return_rect = self.draw(party, enemy, player_active, p_text, e_text, flash_red)
             flash_red = None
-            dt = min(self.clock.tick(FPS) / 100.0, 1.0 / FPS)
+            dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
             self.swap_time += dt
 
             for event in pygame.event.get():
@@ -317,34 +322,86 @@ class Game(object):
                     self.input(event.key)
                 elif event.type == QUIT:
                     self.quit()
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+
+                ## TODO: Current problems with drag matching:
+                # Fixed? - When gem is "swapped", original gem does swap with something, but it's not the correct gem
+                # - Swaps are not very visible and the board doesn't update smoothly
+                # Fixed? - Sometimes after swapping you can drag and drop random gems
+                # - Gems are dropped onto xy coords of mouse not where original gem was
+                elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy():
                     if return_rect.collidepoint(event.pos):
                         return "RAN"
-                #elif event.type == pygame.MOUSEBUTTONDOWN:
-                #    if event.button == 1:            
-                #        if rectangle.collidepoint(event.pos):
-                #            rectangle_dragging = True
-                #            mouse_x, mouse_y = event.pos
-                #            offset_x = rectangle.x - mouse_x
-                #            offset_y = rectangle.y - mouse_y
+                    if event.button == 1:
+                       pos = pygame.mouse.get_pos()
+                       for cell in self.board.board:            
+                            if cell.rect.collidepoint(pos):
+                                cell_dragging = True
+                                cell_to_drag = cell
+                                store_x = cell_to_drag.x
+                                store_y = cell_to_drag.y
+                                mouse_x, mouse_y = event.pos
+                                offset_x = cell_to_drag.x - mouse_x
+                                offset_y = cell_to_drag.y - mouse_y
+                                # current_i = cell_to_drag.get_i()
+                                cell_i = cell_to_drag.get_i()
 
-                #elif event.type == pygame.MOUSEBUTTONUP:
-                #    if event.button == 1:            
-                #        rectangle_dragging = False
+                elif event.type == pygame.MOUSEBUTTONUP and not self.board.busy():
+                    # print("cell_dragging: " + str(cell_dragging))
+                    if event.button == 1: 
+                        pos = pygame.mouse.get_pos()
+                        if cell_dragging == True:  
+                            for cell in self.board.board:            
+                                if cell.rect.collidepoint(pos):
+                                    # check if in x,y of picked up cell (can't just put tokens wherever)
+                                    new_i = cell.get_i()
+                                    y = cell_i % 10 
+                                    x = Math.floor(cell_i / 10) * 10
+                                    poss = []
+                                    for z in range(x, x+10):
+                                        poss.append(z)
+                                    for z in range(y, y+90, 10):
+                                        poss.append(z)
+                                    if new_i in poss:
+                                        # check if occupied square is a match
+                                        self.swap(new_i, cell_i)
+                                        if len(self.board.find_matches()) > 0:
+                                            cell_dragging = False
+                                            cell.x = store_x
+                                            cell.y = store_y
+                                            cell_to_drag = None
+                                            reset = 1
+                                            break
+                                        else:
+                                            self.swap(new_i, cell_i)
+                            if reset != 1:
+                                cell_dragging = False
+                                cell_to_drag.x = store_x
+                                cell_to_drag.y = store_y
+                                cell_to_drag = None
+                                reset = 0
+                            reset = 0
 
-                #elif event.type == pygame.MOUSEMOTION:
-                #    if rectangle_dragging:
-                #        mouse_x, mouse_y = event.pos
-                #        rectangle.x = mouse_x + offset_x
-                #        rectangle.y = mouse_y + offset_y
+                elif event.type == pygame.MOUSEMOTION and not self.board.busy():
+                    if cell_dragging:
+                        pos = pygame.mouse.get_pos()
+                        mouse_x, mouse_y = pos
+                        # Move gems to unoccupied squares as dragged gem passes over them
+                        #for cell in self.board.board:            
+                        #    if cell.rect.collidepoint(event.pos):
+                        #        new_i = cell.i
+                        #        cell.i = current_i
+                        #        current_i = new_i
+                        cell_to_drag.x = mouse_x + offset_x
+                        cell_to_drag.y = mouse_y + offset_y
                     
+            # If any matches are made by the player        
             if len(curr_match) > 0:
                 for item in curr_match:
                     print(curr_match)
                     state = self.process_action(curr_match[0], party, enemy, player_active, enemy_active, party_turns, enemy_turns)
                     curr_match.remove(curr_match[0])
                     if state == "WIN":
-                        self.draw(party, enemy, player_active, "Your party was victorious!", "Your enemies skulk away.", flash_red)
+                        self.draw(party, enemy, player_active, "Your party was victorious!", "Your enemies skulk away.", flash_red, xp=exp)
                         self.pyg_wait(5)
                         return "WIN"
                 if len(curr_match) == 0:
@@ -352,12 +409,14 @@ class Game(object):
                         party_current += 1
                     else:
                         party_current = 0
-
                     player_active = party_turns[party_current][0]
                     self.party_text.append("It is " + player_active.get_name() + "'s turn.")
                     curr_match = []
 
+            # enemy attack
             if now - timer > TIME:
+                print(enemy_turns)
+                debug_print(varname.nameof(enemy_current), enemy_current)
                 enemy_active = enemy_turns[enemy_current][0]
                 target = player_active
                 while target.get_chp() == 0:
@@ -374,13 +433,14 @@ class Game(object):
                     return "DEAD"
                 
                 timer = pygame.time.get_ticks()
-                if enemy_current+1 < len(enemy_turns):
+                if enemy_current+1 < len(enemy_turns)-1:
                     enemy_current += 1
                 else:
                     enemy_current = 0
 
                 self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
             
+            # update the box text with what's going on
             p_text = self.party_text[0]
             e_text = self.enemy_text[0]
 
@@ -421,20 +481,28 @@ class Game(object):
         elif key == K_UP and self.cursor[1] > 0:
             self.cursor[1] -= 1
         elif key == K_SPACE and not self.board.busy():
-            self.swap()
+            self.board.swap_old(self.cursor)
         elif key == K_r:
             pygame.display.set_mode((1600, 900), pygame.FULLSCREEN)
 
-    def swap(self):
+    def swap(self, i, j):
         self.swap_time = 0.0
-        self.board.swap(self.cursor)
+        self.board.swap(i, j)
 
-    def draw(self, party, enemy, active, p_text, e_text, flash_red, update_text=None):
+    def draw(self, party, enemy, active, p_text, e_text, flash_red, xp=None, update_text=None):
         if p_text == "Your party was victorious!":
-            self.display.blit(background, (0,0))
-            victory_rect = pygame.Rect(width-1600,height-450,1600,50)
-            drawText(self.display, p_text, WHITE, victory_rect, self.font, center=True)
-            return "WIN"
+            xp_count = 0
+            while True:
+                self.display.blit(background, (0,0))
+                victory_rect = pygame.Rect(width-1600,height-450,1600,50)
+                drawText(self.display, p_text, WHITE, victory_rect, self.font, center=True)
+                xp_rect = pygame.Rect(width-1600,height-550,1600,50)
+                xp_count += 1
+                drawText(self.display, "XP: " + str(xp_count), WHITE, xp_rect, self.font, center=True)
+                self.pyg_wait(.01)
+                if xp_count == xp:
+                    self.pyg_wait(3)
+                    return "WIN"
         if e_text == "Your party was wiped out...":
             self.display.blit(background, (0,0))
             victory_rect = pygame.Rect(width-1600,height-450,1600,50)
@@ -455,8 +523,16 @@ class Game(object):
             if flash_red == 3:
                 color_3 = pygame.Color('Red')    
 
+        # TODO: Background movement does not work
+        screen.blit(background, (width+self.i,0))
+        screen.blit(background, (self.i, 0))
+        if (self.i == -width):
+            screen.blit(background, (width+self.i, 0))
+            self.i=0
+        self.i-=1
         self.board.draw(self.display)
         color_return = BLACK
+
         #self.draw_time()
         self.draw_cursor()
         return_rect = pygame.Rect(width-600,height-50,600,50)
@@ -472,6 +548,18 @@ class Game(object):
         party_4_rect = pygame.Rect(width-500,height-600,500,50)
         party_4_hp_rect = pygame.Rect(width-500,height-550,500,50)
         party_4_portrait_rect = pygame.Rect(width-600,height-600,100,100)
+
+        ability_1_rect = pygame.Rect(width-600,height-500,300,75)
+        ability_2_rect = pygame.Rect(width-300,height-500,300,75)
+        ability_3_rect = pygame.Rect(width-600,height-425,300,75)
+        ability_4_rect = pygame.Rect(width-300,height-425,300,75)
+
+
+
+        pygame.draw.rect(screen, pygame.Color('red'), ability_1_rect)
+        pygame.draw.rect(screen, pygame.Color('blue'), ability_2_rect)
+        pygame.draw.rect(screen, pygame.Color('green'), ability_3_rect)
+        pygame.draw.rect(screen, pygame.Color('purple'), ability_4_rect)
 
 
         if return_rect.collidepoint(pygame.mouse.get_pos()):
@@ -540,7 +628,10 @@ class Game(object):
         port_e1 = get_portrait(enemy[0].get_name())
         self.display.blit(port_e1, enemy_1_portrait_rect)
         drawText(self.display, enemy[0].get_name(), WHITE, enemy_1_rect, self.font, center=True)
-        drawText(self.display, "HEALTH: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), WHITE, enemy_1_hp_rect, self.font, center=True) 
+        if enemy[0].get_chp() > 10:
+            drawText(self.display, str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), WHITE, enemy_1_hp_rect, self.font, center=True) 
+        else:
+            drawText(self.display, "HEALTH: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), WHITE, enemy_1_hp_rect, self.font, center=True) 
         
         if len(enemy) > 1:
             #pygame.draw.rect(screen, color_passive, next_rect)
@@ -562,8 +653,8 @@ class Game(object):
             self.display.blit(port_e3, enemy_3_portrait_rect)
 
         drawText(self.display, "Return", WHITE, return_rect, self.font, center=True) 
-        party_box = pygame.Rect(width-600,height-450,600,100) 
-        enemy_box = pygame.Rect(width-600,height-350,600,100)
+        party_box = pygame.Rect(width-600,height-350,600,100) 
+        enemy_box = pygame.Rect(width-600,height-250,600,100)
         self.update_box(p_text, party_box)
         self.update_box(e_text, enemy_box)
 
@@ -686,8 +777,6 @@ class Game(object):
                     continue
                 else:
                     return enemy_text
-            update_text = "Your whole party has been defeated."
-            self.draw(party, enemy, player_active, update_text, enemy_text)
             return "DEAD"
         
     def pyg_wait(self, seconds):
