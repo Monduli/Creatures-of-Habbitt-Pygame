@@ -207,3 +207,6 @@ def print_rects(board):
     for x in range(0, len(board.board)):
         print(board.board[x].rect)
 
+def loadify(imgname):
+    return pygame.image.load(imgname).convert_alpha()
+
