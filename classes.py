@@ -120,7 +120,7 @@ class Martial(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
-        self.hp = 60
+        self.hp = 99999
         self.current_hp = 60
 
     def spread(self, stats):

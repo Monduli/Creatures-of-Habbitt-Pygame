@@ -51,7 +51,7 @@ BLACK = (0, 0, 0)
 
 MINIMUM_MATCH = 3
 
-FPS = 60
+FPS = 120
 EXPLOSION_SPEED = 15
 REFILL_SPEED = 10
 
@@ -93,7 +93,7 @@ class Board(object):
     def __init__(self, width, height, background):
         self.explosion = [pygame.image.load('images/explosion{}.png'.format(i)) for i in range(1, 1)]
         for explode in self.explosion:
-            pygame.transform.scale(explode,(50,50))
+            explode = pygame.transform.scale(explode, (50,50))
         shapes = 'red blue purple green orange yellow'
         self.shapes = []
         self.type_shape = []
@@ -102,7 +102,7 @@ class Board(object):
             self.type_shape.append(shape)
         for shape in self.shapes:
             shape = pygame.transform.scale(shape,(50,50))
-        self.background = background
+        #self.background = background
         self.blank = pygame.image.load("images/blank.png")
         self.w = width
         self.h = height
@@ -134,7 +134,7 @@ class Board(object):
     def busy(self):
         return self.refill or self.matches
     
-    def tick(self, dt):
+    def tick(self, dt, display):
         if self.refill:
             for c in self.refill:
                 c.tick(dt)
@@ -145,15 +145,15 @@ class Board(object):
             self.explosion_time += dt
             f = int(self.explosion_time * EXPLOSION_SPEED)
             if f < len (self.explosion):
-                self.update_matches(self.explosion[f])
+                self.update_matches(self.explosion[f], display)
                 return
-            self.update_matches(self.blank)
+            self.update_matches(self.blank, display)
             self.refill = list(self.refill_columns())
         self.explosion_time = 0
         self.matches = self.find_matches()
 
     def draw(self, display):
-        display.blit(self.background, (0,0))
+        #display.blit(self.background, (0,0))
         for i, c in enumerate(self.board):
             rectangle = pygame.Rect(MARGIN + SHAPE_WIDTH * (i % self.w),
                         MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset), SHAPE_WIDTH, SHAPE_HEIGHT)
@@ -195,14 +195,20 @@ class Board(object):
                         yield match
         return list(matches())
     
-    def update_matches(self,image):
+    def update_matches(self, image, display):
         for match in self.matches:
             global curr_match
-            print(match[0])
             curr_match.append(self.board[match[0]].shape)
-            print(curr_match)
+            #circle = pygame.image.load("images/circle.png")
             for position in match:
+                # TODO: Make circle that expands outward (with transparency) with every match
+                #circle = pygame.transform.scale(circle, (50, 50))
                 self.board[position].image = image
+                for x in range(0, 100):
+                    # drawStyleCircle(display, self.board[match[0]].x, self.board[match[0]].y, circle_width)
+                    #circle = pygame.transform.scale(circle, (50+x, 50+x))
+                    self.board[position].image = image
+                    pygame.display.update()
 
     def refill_columns(self):
         for i in range(self.w):
@@ -237,6 +243,9 @@ class Game(object):
         self.party_text = []
         self.enemy_text = []
         self.i = 0
+        self.spread = []
+        for x in range(2, 1102, 100):
+            self.spread.append(x)
 
     def start(self):
         self.board.randomize()
@@ -324,10 +333,12 @@ class Game(object):
                     self.quit()
 
                 ## TODO: Current problems with drag matching:
-                # Fixed? - When gem is "swapped", original gem does swap with something, but it's not the correct gem
-                # - Swaps are not very visible and the board doesn't update smoothly
+                # - Swaps are not very visible and the board doesn't update smoothly FIX ANIMATIONS
+                #
                 # Fixed? - Sometimes after swapping you can drag and drop random gems
-                # - Gems are dropped onto xy coords of mouse not where original gem was
+                # FIXED! - Gems are dropped onto xy coords of mouse not where original gem was
+                # Fixed? - When gem is "swapped", original gem does swap with something, but it's not the correct gem
+                ##
                 elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy():
                     if return_rect.collidepoint(event.pos):
                         return "RAN"
@@ -337,42 +348,49 @@ class Game(object):
                             if cell.rect.collidepoint(pos):
                                 cell_dragging = True
                                 cell_to_drag = cell
-                                store_x = cell_to_drag.x
-                                store_y = cell_to_drag.y
+                                store_x = cell.x
+                                store_y = cell.y
                                 mouse_x, mouse_y = event.pos
                                 offset_x = cell_to_drag.x - mouse_x
                                 offset_y = cell_to_drag.y - mouse_y
                                 # current_i = cell_to_drag.get_i()
                                 cell_i = cell_to_drag.get_i()
 
-                elif event.type == pygame.MOUSEBUTTONUP and not self.board.busy():
+                elif event.type == pygame.MOUSEBUTTONUP:
                     # print("cell_dragging: " + str(cell_dragging))
                     if event.button == 1: 
                         pos = pygame.mouse.get_pos()
-                        if cell_dragging == True:  
-                            for cell in self.board.board:            
-                                if cell.rect.collidepoint(pos):
-                                    # check if in x,y of picked up cell (can't just put tokens wherever)
-                                    new_i = cell.get_i()
-                                    y = cell_i % 10 
-                                    x = Math.floor(cell_i / 10) * 10
-                                    poss = []
-                                    for z in range(x, x+10):
-                                        poss.append(z)
-                                    for z in range(y, y+90, 10):
-                                        poss.append(z)
-                                    if new_i in poss:
-                                        # check if occupied square is a match
-                                        self.swap(new_i, cell_i)
-                                        if len(self.board.find_matches()) > 0:
-                                            cell_dragging = False
-                                            cell.x = store_x
-                                            cell.y = store_y
-                                            cell_to_drag = None
-                                            reset = 1
-                                            break
-                                        else:
+                        if cell_dragging == True: 
+                            possible_matches = get_possible_matches(cell_i)
+                            if pos[0] < 1002:
+                                if pos[1] < 902: 
+                                    i = find_i(self.spread, pos)
+                                    cell = self.board.board[i] 
+                                    cell_x = cell.x
+                                    cell_y = cell.y  
+                                    print(str(cell_x) + " < " + str(pos[0]) + " < " + str(cell_x+100))
+                                    print(str(cell_y) + " < " + str(pos[1]) + " < " + str(cell_y+100))
+                                    print(cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100)
+                                    if cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100:
+                                        # check if in x,y of picked up cell (can't just put tokens wherever)
+                                        print("Colliding with rect at " + str(pos))
+                                        new_i = cell.get_i()
+                                        if new_i in possible_matches:
+                                            # check if occupied square is a match
+                                            print("Cell is in possible matchable x/y coords")
                                             self.swap(new_i, cell_i)
+                                            if len(self.board.find_matches()) > 0:
+                                                print("Match found")
+                                                cell_dragging = False
+                                                cell_to_drag.x = cell.x
+                                                cell_to_drag.y = cell.y
+                                                cell.x = store_x
+                                                cell.y = store_y
+                                                cell_to_drag = None
+                                                reset = 1
+                                                break
+                                            else:
+                                                self.swap(new_i, cell_i)
                             if reset != 1:
                                 cell_dragging = False
                                 cell_to_drag.x = store_x
@@ -467,7 +485,7 @@ class Game(object):
             if self.enemy_text[0:5] == "It is" and len(self.enemy_text) > 1:
                 self.enemy_text.remove(self.enemy_text[0])
                 text_timer = pygame.time.get_ticks()
-            self.board.tick(dt)
+            self.board.tick(dt, self.display)
     
     def input(self, key):
         if key == K_q:
@@ -482,6 +500,8 @@ class Game(object):
             self.cursor[1] -= 1
         elif key == K_SPACE and not self.board.busy():
             self.board.swap_old(self.cursor)
+        elif key == K_d:
+            print_rects(self.board)
         elif key == K_r:
             pygame.display.set_mode((1600, 900), pygame.FULLSCREEN)
 
@@ -492,7 +512,7 @@ class Game(object):
     def draw(self, party, enemy, active, p_text, e_text, flash_red, xp=None, update_text=None):
         if p_text == "Your party was victorious!":
             xp_count = 0
-            while True:
+            """ while True:
                 self.display.blit(background, (0,0))
                 victory_rect = pygame.Rect(width-1600,height-450,1600,50)
                 drawText(self.display, p_text, WHITE, victory_rect, self.font, center=True)
@@ -502,12 +522,12 @@ class Game(object):
                 self.pyg_wait(.01)
                 if xp_count == xp:
                     self.pyg_wait(3)
-                    return "WIN"
+                    return "WIN" """
         if e_text == "Your party was wiped out...":
             self.display.blit(background, (0,0))
             victory_rect = pygame.Rect(width-1600,height-450,1600,50)
             drawText(self.display, e_text, WHITE, victory_rect, self.font, center=True)
-            return "WIN"
+            return "DEAD"
         color_0 = color_passive
         color_1 = color_passive
         color_2 = color_passive
@@ -785,7 +805,7 @@ class Game(object):
         while ahead == 0:
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
             self.swap_time += dt
-            self.board.tick(dt)
+            self.board.tick(dt, self.display)
             pygame.display.update()
             now = pygame.time.get_ticks()
             if now - last > (seconds * 300):

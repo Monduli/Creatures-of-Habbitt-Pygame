@@ -2,6 +2,7 @@ import pygame
 from classes import *
 import random
 import varname
+import math
 
 def retrieve_background(choice):
     folder = "images/"
@@ -142,6 +143,9 @@ def drawStyleRect(surface, x, y):
     for i in range(4):
         pygame.draw.rect(surface, (255,255,255), (x-i,y-i,500,100), 1)
 
+def drawStyleCircle(surface, x, y, width):
+    for i in range(4):
+        pygame.draw.circle(surface, (255,0,0), (x-i,y-i), width/2, width)
 
 def get_portrait(character):
     if character == "N. Steen":
@@ -175,3 +179,31 @@ def get_portrait(character):
     
 def debug_print(name, variable):
     print(name + ": " + str(variable))
+
+def get_possible_matches(cell_i):
+    y = cell_i % 10 
+    x = math.floor(cell_i / 10) * 10
+    poss = []
+    for z in range(x, x+10):
+        poss.append(z)
+    for z in range(y, y+90, 10):
+        poss.append(z)
+    return poss
+
+def find_i(spread, pos):
+    x = pos[0]
+    y = pos[1]
+    for j in range(len(spread)-1):
+        for k in range(len(spread)-1):
+            check_x, check_y = spread[j], spread[k]
+            check_x_high, check_y_high = spread[j+1], spread[k+1]
+            if check_x <= x < check_x_high:
+                if check_y <= y < check_y_high:
+                    ret = j + (k*10)
+                    return ret
+    raise Exception(str(pos) + " is not a valid location on the board.")
+
+def print_rects(board):
+    for x in range(0, len(board.board)):
+        print(board.board[x].rect)
+
