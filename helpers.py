@@ -210,3 +210,6 @@ def print_rects(board):
 def loadify(imgname):
     return pygame.image.load(imgname).convert_alpha()
 
+def debug_timing(message, timer):
+    print(message + ": " + str(timer - pygame.time.get_ticks()))
+    return pygame.time.get_ticks()
