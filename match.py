@@ -242,8 +242,10 @@ class Game(object):
     def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock()
+        #self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
+        #                                       pygame.RESIZABLE)
         self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
-                                               pygame.RESIZABLE)
+                                              pygame.RESIZABLE)
         self.board = Board(PUZZLE_COLUMNS, PUZZLE_ROWS, background)
         self.font = pygame.font.Font('font/VCR.001.ttf', FONT_SIZE)
         self.party_text = []
@@ -264,7 +266,6 @@ class Game(object):
 
     def play(self, party, dungeon):
         self.start()
-
 
         #gluPerspective(45, (1600/900), 0.1, 50.0)
         #glTranslatef(0.0, 0.0, -5)
@@ -589,7 +590,6 @@ class Game(object):
             victory_rect = pygame.Rect(width-1600,height-450,1600,50)
             drawText(self.display, e_text, WHITE, victory_rect, self.font, center=True)
             return "DEAD"
-
         
         color_0 = color_passive
         color_1 = color_passive
