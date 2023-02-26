@@ -109,14 +109,15 @@ class GameTest():
         self.gl_text("BLACK", .4, 1, .7, .8, "Radish", 0.86, 1.04)
         self.gl_text("BLACK",.4, 1, .6, .7, "HP: 10/10", 0.885, 1.045)
         # party 3
-        self.gl_text("BLACK", .4, 1, .5, .6, "Toffee", 0.88, 1.045)
+        self.gl_text("BLACK", .4, 1, .5, .6, "Toffee", 0.86, 1.045)
         self.gl_text("BLACK",.4, 1, .4, .5, "HP: 10/10", 0.885, 1.045)
         # party 4
-        self.gl_text("BLUE", .4, 1, .3, .4, "Grapefart", 0.89, 1.06)
-        self.gl_text("RED",.4, 1, .2, .3, "HP: 10/10", 0.88, 1.07)
+        self.gl_text("BLACK", .4, 1, .3, .4, "Grapefart", 0.882, 1.06)
+        self.gl_text("BLACK",.4, 1, .2, .3, "HP: 10/10", 0.88, 1.07)
         # enemy 1
-        self.gl_text("BLUE", .64, 1, -.9, -.8, "Enemy", 0.89, 1.06)
-        self.gl_text("RED", .64, 1, -.7, -.8, "HP: 10/10", 0.88, 1.07)
+        self.gl_text("BLACK", .64, 1, -.7, -.8, "Enemy", .94, .9)
+        self.gl_text("BLACK", .64, 1, -.8, -.9, "HP: 10/10", 0.965, 0.9)
+        # -.8, -.9, "Enemy", 0.965, .5
 
         glBegin(GL_QUADS)
         party_port_1 = self.rect_ogl("GREEN", .28, .4, .8, 1)
