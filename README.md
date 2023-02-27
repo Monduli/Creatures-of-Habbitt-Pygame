@@ -37,7 +37,11 @@ Current Bugs:
 Would like to implement:
 - Better match 3 system. Preferably with clicking and dragging like an actual modern game instead of this horizontal stuff.
 - More characters. I need at least 4 to have a functional party but plan to have a solid number more for "support conversations".
-- Actual story. This can wait until the match 3 system is perfected.
+- Actual story. This can wait until the match 3 system is perfected.  
+  
+2/20 - 2/27 /2023
+Overhaul. Found that it was impossible to keep the game running smoothly using just pygame, as pygame uses the RAM and CPU and not the GPU. Switched to PyOpenGL, which uses OpenGL (using C) but translated into Python for my ease of use, thankfully. 
+- Created half of the UI in PyOpenGL. Have not made it to inserting proper text yet, nor have I got the "jewels" rendering and following the cursor yet. That is next on the list.  
   
 =======  
   
