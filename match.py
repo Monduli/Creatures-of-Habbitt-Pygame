@@ -103,7 +103,7 @@ class Board(object):
         self.shapes = []
         self.type_shape = []
         for shape in shapes.split():
-            self.shapes.append(loadify('images/tabs/{}_gem.png'.format(shape)))
+            self.shapes.append(loadify('images/tabs/{}_gem_nbd.png'.format(shape)))
             self.type_shape.append(shape)
         for shape in self.shapes:
             shape = pygame.transform.scale(shape,(50,50))
@@ -602,9 +602,10 @@ class Game(object):
         self.draw(self.party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
         self.board.tick(dt, self.display)
     
+    # TODO
     def update_box(self, text, box):
         pygame.draw.rect(screen, color_passive, box)
-        drawText(self.display, text, WHITE, box, self.font, center=True)
+        self.gl_text("WHITE", text, WHITE, box, self.font, center=True)
 
     """def draw_time(self):
         s = int(self.swap_time)
@@ -863,7 +864,13 @@ class Game(object):
         color_return = BLACK"""
 
         background = pygame.image.load("images\cave.png").convert_alpha()
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], 0, 0, background, 1, 1, 1)
+        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width+self.i, 0, background, 1, 1, 1)
+        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], self.i, 0, background, 1, 1, 1)
+        if (self.i == -width):
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width+self.i, 0, background, 1, 1, 1)
+            self.i=0
+        self.i-=1
+        self.board.draw(self.display)
 
         #print("Drawing board")
         self.board.draw(self.display)
@@ -885,7 +892,8 @@ class Game(object):
         # enemy 1
         self.gl_text("BLACK", .64, 1, -.7, -.8, enemy[enemy_current].get_name(), .94, .9)
         self.gl_text("BLACK", .64, 1, -.8, -.9, "HP: " + str(enemy[enemy_current].get_chp()) + "/" + str(enemy[enemy_current].get_hp()), 0.965, 0.9)
-        # -.8, -.9, "Enemy", 0.965, .5
+        # return (DOESN'T WORK)
+        self.gl_text("BLACK", .64, 1, -.9, -1, "RETURN", .94, .9)
 
         glBegin(GL_QUADS)
         #party_port_1 = self.rect_ogl("GREEN", .27, .4, .8, 1)
@@ -910,6 +918,14 @@ class Game(object):
         ability_4 = self.rect_ogl("PINK", .64, 1, -.2, 0)
 
         glEnd()
+
+        # draw highlight rectangles
+
+        # ability rectangles for clicking
+        ability_1_rect = pygame.Rect(width-600,height-500,300,75)
+        ability_2_rect = pygame.Rect(width-300,height-500,300,75)
+        ability_3_rect = pygame.Rect(width-600,height-425,300,75)
+        ability_4_rect = pygame.Rect(width-300,height-425,300,75)
         
         # blit images - NEED TO SHRINK PORTRAITS TO 100x100
         blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, pygame.image.load(get_portrait_2(party[0].get_name())).convert_alpha(), 1, 1, 1)
@@ -924,6 +940,9 @@ class Game(object):
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-480,height-860, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
         if len(enemy) > 0:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-380,height-860, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
+
+        self.update_box(self.p_text, party_box)
+        self.update_box(self.e_text, enemy_box)
 
         pygame.display.flip()
 
