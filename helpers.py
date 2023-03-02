@@ -295,11 +295,11 @@ def blit_image(display, x, y, img, r, g, b):
     # disable blending
     glDisable(GL_BLEND)
 
-
+"""
 def draw_old(self, party, enemy, active, p_text, e_text, flash_red, xp=None, update_text=None):
     if p_text == "Your party was victorious!":
         xp_count = 0
-        """ while True:
+        while True:
             self.display.blit(background, (0,0))
             victory_rect = pygame.Rect(width-1600,height-450,1600,50)
             drawText(self.display, p_text, WHITE, victory_rect, self.font, center=True)
@@ -309,7 +309,7 @@ def draw_old(self, party, enemy, active, p_text, e_text, flash_red, xp=None, upd
             self.pyg_wait(.01)
             if xp_count == xp:
                 self.pyg_wait(3)
-                return "WIN" """
+                return "WIN"
     if e_text == "Your party was wiped out...":
         self.display.blit(background, (0,0))
         victory_rect = pygame.Rect(width-1600,height-450,1600,50)
@@ -505,6 +505,12 @@ def draw_old(self, party, enemy, active, p_text, e_text, flash_red, xp=None, upd
     if self.timing == 1:
         self.debug_timer = debug_timing("DRAW DONE", self.debug_timer)
     return return_rect
+
+def update_box_old(self, text, box):
+    pygame.draw.rect(screen, color_passive, box)
+    self.gl_text("WHITE", text, WHITE, box, self.font, center=True)
+
+"""
 
 if __name__ == "__main__":
     print("This is the helper file. Do not run this directly.")

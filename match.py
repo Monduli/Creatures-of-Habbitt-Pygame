@@ -187,6 +187,7 @@ class Board(object):
         for cell_num in range(len(self.board)):
             self.board[cell_num].set_i(cell_num)
         self.matches = self.find_matches()
+        
 
     def find_matches(self):
         def lines():
@@ -202,12 +203,14 @@ class Board(object):
                     match = list(group)
                     if len(match) >= MINIMUM_MATCH:
                         yield match
+                        global matches
+                        if matches != True:
+                            global curr_match
+                            curr_match.append(self.board[match[0]].shape)
         return list(matches())
     
     def update_matches(self, image, display):
         for match in self.matches:
-            global curr_match
-            curr_match.append(self.board[match[0]].shape)
             #circle = loadify("images/circle.png")
             for position in match:
                 # TODO: Make circle that expands outward (with transparency) with every match
@@ -323,9 +326,7 @@ class Game(object):
         # Governs the current matches that exist on the board.
         global curr_match
         
-        # Determines if there are matches on the board, for randomization.
-        matches = True
-
+        
         # Determines which portrait will flash red when damage is taken.
         self.flash_red = False
 
@@ -367,6 +368,10 @@ class Game(object):
         debug = self.debug
         self.timing = 0
         self.debug_timer = pygame.time.get_ticks()
+
+        # Determines if there are matches on the board, for randomization.
+        global matches
+        matches = True
 
         while matches:
             if len(self.board.find_matches()) > 0:
@@ -413,9 +418,9 @@ class Game(object):
                 ## TODO: Current problems with drag matching:
                 # - Swaps are not very visible and the board doesn't update smoothly FIX ANIMATIONS
                 #
-                # Fixed? - Sometimes after swapping you can drag and drop random gems
+                # Fixed - Sometimes after swapping you can drag and drop random gems
                 # FIXED! - Gems are dropped onto xy coords of mouse not where original gem was
-                # Fixed? - When gem is "swapped", original gem does swap with something, but it's not the correct gem
+                # Fixed - When gem is "swapped", original gem does swap with something, but it's not the correct gem
                 ##
                 elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy():
                     #if return_rect.collidepoint(event.pos):
@@ -505,7 +510,7 @@ class Game(object):
                     cell_to_drag.y = mouse_y + offset_y
 
             # If any matches are made by the player   
-            """     
+               
             if len(curr_match) > 0:
                 for item in curr_match:
                     print(curr_match)
@@ -523,14 +528,18 @@ class Game(object):
                     self.player_active = party_turns[party_current][0]
                     self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
                     curr_match = []
-                    """
 
+            if now - timer > 5000:
+                print("Enemy attacking")
+                self.enemy_attack(self.party, self.enemy, self.player_active, self.enemy_active)
+                timer = now
+                self.e_text = self.enemy_text[0]
+        
             # update the box text with what's going on
             if debug == 1:
                 print("Debug: Updating textboxes") 
             self.p_text = self.party_text[0]
-            self.e_text = self.enemy_text[0]
-
+            
             if self.timing == 1:
                 print("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
@@ -603,9 +612,10 @@ class Game(object):
         self.board.tick(dt, self.display)
     
     # TODO
-    def update_box(self, text, box):
-        pygame.draw.rect(screen, color_passive, box)
-        self.gl_text("WHITE", text, WHITE, box, self.font, center=True)
+    def update_box(self):
+        self.gl_text_wrap("BLACK", .28, 1, -.45, -.7, self.e_text, 1, 1)
+        self.gl_text_wrap("BLACK", .28, 1, -.2, -.45, self.p_text, 1, 1)
+        # color left right bot top text x_adjust y_adjust
 
     """def draw_time(self):
         s = int(self.swap_time)
@@ -683,6 +693,7 @@ class Game(object):
             enemy = self.enemy
             party_turns = self.party_turns
             if len(curr_match) > 0:
+                print("Match made, running player process thread")
                 for item in curr_match:
                     print(curr_match)
                     action = item
@@ -744,6 +755,7 @@ class Game(object):
                     self.player_active = party_turns[party_current][0]
                     self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
                     curr_match = []
+                print("Player process thread concluded.")
             
     def red_attack(self, player_active, enemy_active, enemy, enemy_turns):
         att = player_active.get_str()
@@ -941,18 +953,23 @@ class Game(object):
         if len(enemy) > 0:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-380,height-860, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
 
-        self.update_box(self.p_text, party_box)
-        self.update_box(self.e_text, enemy_box)
+        self.update_box()
 
         pygame.display.flip()
 
         return return_button
 
-    def gl_text(self, color, left, right, bot, top, text, x_adjust, y_adjust):
+    def gl_text(self, rect_color, left, right, bot, top, text, x_adjust, y_adjust):
         glBegin(GL_QUADS)
-        self.rect_ogl(color, left, right, bot, top)
+        self.rect_ogl(rect_color, left, right, bot, top)
         glEnd()
         self.drawText(left, top, text, x_adjust, y_adjust)
+
+    def gl_text_wrap(self, rect_color, left, right, bot, top, text, x_adjust, y_adjust):
+        glBegin(GL_QUADS)
+        self.rect_ogl(rect_color, left, right, bot, top)
+        glEnd()
+        self.drawTextWrap(self.display, text, rect_color, self.font, left, top, x_adjust, y_adjust)
 
     def shape_color(self, color):
         if color == "BLUE":
@@ -980,12 +997,71 @@ class Game(object):
                 print("Drew triangle at vertices " + str(vertex_pair[0]) + " and " + str(vertex_pair[1]) + ".")
 
     def drawText(self, x, y, text, x_adjust, y_adjust):                                                
-        textSurface = self.font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 255))
+        textSurface = self.font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 0))
         textData = pygame.image.tostring(textSurface, "RGBA", True)
-        new_x = ((x+1)/2)*1600/x_adjust
-        new_y = ((y+1)/2)*900/y_adjust
+        new_x = ((x+1)/2)*width/x_adjust
+        new_y = ((y+1)/2)*height/y_adjust
         glWindowPos2d(new_x, new_y)
         glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+
+    def drawTextWrap(self, surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None, aa=False, center=False):
+        
+        new_x = ((x+1)/2)*width/x_adjust
+        new_y = ((y+1)/2)*height/y_adjust
+        rect = pygame.Rect(x,y,600,100)
+        y = rect.top
+        lineSpacing = 0
+        image = None
+        first = 1
+
+        # get the height of the font
+        fontHeight = font.size("Tg")[1]
+
+        while text:
+            i = 1
+
+            # determine if the row of text will be outside our area
+            if y + fontHeight > rect.bottom:
+                break
+
+            # determine maximum width of line
+            while font.size(text[:i])[0] < rect.width and i < len(text):
+                i += 1
+
+            # if we've wrapped the text, then adjust the wrap to the last word      
+            if i < len(text): 
+                i = text.rfind(" ", 0, i) + 1
+
+            # render the line and blit it to the surface
+            if bkg:
+                image = font.render(text[:i], 1, color, bkg)
+                image.set_colorkey(bkg)
+            else:
+                textSurface = self.font.render(text[:i], True, (255, 255, 255, 255), (0, 0, 0, 0))
+                textData = pygame.image.tostring(textSurface, "RGBA", True)
+                if first == 1:
+                    new_height = textSurface.get_height()+100
+                    first = 0
+                else:
+                    new_height += 100
+
+            text_rect = textSurface.get_rect()
+            
+            if center == True:
+                text_rect.center = rect.center
+                surface.blit(image, (text_rect.left, y+10))
+            else:
+                glWindowPos2d(new_x, new_y)
+                glDrawPixels(textSurface.get_width(), new_height, GL_RGBA, GL_UNSIGNED_BYTE, textData)
+            y += fontHeight + lineSpacing
+
+            # remove the text we just blitted
+            text = text[i:]
+
+        if input == True:
+            return image
+        return text
+
 
 if __name__ == '__main__':
     party = fill_party()
