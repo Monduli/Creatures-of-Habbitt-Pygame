@@ -18,6 +18,7 @@ class Character:
         self.charisma = 0
         self.name = ""
         self.background = ""
+        self.portrait = "images/"
     
     def get_hp(self):
         return self.hp
@@ -51,6 +52,9 @@ class Character:
     
     def get_name(self):
         return self.name
+    
+    def get_portrait(self):
+        return self.portrait
 
     def set_hp(self, value):
         self.hp = value
@@ -84,6 +88,9 @@ class Character:
 
     def set_name(self, value):
         self.name = value
+
+    def set_portrait(self, value):
+        self.portrait = self.portrait + value
 
     def distribute_stats(self, spread, stats):
         temp = stats

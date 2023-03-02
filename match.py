@@ -39,12 +39,12 @@ MARGIN = 2
 # Amount of time before enemy makes a decision
 TIME = 5000
 
-RED = loadify("images/red_gem.png")
-BLUE = loadify("images/blue_gem.png")
-PURPLE = loadify("images/purple_gem.png")
-GREEN = loadify("images/green_gem.png")
-ORANGE = loadify("images/orange_gem.png")
-YELLOW = loadify("images/yellow_gem.png")
+RED = loadify("images/tabs/red_gem.png")
+BLUE = loadify("images/tabs/blue_gem.png")
+PURPLE = loadify("images/tabs/purple_gem.png")
+GREEN = loadify("images/tabs/green_gem.png")
+ORANGE = loadify("images/tabs/orange_gem.png")
+YELLOW = loadify("images/tabs/yellow_gem.png")
 WINDOW_WIDTH = 1600
 WINDOW_HEIGHT = 900
 FONT_SIZE = 36
@@ -56,8 +56,8 @@ BLACK = (0, 0, 0)
 
 MINIMUM_MATCH = 3
 
-FPS = 120
-EXPLOSION_SPEED = 1
+FPS = 60
+EXPLOSION_SPEED = 5
 REFILL_SPEED = 10
 
 class Cell(object):
@@ -96,14 +96,14 @@ class Board(object):
     """
 
     def __init__(self, width, height, background):
-        self.explosion = [loadify('images/explosion{}.png'.format(i)) for i in range(1, 1)]
+        self.explosion = [loadify('images/explosion{}.png'.format(i)) for i in range(1, 2)]
         for explode in self.explosion:
             explode = pygame.transform.scale(explode, (50,50))
         shapes = 'red blue purple green orange yellow'
         self.shapes = []
         self.type_shape = []
         for shape in shapes.split():
-            self.shapes.append(loadify('images/{}_gem.png'.format(shape)))
+            self.shapes.append(loadify('images/tabs/{}_gem.png'.format(shape)))
             self.type_shape.append(shape)
         for shape in self.shapes:
             shape = pygame.transform.scale(shape,(50,50))
@@ -161,14 +161,17 @@ class Board(object):
     def draw(self, display):
         #display.blit(self.background, (0,0))
         for i, c in enumerate(self.board):
-            rectangle = pygame.Rect(MARGIN + SHAPE_WIDTH * (i % self.w),
-                        MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset), SHAPE_WIDTH, SHAPE_HEIGHT)
-            c.rect = rectangle
+            x = MARGIN + SHAPE_WIDTH * (i % self.w)
+            y = MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset)
+            #rectangle = pygame.Rect(x, WINDOW_HEIGHT - y -100, SHAPE_WIDTH, SHAPE_HEIGHT)
             if c.x == None:
-                c.x = MARGIN + SHAPE_WIDTH * (i % self.w)
+                c.x = x
             if c.y == None:
-                c.y = MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset)
-            display.blit(c.image, (c.x,c.y))
+                c.y = y
+            rectangle = pygame.Rect(c.x, c.y, SHAPE_WIDTH, SHAPE_HEIGHT)
+            c.rect = rectangle
+            #display.blit(c.image, (c.x,c.y))
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], c.x, 800 - c.y + c.offset, c.image, 1, 1, 1)
             
     def swap_old(self, cursor):
         i = self.pos(*cursor)
@@ -224,8 +227,9 @@ class Board(object):
                     c = self.board[target]
                     c.image = self.board[pos].image
                     c.offset = (target - pos) // self.w
-                    c.x = c.x + c.offset
-                    c.set_i(target)
+                    c.y = c.y + c.offset
+                    if c.offset == 0:
+                        c.set_i(target)
                     target -= self.w
                     yield c
             offset = 1 + (target - pos) // self.w
@@ -235,9 +239,26 @@ class Board(object):
                 c.image = self.shapes[ran]
                 c.shape = self.type_shape[ran]
                 c.set_i(pos)
-                print(c.get_i())
                 c.offset = offset
                 yield c
+
+    """
+    for i in range(self.w):
+            target = self.size - i - 1
+            for pos in range(target, -1, -self.w):
+                if self.board[pos].image != self.blank:
+                    c = self.board[target]
+                    c.image = self.board[pos].image
+                    c.offset = (target - pos) // self.w
+                    target -= self.w
+                    yield c
+            offset = 1 + (target - pos) // self.w
+            for pos in range(target, -1, -self.w):
+                c = self.board[pos]
+                c.image = random.choice(self.shapes)
+                c.offset = offset
+                yield c
+    """
     
 class Game(object):
 
@@ -331,15 +352,15 @@ class Game(object):
         reset = 0
         turn = 0
 
-        self.event = threading.Event()
-        enemy_thread = threading.Thread(target=self.enemy_thread, args=())
-        enemy_thread.start()
+        #self.event = threading.Event()
+        #enemy_thread = threading.Thread(target=self.enemy_thread, args=())
+        #enemy_thread.start()
 
-        player_thread = threading.Thread(target=self.thread_process_action, args=())
-        player_thread.start()
+        #player_thread = threading.Thread(target=self.thread_process_action, args=())
+        #player_thread.start()
 
-        player_thread = threading.Thread(target=self.draw_thread, args=())
-        player_thread.start()
+        #draw_thread = threading.Thread(target=self.draw_gl_scene, args=())
+        #draw_thread.start()
 
         now = "skip"
         self.debug = 0
@@ -366,7 +387,7 @@ class Game(object):
             now = pygame.time.get_ticks()
             debug = 0
 
-            self.draw_gl_scene(party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
+            self.draw_gl_scene()
             #return_rect = self.draw(self.party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
             if self.timing == 1:
                 print("DRAW: " + str(self.debug_timer - pygame.time.get_ticks()))
@@ -386,7 +407,7 @@ class Game(object):
                 if event.type == KEYUP:
                     self.input(event.key)
                 elif event.type == QUIT:
-                    self.event.set()
+                    #self.event.set()
                     self.quit()
 
                 ## TODO: Current problems with drag matching:
@@ -397,12 +418,14 @@ class Game(object):
                 # Fixed? - When gem is "swapped", original gem does swap with something, but it's not the correct gem
                 ##
                 elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy():
-                    if return_rect.collidepoint(event.pos):
-                        return "RAN"
+                    #if return_rect.collidepoint(event.pos):
+                    #    return "RAN"
                     if event.button == 1:
                        pos = pygame.mouse.get_pos()
                        for cell in self.board.board:            
                             if cell.rect.collidepoint(pos):
+                                print("Mouse pos: " + str(pos))
+                                print("Rect location: " + str(cell.rect))
                                 cell_dragging = True
                                 cell_to_drag = cell
                                 store_x = cell.x
@@ -470,6 +493,7 @@ class Game(object):
 
                 elif event.type == pygame.MOUSEMOTION and not self.board.busy() and cell_dragging:
                     pos = pygame.mouse.get_pos()
+                    mouse_y_old = mouse_y
                     mouse_x, mouse_y = pos
                     # Move gems to unoccupied squares as dragged gem passes over them
                     #for cell in self.board.board:            
@@ -582,7 +606,7 @@ class Game(object):
         pygame.draw.rect(screen, color_passive, box)
         drawText(self.display, text, WHITE, box, self.font, center=True)
 
-    def draw_time(self):
+    """def draw_time(self):
         s = int(self.swap_time)
         text = self.font.render('Move Timer: {}:{:02}'.format(s/60, s%60), True, WHITE)
         self.display.blit(text, (TEXT_OFFSET, WINDOW_HEIGHT - (FONT_SIZE * 2)))
@@ -595,7 +619,7 @@ class Game(object):
         bottomRight = (topRight[0], topRight[1] + SHAPE_HEIGHT)
         pygame.draw.lines(self.display, WHITE, True,
                         [topLeft, topRight, bottomRight, bottomLeft], 3)
-        
+     """   
     def process_action(self, item, party, enemy, player_active, enemy_active, turns, enemy_turns):
         action = item
         update_text = None
@@ -805,13 +829,14 @@ class Game(object):
                 self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
                 print("Enemy thread finished running.")
 
-    def draw_gl_scene(self, party, enemy, active, p_text, e_text, flash_red, xp=None, update_text=None):
+    def draw_gl_scene(self, xp=None, update_text=None):
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
         party = self.party
         enemy_current = self.enemy_current
         enemy = self.enemy
+        flash_red = self.flash_red
 
         color_0 = color_passive
         color_1 = color_passive
@@ -839,6 +864,10 @@ class Game(object):
 
         background = pygame.image.load("images\cave.png").convert_alpha()
         blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], 0, 0, background, 1, 1, 1)
+
+        #print("Drawing board")
+        self.board.draw(self.display)
+        #print("Finished drawing board")
 
         self.shape_color("BLACK")
         # party 1
@@ -883,12 +912,22 @@ class Game(object):
         glEnd()
         
         # blit images - NEED TO SHRINK PORTRAITS TO 100x100
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, pygame.image.load("images/bear_portrait_100.png").convert_alpha(), 1, 1, 1)
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, pygame.image.load("images/rabbit_portrait_100.png").convert_alpha(), 1, 1, 1)
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, pygame.image.load("images/toffee_portrait_100.png").convert_alpha(), 1, 1, 1)
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, pygame.image.load("images/grapefart_portrait_100.png").convert_alpha(), 1, 1, 1)
+        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, pygame.image.load(get_portrait_2(party[0].get_name())).convert_alpha(), 1, 1, 1)
+        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, pygame.image.load(get_portrait_2(party[1].get_name())).convert_alpha(), 1, 1, 1)
+        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, pygame.image.load(get_portrait_2(party[2].get_name())).convert_alpha(), 1, 1, 1)
+        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, pygame.image.load(get_portrait_2(party[3].get_name())).convert_alpha(), 1, 1, 1)
+
+        if len(enemy) > 2:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-860, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)
+            #print("Enemy 2 X: " + str(width-580) + ", Y: " + str(height-860))
+        if len(enemy) > 1:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-480,height-860, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
+        if len(enemy) > 0:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-380,height-860, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
 
         pygame.display.flip()
+
+        return return_button
 
     def gl_text(self, color, left, right, bot, top, text, x_adjust, y_adjust):
         glBegin(GL_QUADS)
