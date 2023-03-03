@@ -280,6 +280,7 @@ class Game(object):
         self.enemy_text = []
         self.i = 0
         self.spread = []
+        self.level = 0
         for x in range(2, 1102, 100):
             self.spread.append(x)
 
@@ -1005,14 +1006,12 @@ class Game(object):
         glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
     def drawTextWrap(self, surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None, aa=False, center=False):
-        
-        new_x = ((x+1)/2)*width/x_adjust
-        new_y = ((y+1)/2)*height/y_adjust
         rect = pygame.Rect(x,y,600,100)
         y = rect.top
         lineSpacing = 0
         image = None
-        first = 1
+        new_x = ((x+1)/2)*width/x_adjust
+        new_y = ((y+1)/2)*height/y_adjust #- (self.level*100)
 
         # get the height of the font
         fontHeight = font.size("Tg")[1]
@@ -1033,33 +1032,27 @@ class Game(object):
                 i = text.rfind(" ", 0, i) + 1
 
             # render the line and blit it to the surface
-            if bkg:
-                image = font.render(text[:i], 1, color, bkg)
-                image.set_colorkey(bkg)
-            else:
-                textSurface = self.font.render(text[:i], True, (255, 255, 255, 255), (0, 0, 0, 0))
-                textData = pygame.image.tostring(textSurface, "RGBA", True)
-                if first == 1:
-                    new_height = textSurface.get_height()+100
-                    first = 0
-                else:
-                    new_height += 100
+            textSurface = self.font.render(text[:i], True, (255, 255, 255, 0), (0, 0, 0, 0))
+            textData = pygame.image.tostring(textSurface, "RGBA", True)
 
             text_rect = textSurface.get_rect()
             
             if center == True:
-                text_rect.center = rect.center
-                surface.blit(image, (text_rect.left, y+10))
+                glWindowPos2d(new_x, new_y)
+                glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
             else:
                 glWindowPos2d(new_x, new_y)
-                glDrawPixels(textSurface.get_width(), new_height, GL_RGBA, GL_UNSIGNED_BYTE, textData)
+                glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
             y += fontHeight + lineSpacing
 
             # remove the text we just blitted
             text = text[i:]
+            self.level += 1
 
         if input == True:
             return image
+        if text == "":
+            self.level = 0
         return text
 
 
