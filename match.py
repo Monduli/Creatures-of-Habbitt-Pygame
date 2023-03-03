@@ -554,10 +554,12 @@ class Game(object):
                 if now - text_timer > 1000 and hold == 0:
                     if len(self.enemy_text) > 1:
                         self.enemy_text.remove(self.e_text)
+                        self.e_text = self.enemy_text[0]
                         hold = 1
             else:
                 if len(self.enemy_text) > 1:
                     self.enemy_text.remove(self.e_text)
+                    self.e_text = self.enemy_text[0]
                     text_timer = pygame.time.get_ticks()
                     hold = 0
 
@@ -568,12 +570,12 @@ class Game(object):
                 text_timer = pygame.time.get_ticks()
             if self.enemy_text[0][0:5] == "It is" and len(self.enemy_text) > 1:
                 self.enemy_text.remove(self.enemy_text[0])
+                self.e_text = self.enemy_text[0]
                 text_timer = pygame.time.get_ticks()
             if debug == 1:
                 print("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
 
-            # Tick is where all the lag is
             if self.timing == 1:
                 print("TICK START: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
@@ -614,8 +616,8 @@ class Game(object):
     
     # TODO
     def update_box(self):
-        self.gl_text_wrap("BLACK", .28, 1, -.45, -.7, self.e_text, 1, 1)
-        self.gl_text_wrap("BLACK", .28, 1, -.2, -.45, self.p_text, 1, 1)
+        self.gl_text_wrap("BLACK", .28, 1, -.7, -.45, self.e_text, .98, 2.1)
+        self.gl_text_wrap("BLACK", .28, 1, -.2, -.45, self.p_text, .98, 1.4)
         # color left right bot top text x_adjust y_adjust
 
     """def draw_time(self):
@@ -922,8 +924,8 @@ class Game(object):
         # return button
         return_button = self.rect_ogl("BLACK", .28, 1, -.9, -1)
 
-        text_enemy = self.rect_ogl("BLACK", .28, 1, -.7, -.45)
-        text_party = self.rect_ogl("BLACK", .28, 1, -.45, -.2)
+        #text_enemy = self.rect_ogl("BLACK", .28, 1, -.7, -.45)
+        #text_party = self.rect_ogl("BLACK", .28, 1, -.45, -.2)
 
         ability_1 = self.rect_ogl("RED", .28, .64, 0, .2)
         ability_2 = self.rect_ogl("BLUE", .64, 1, 0, .2)
@@ -1024,7 +1026,7 @@ class Game(object):
                 break
 
             # determine maximum width of line
-            while font.size(text[:i])[0] < rect.width and i < len(text):
+            while font.size(text[:i])[0] < rect.width-80 and i < len(text):
                 i += 1
 
             # if we've wrapped the text, then adjust the wrap to the last word      
@@ -1034,16 +1036,15 @@ class Game(object):
             # render the line and blit it to the surface
             textSurface = self.font.render(text[:i], True, (255, 255, 255, 0), (0, 0, 0, 0))
             textData = pygame.image.tostring(textSurface, "RGBA", True)
-
             text_rect = textSurface.get_rect()
             
             if center == True:
                 glWindowPos2d(new_x, new_y)
                 glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
             else:
-                glWindowPos2d(new_x, new_y)
+                glWindowPos2d(new_x,new_y)
                 glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
-            y += fontHeight + lineSpacing
+            new_y -= fontHeight + lineSpacing
 
             # remove the text we just blitted
             text = text[i:]
