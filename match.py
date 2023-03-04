@@ -39,12 +39,12 @@ MARGIN = 2
 # Amount of time before enemy makes a decision
 TIME = 5000
 
-RED = loadify("images/tabs/red_gem.png")
-BLUE = loadify("images/tabs/blue_gem.png")
-PURPLE = loadify("images/tabs/purple_gem.png")
-GREEN = loadify("images/tabs/green_gem.png")
-ORANGE = loadify("images/tabs/orange_gem.png")
-YELLOW = loadify("images/tabs/yellow_gem.png")
+RED = loadify("images/tabs/red_gem_nbd.png")
+BLUE = loadify("images/tabs/blue_gem_nbd.png")
+PURPLE = loadify("images/tabs/purple_gem_nbd.png")
+GREEN = loadify("images/tabs/green_gem_nbd.png")
+ORANGE = loadify("images/tabs/orange_gem_nbd.png")
+YELLOW = loadify("images/tabs/yellow_gem_nbd.png")
 WINDOW_WIDTH = 1600
 WINDOW_HEIGHT = 900
 FONT_SIZE = 36
@@ -56,7 +56,7 @@ BLACK = (0, 0, 0)
 
 MINIMUM_MATCH = 3
 
-FPS = 60
+FPS = 120
 EXPLOSION_SPEED = 5
 REFILL_SPEED = 10
 
@@ -164,15 +164,15 @@ class Board(object):
             x = MARGIN + SHAPE_WIDTH * (i % self.w)
             y = MARGIN + SHAPE_HEIGHT * (i // self.w - c.offset)
             #rectangle = pygame.Rect(x, WINDOW_HEIGHT - y -100, SHAPE_WIDTH, SHAPE_HEIGHT)
-            if c.x == None:
+            if c.x == None or self.busy():
                 c.x = x
-            if c.y == None:
+            if c.y == None or self.busy():
                 c.y = y
-            rectangle = pygame.Rect(c.x, c.y, SHAPE_WIDTH, SHAPE_HEIGHT)
+            rectangle = pygame.Rect(x, y, SHAPE_WIDTH, SHAPE_HEIGHT)
             c.rect = rectangle
             #display.blit(c.image, (c.x,c.y))
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], c.x, 800 - c.y + c.offset, c.image, 1, 1, 1)
-            
+
     def swap_old(self, cursor):
         i = self.pos(*cursor)
         b = self.board
