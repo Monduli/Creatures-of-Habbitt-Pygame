@@ -117,6 +117,7 @@ class Board(object):
         self.refill = []
         global curr_match
         curr_match = []
+        self.wait = 0
         
 
     def randomize(self):
@@ -137,9 +138,14 @@ class Board(object):
         return j * self.w + i
     
     def busy(self):
+        if self.wait > 0:
+            self.wait -= 1
+            return True
         return self.refill or self.matches
     
     def tick(self, dt, display):
+        if self.refill or self.matches:
+            self.wait = 100
         if self.refill:
             for c in self.refill:
                 c.tick(dt)
@@ -188,7 +194,6 @@ class Board(object):
             self.board[cell_num].set_i(cell_num)
         self.matches = self.find_matches()
         
-
     def find_matches(self):
         def lines():
             for j in range(self.h):
@@ -328,7 +333,6 @@ class Game(object):
         # Governs the current matches that exist on the board.
         global curr_match
         
-        
         # Determines which portrait will flash red when damage is taken.
         self.flash_red = False
 
@@ -375,6 +379,10 @@ class Game(object):
         global matches
         matches = True
 
+        character_swap_timing = 0
+        time_to_swap = 0
+        character_swap_timer = 0
+
         while matches:
             if len(self.board.find_matches()) > 0:
                 self.board.randomize()
@@ -382,6 +390,10 @@ class Game(object):
                 matches = False
 
         while True:
+            next_turn = 0
+            if self.enemy_active not in self.enemy:
+                self.enemy_active = self.enemy[0]
+                self.e_text = "It is " + self.enemy_active.get_name() + "'s turn."
             if self.timing == 1:
                 print("START: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
@@ -511,9 +523,11 @@ class Game(object):
                     cell_to_drag.x = mouse_x + offset_x
                     cell_to_drag.y = mouse_y + offset_y
 
-            # If any matches are made by the player   
+            # If any matches are made by the player  
+            # TODO: Make it not change party members in the middle of a combo 
                
-            if len(curr_match) > 0:
+            while len(curr_match) > 0:
+                character_swap_timing = 1
                 for item in curr_match:
                     print(curr_match)
                     state = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
@@ -522,14 +536,24 @@ class Game(object):
                         self.draw(party, self.enemy, self.player_active, "Your party was victorious!", "Your enemies skulk away.", self.flash_red, xp=exp)
                         self.pyg_wait(5)
                         return "WIN"
-                if len(curr_match) == 0:
-                    if party_current+1 < len(party_turns):
-                        party_current += 1
-                    else:
-                        party_current = 0
-                    self.player_active = party_turns[party_current][0]
-                    self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
-                    curr_match = []
+                    
+            if self.board.busy() == [] and character_swap_timing == 1:
+                character_swap_timer = pygame.time.get_ticks()
+                time_to_swap = 1
+            
+            # if matches have been made previously and the board isn't processing them
+            if pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1:
+                print("Changing party member")
+                if party_current+1 < len(party_turns):
+                    party_current += 1
+                else:
+                    party_current = 0
+                self.player_active = party_turns[party_current][0]
+                self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
+                curr_match = []
+                character_swap_timer = 0
+                time_to_swap = 0
+                
 
             if now - timer > 5000:
                 print("Enemy attacking")
@@ -624,8 +648,8 @@ class Game(object):
     
     # TODO
     def update_box(self):
-        gl_text_wrap(self.display, "BLACK", .28, 1, -.7, -.45, self.e_text, .98, 2.1)
-        gl_text_wrap(self.display, "BLACK", .28, 1, -.2, -.45, self.p_text, .98, 1.4)
+        gl_text_wrap(self.font, self.display, "BLACK", .28, 1, -.7, -.45, self.e_text, .98, 2.1, self.level)
+        gl_text_wrap(self.font, self.display, "BLACK", .28, 1, -.2, -.45, self.p_text, .98, 1.4, self.level)
         # color left right bot top text x_adjust y_adjust
 
     """def draw_time(self):
@@ -650,7 +674,7 @@ class Game(object):
         if action == "red":
             # do physical damage
             return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
-        elif action == "blue":
+        elif action == "purple":
             # deal magic damage
             att = player_active.get_magic()
             gua = enemy_active.get_maggua()
@@ -658,7 +682,7 @@ class Game(object):
             if dmg < 0:
                 dmg = 0
             enemy_active.set_chp(enemy_active.get_chp() - dmg)
-            update_text = player_active.get_name() + " attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
+            update_text = player_active.get_name() + " magically attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
             self.party_text.append(update_text)
             if enemy_active.get_chp() <= 0:
                 update_text = enemy_active.get_name() + " has fallen!"
@@ -674,21 +698,33 @@ class Game(object):
         elif action == "green":
             # heal active party member
             heal = player_active.get_magic()
-            if player_active.get_hp() < player_active.get_chp() + heal:
+            if player_active.get_chp() >= player_active.get_hp():
+                heal_target = None
+                for player in party:
+                    if player.get_chp() < player.get_hp():
+                        player.set_chp(player.get_chp() + heal)
+                        heal_target = player
+                        break
+                if heal_target != None:
+                    update_text = player_active.get_name() + " healed " + heal_target.get_name() + " for " + str(heal) + " points."
+                else:
+                    update_text = player_active.get_name() + " tried to heal, but was at full health already."
+            elif player_active.get_hp() < player_active.get_chp() + heal:
                 player_active.set_chp(player_active.get_hp())
+                update_text = player_active.get_name() + " healed for " + str(heal) + " points."
             else:
                 player_active.set_chp(player_active.get_chp() + heal)
-            update_text = player_active.get_name() + " healed for " + str(heal) + " damage."
+                update_text = player_active.get_name() + " healed for " + str(heal) + " points."
             self.party_text.append(update_text)
         elif action == "orange":
-            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
-            # grant support points with this unit
-        elif action == "purple":
-            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
-            # grant support points with next in line?
+            return self.orange_attack(player_active, party)
+            # should grant support points
+        elif action == "blue":
+            return self.blue_debuff(player_active, enemy)
+            # should buff the user
         elif action == "yellow":
-            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
-            # recover action points
+            return self.yellow_buff(player_active, party)
+            # should debuff the enemy
         return update_text
     
     def thread_process_action(self):
@@ -775,7 +811,7 @@ class Game(object):
         if dmg < 0:
             dmg = 0
         enemy_active.set_chp(enemy_active.get_chp() - dmg)
-        update_text = player_active.get_name() + " attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
+        update_text = player_active.get_name() + " physically attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
         self.party_text.append(update_text)
         if enemy_active.get_chp() <= 0:
             update_text = enemy_active.get_name() + " has fallen!"
@@ -787,6 +823,32 @@ class Game(object):
             print(enemy)
             if len(enemy) == 0:
                 return "WIN"
+            
+    def orange_attack(self, player_active, party):
+        sup_num = 10
+        choices = []
+        name = player_active.get_name()
+        for player in party:
+            if player.get_name() != name:
+                choices.append(player)
+        target = random.choice(choices)
+        update_text = player_active.get_name() + " received " + str(sup_num) + " support points with " + target.get_name() + "!"
+        self.party_text.append(update_text) 
+
+    def blue_debuff(self, player_active, enemy):
+        debuff_num = 10
+        debuff_type = "Attack"
+        name = player_active.get_name()
+        target = random.choice(enemy)
+        update_text = name + " debuffed " + target.get_name() + " with -" + str(debuff_num) + " " + debuff_type + "!"
+        self.party_text.append(update_text)
+    
+    def yellow_buff(self, player_active, party):
+        buff_num = 10
+        buff_type = "Attack"
+        target = random.choice(party)
+        update_text = player_active.get_name() + " buffed " + target.get_name() + " with +" + str(buff_num) + " " + buff_type + "!"
+        self.party_text.append(update_text)
 
     def enemy_attack(self, party, enemy, player_active, enemy_active):
         # enemy goes
@@ -867,15 +929,15 @@ class Game(object):
         color_2 = color_passive
         color_3 = color_passive
 
-        if flash_red != None:
-            if flash_red == 0:
-                color_0 = pygame.Color('Red') 
-            if flash_red == 1:
-                color_1 = pygame.Color('Red') 
-            if flash_red == 2:
-                color_2 = pygame.Color('Red') 
-            if flash_red == 3:
-                color_3 = pygame.Color('Red')
+        if self.flash_red != None:
+            if self.flash_red == 0:
+                color_0 = "RED"
+            if self.flash_red == 1:
+                color_1 = "RED"
+            if self.flash_red == 2:
+                color_2 = "RED"
+            if self.flash_red == 3:
+                color_3 = "RED"
 
         """screen.blit(background, (width+self.i,0))
         screen.blit(background, (self.i, 0))
@@ -886,37 +948,27 @@ class Game(object):
         self.board.draw(self.display)
         color_return = BLACK"""
 
-        background = pygame.image.load("images\cave.png").convert_alpha()
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width+self.i, 0, background, 1, 1, 1)
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], self.i, 0, background, 1, 1, 1)
-        if (self.i == -width):
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width+self.i, 0, background, 1, 1, 1)
-            self.i=0
-        self.i-=1
+        self.i = blit_bg(self.i)
         self.board.draw(self.display)
-
-        #print("Drawing board")
-        self.board.draw(self.display)
-        #print("Finished drawing board")
 
         shape_color("BLACK")
         # party 1
-        self.gl_text(color_0, .4, 1, .9, 1, party[0].get_name(), 0.88, 1.045)
-        self.gl_text(color_0,.4, 1, .8, .9, "HP: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), 0.885, 1.045)
+        gl_text(self.font, color_0, 1, .4, .9, 1, party[0].get_name(), .99, .99)
+        gl_text(self.font, color_0, 1, .4, .8, .9, "HP: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), .99, .99)
         # party 2
-        self.gl_text(color_1, .4, 1, .7, .8, party[1].get_name(), 0.86, 1.04)
-        self.gl_text(color_1,.4, 1, .6, .7, "HP: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), 0.885, 1.045)
+        gl_text(self.font, color_1, 1, .4, .7, .8, party[1].get_name(), .99, .99)
+        gl_text(self.font, color_1, 1, .4, .6, .7, "HP: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), .99, .99)
         # party 3
-        self.gl_text(color_2, .4, 1, .5, .6, party[2].get_name(), 0.86, 1.045)
-        self.gl_text(color_2,.4, 1, .4, .5, "HP: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), 0.885, 1.045)
+        gl_text(self.font, color_2, 1, .4, .5, .6, party[2].get_name(), .99, .99)
+        gl_text(self.font, color_2, 1, .4, .4, .5, "HP: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), .99, .99)
         # party 4
-        self.gl_text(color_3, .4, 1, .3, .4, party[3].get_name(), 0.882, 1.06)
-        self.gl_text(color_3,.4, 1, .2, .3, "HP: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), 0.88, 1.07)
+        gl_text(self.font, color_3, 1, .4, .3, .4, party[3].get_name(), .99, .99)
+        gl_text(self.font, color_3, 1, .4, .2, .3, "HP: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), .99, .99)
         # enemy 1
-        self.gl_text("BLACK", .64, 1, -.7, -.8, enemy[enemy_current].get_name(), .94, .9)
-        self.gl_text("BLACK", .64, 1, -.8, -.9, "HP: " + str(enemy[enemy_current].get_chp()) + "/" + str(enemy[enemy_current].get_hp()), 0.965, 0.9)
+        gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
+        gl_text(self.font, "BLACK", 1, .64, -.9, -1, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 1)
         # return (DOESN'T WORK)
-        self.gl_text("BLACK", .64, 1, -.9, -1, "RETURN", .94, .9)
+        gl_text(self.font, "BLACK", .28, 1, -1, -.9, "RETURN", 1.3, 1)
 
         glBegin(GL_QUADS)
         #party_port_1 = rect_ogl("GREEN", .27, .4, .8, 1)
@@ -925,12 +977,12 @@ class Game(object):
         #party_port_4 = rect_ogl("GREEN", .27, .4, .2, .4)
 
         # enemies
-        enemy_port_1 = rect_ogl("GREEN", .52, .64, -.9, -.7)
-        enemy_port_2 = rect_ogl("RED", .4, .52, -.9, -.7)
-        enemy_port_3 = rect_ogl("BLUE", .28, .4, -.9, -.7)
+        #enemy_port_1 = rect_ogl("GREEN", .52, .64, -.9, -.7)
+        #enemy_port_2 = rect_ogl("RED", .4, .52, -.9, -.7)
+        #enemy_port_3 = rect_ogl("BLUE", .28, .4, -.9, -.7)
 
         # return button
-        return_button = rect_ogl("BLACK", .28, 1, -.9, -1)
+        #return_button = rect_ogl("BLACK", .28, 1, -.9, -1)
 
         #text_enemy = rect_ogl("BLACK", .28, 1, -.7, -.45)
         #text_party = rect_ogl("BLACK", .28, 1, -.45, -.2)
@@ -941,7 +993,6 @@ class Game(object):
         ability_4 = rect_ogl("PINK", .64, 1, -.2, 0)
 
         glEnd()
-
         # draw highlight rectangles
 
         # ability rectangles for clicking
@@ -957,18 +1008,18 @@ class Game(object):
         blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, pygame.image.load(get_portrait_2(party[3].get_name())).convert_alpha(), 1, 1, 1)
 
         if len(enemy) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-860, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)
             #print("Enemy 2 X: " + str(width-580) + ", Y: " + str(height-860))
         if len(enemy) > 1:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-480,height-860, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-482,height-857, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
         if len(enemy) > 0:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-380,height-860, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-386,height-857, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
 
         self.update_box()
 
         pygame.display.flip()
 
-        return return_button
+        return 
 
 
 

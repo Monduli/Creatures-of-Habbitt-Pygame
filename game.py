@@ -35,11 +35,10 @@ def start_screen():
 
     while True:
         screen.fill(black)
-        screen.blit(background, (width+i,0))
-        screen.blit(background, (i, 0))
+        blit_bg(i)
         
-        draw_start_screen(color_start, color_town_start, color_options, color_exit)
-        color_exit = pygame.Color('black')
+        draw_start_screen(base_font, color_start, color_town_start, color_options, color_exit)
+        color_exit = "BLACK"
 
         if (i == -width):
             screen.blit(background, (width+i, 0))
@@ -537,12 +536,12 @@ def controller():
         elif option == "exit":
             sys.exit()
 
-def draw_start_screen(color_start, color_town_start, color_options, color_exit):
-    gl_text("BLACK", width-1100, width-600, height-750, height-800, "Creatures of Habbitt", 1, 1)
-    gl_text(color_start, width-900, width-700, height-500, height-550, "Start", 1, 1)
-    gl_text(color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
-    gl_text(color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
-    gl_text(color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)
+def draw_start_screen(font, color_start, color_town_start, color_options, color_exit):
+    gl_text(font, "BLACK", cgls(1100, width), cgls(600, width), cgls(750, height), cgls(800, height), "Creatures of Habbitt", 1, 1)
+    gl_text(font, color_start, width-900, width-700, height-500, height-550, "Start", 1, 1)
+    gl_text(font, color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
+    gl_text(font, color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
+    gl_text(font, color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)
 
 if __name__ == "__main__":
     print(os.getcwd())

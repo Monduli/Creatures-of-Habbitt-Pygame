@@ -173,15 +173,15 @@ def get_portrait(character):
         return portrait
     if character in ["Gobble"]:
         portrait = pygame.image.load("images/goblin.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
+        portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
     if character in ["Goobble"]:
         portrait = pygame.image.load("images/goobble.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
+        portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
     if character in ["Gabble"]:
         portrait = pygame.image.load("images/gabble.png")
-        portrait = pygame.transform.scale(portrait,(100,100))
+        portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
     
 def get_portrait_2(character):
@@ -323,27 +323,27 @@ def shape_color(color):
         if color == "PINK":
             glColor3f(222.0, 49.0, 99.0)
 
-def gl_text(rect_color, left, right, bot, top, text, x_adjust, y_adjust):
+def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    drawText(left, top, text, x_adjust, y_adjust)
+    drawText_gl(font, left, bot, text, x_adjust, y_adjust)
 
-def gl_text_wrap(display, rect_color, left, right, bot, top, text, x_adjust, y_adjust):
+def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    drawTextWrap(display, text, rect_color, self.font, left, top, x_adjust, y_adjust)
+    drawTextWrap(font, display, text, rect_color, left, top, x_adjust, y_adjust, level)
 
-def drawText(x, y, text, x_adjust, y_adjust):                                                
-    textSurface = pygame.font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 0))
+def drawText_gl(font, x, y, text, x_adjust, y_adjust):                                                
+    textSurface = font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 0))
     textData = pygame.image.tostring(textSurface, "RGBA", True)
     new_x = ((x+1)/2)*width/x_adjust
     new_y = ((y+1)/2)*height/y_adjust
     glWindowPos2d(new_x, new_y)
     glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
-def drawTextWrap(surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None, aa=False, center=False):
+def drawTextWrap(font, surface, text, color, x, y, x_adjust, y_adjust, level, bkg=None, aa=False, center=False):
     rect = pygame.Rect(x,y,600,100)
     y = rect.top
     lineSpacing = 0
@@ -370,7 +370,7 @@ def drawTextWrap(surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None,
             i = text.rfind(" ", 0, i) + 1
 
         # render the line and blit it to the surface
-        textSurface = pygame.font.render(text[:i], True, (255, 255, 255, 0), (0, 0, 0, 0))
+        textSurface = font.render(text[:i], True, (255, 255, 255, 0), (0, 0, 0, 0))
         textData = pygame.image.tostring(textSurface, "RGBA", True)
         text_rect = textSurface.get_rect()
         
@@ -392,6 +392,19 @@ def drawTextWrap(surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None,
         level = 0
     return text
 
+def blit_bg(i):
+    background = pygame.image.load("images/cave.png").convert_alpha()
+    background = pygame.transform.scale(background,(1600,900))
+    blit_image([width, height], width+i, 0, background, 1, 1, 1)
+    blit_image([width, height], i, 0, background, 1, 1, 1)
+    if (i == -width):
+        blit_image([width, height], width+i, 0, background, 1, 1, 1)
+        i=0
+    i-=1
+    return i
+
+def cgls(value, length):
+    return ((value/length) * 2) - 1
 
 """
 def draw_old(self, party, enemy, active, p_text, e_text, flash_red, xp=None, update_text=None):
