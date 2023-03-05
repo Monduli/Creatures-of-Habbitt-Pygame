@@ -8,6 +8,9 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import numpy as np
 
+width = 1600
+height = 900
+
 def retrieve_background(choice):
     folder = "images/"
     if choice == "cave":
@@ -294,6 +297,101 @@ def blit_image(display, x, y, img, r, g, b):
 
     # disable blending
     glDisable(GL_BLEND)
+
+def rect_ogl(color, left, right, bot, top, debug=0):
+        shape_color(color)
+        vertices = np.array([
+            [left, bot],
+            [left, top],
+            [right, top],
+            [right, bot]
+        ], dtype=np.float32)
+        for vertex_pair in vertices:
+            glVertex2f(vertex_pair[0], vertex_pair[1])
+            if debug == 1:
+                print("Drew triangle at vertices " + str(vertex_pair[0]) + " and " + str(vertex_pair[1]) + ".")
+
+def shape_color(color):
+        if color == "BLUE":
+            glColor3f(0.0, 0.0, 1.0)
+        if color == "RED":
+            glColor3f(1.0, 0.0, 0.0)
+        if color == "GREEN":
+            glColor3f(0.0, 1.0, 0.0)
+        if color == "BLACK":
+            glColor3f(0.0, 0.0, 0.0)
+        if color == "PINK":
+            glColor3f(222.0, 49.0, 99.0)
+
+def gl_text(rect_color, left, right, bot, top, text, x_adjust, y_adjust):
+    glBegin(GL_QUADS)
+    rect_ogl(rect_color, left, right, bot, top)
+    glEnd()
+    drawText(left, top, text, x_adjust, y_adjust)
+
+def gl_text_wrap(display, rect_color, left, right, bot, top, text, x_adjust, y_adjust):
+    glBegin(GL_QUADS)
+    rect_ogl(rect_color, left, right, bot, top)
+    glEnd()
+    drawTextWrap(display, text, rect_color, self.font, left, top, x_adjust, y_adjust)
+
+def drawText(x, y, text, x_adjust, y_adjust):                                                
+    textSurface = pygame.font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 0))
+    textData = pygame.image.tostring(textSurface, "RGBA", True)
+    new_x = ((x+1)/2)*width/x_adjust
+    new_y = ((y+1)/2)*height/y_adjust
+    glWindowPos2d(new_x, new_y)
+    glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+
+def drawTextWrap(surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None, aa=False, center=False):
+    rect = pygame.Rect(x,y,600,100)
+    y = rect.top
+    lineSpacing = 0
+    image = None
+    new_x = ((x+1)/2)*width/x_adjust
+    new_y = ((y+1)/2)*height/y_adjust #- (self.level*100)
+
+    # get the height of the font
+    fontHeight = font.size("Tg")[1]
+
+    while text:
+        i = 1
+
+        # determine if the row of text will be outside our area
+        if y + fontHeight > rect.bottom:
+            break
+
+        # determine maximum width of line
+        while font.size(text[:i])[0] < rect.width-80 and i < len(text):
+            i += 1
+
+        # if we've wrapped the text, then adjust the wrap to the last word      
+        if i < len(text): 
+            i = text.rfind(" ", 0, i) + 1
+
+        # render the line and blit it to the surface
+        textSurface = pygame.font.render(text[:i], True, (255, 255, 255, 0), (0, 0, 0, 0))
+        textData = pygame.image.tostring(textSurface, "RGBA", True)
+        text_rect = textSurface.get_rect()
+        
+        if center == True:
+            glWindowPos2d(new_x, new_y)
+            glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+        else:
+            glWindowPos2d(new_x,new_y)
+            glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+        new_y -= fontHeight + lineSpacing
+
+        # remove the text we just blitted
+        text = text[i:]
+        level += 1
+
+    if input == True:
+        return image
+    if text == "":
+        level = 0
+    return text
+
 
 """
 def draw_old(self, party, enemy, active, p_text, e_text, flash_red, xp=None, update_text=None):

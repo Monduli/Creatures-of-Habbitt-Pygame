@@ -283,6 +283,7 @@ class Game(object):
         self.level = 0
         for x in range(2, 1102, 100):
             self.spread.append(x)
+        self.fullscreen = 0
 
     def start(self):
         self.board.randomize()
@@ -603,7 +604,14 @@ class Game(object):
         elif key == K_d:
             print_rects(self.board)
         elif key == K_r:
-            pygame.display.set_mode((1600, 900), pygame.FULLSCREEN)
+            if self.fullscreen == 0:
+                self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
+                                              pygame.DOUBLEBUF|pygame.OPENGL|pygame.FULLSCREEN)
+                self.fullscreen = 1
+            else:
+                self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
+                                              pygame.DOUBLEBUF|pygame.OPENGL)
+                self.fullscreen = 0
 
     def swap(self, i, j):
         self.swap_time = 0.0
@@ -616,8 +624,8 @@ class Game(object):
     
     # TODO
     def update_box(self):
-        self.gl_text_wrap("BLACK", .28, 1, -.7, -.45, self.e_text, .98, 2.1)
-        self.gl_text_wrap("BLACK", .28, 1, -.2, -.45, self.p_text, .98, 1.4)
+        gl_text_wrap(self.display, "BLACK", .28, 1, -.7, -.45, self.e_text, .98, 2.1)
+        gl_text_wrap(self.display, "BLACK", .28, 1, -.2, -.45, self.p_text, .98, 1.4)
         # color left right bot top text x_adjust y_adjust
 
     """def draw_time(self):
@@ -891,7 +899,7 @@ class Game(object):
         self.board.draw(self.display)
         #print("Finished drawing board")
 
-        self.shape_color("BLACK")
+        shape_color("BLACK")
         # party 1
         self.gl_text(color_0, .4, 1, .9, 1, party[0].get_name(), 0.88, 1.045)
         self.gl_text(color_0,.4, 1, .8, .9, "HP: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), 0.885, 1.045)
@@ -911,26 +919,26 @@ class Game(object):
         self.gl_text("BLACK", .64, 1, -.9, -1, "RETURN", .94, .9)
 
         glBegin(GL_QUADS)
-        #party_port_1 = self.rect_ogl("GREEN", .27, .4, .8, 1)
-        #party_port_2 = self.rect_ogl("RED", .27, .4, .6, .8)
-        #party_port_3 = self.rect_ogl("BLUE", .27, .4, .4, .6)
-        #party_port_4 = self.rect_ogl("GREEN", .27, .4, .2, .4)
+        #party_port_1 = rect_ogl("GREEN", .27, .4, .8, 1)
+        #party_port_2 = rect_ogl("RED", .27, .4, .6, .8)
+        #party_port_3 = rect_ogl("BLUE", .27, .4, .4, .6)
+        #party_port_4 = rect_ogl("GREEN", .27, .4, .2, .4)
 
         # enemies
-        enemy_port_1 = self.rect_ogl("GREEN", .52, .64, -.9, -.7)
-        enemy_port_2 = self.rect_ogl("RED", .4, .52, -.9, -.7)
-        enemy_port_3 = self.rect_ogl("BLUE", .28, .4, -.9, -.7)
+        enemy_port_1 = rect_ogl("GREEN", .52, .64, -.9, -.7)
+        enemy_port_2 = rect_ogl("RED", .4, .52, -.9, -.7)
+        enemy_port_3 = rect_ogl("BLUE", .28, .4, -.9, -.7)
 
         # return button
-        return_button = self.rect_ogl("BLACK", .28, 1, -.9, -1)
+        return_button = rect_ogl("BLACK", .28, 1, -.9, -1)
 
-        #text_enemy = self.rect_ogl("BLACK", .28, 1, -.7, -.45)
-        #text_party = self.rect_ogl("BLACK", .28, 1, -.45, -.2)
+        #text_enemy = rect_ogl("BLACK", .28, 1, -.7, -.45)
+        #text_party = rect_ogl("BLACK", .28, 1, -.45, -.2)
 
-        ability_1 = self.rect_ogl("RED", .28, .64, 0, .2)
-        ability_2 = self.rect_ogl("BLUE", .64, 1, 0, .2)
-        ability_3 = self.rect_ogl("GREEN", .28, .64, -.2, 0)
-        ability_4 = self.rect_ogl("PINK", .64, 1, -.2, 0)
+        ability_1 = rect_ogl("RED", .28, .64, 0, .2)
+        ability_2 = rect_ogl("BLUE", .64, 1, 0, .2)
+        ability_3 = rect_ogl("GREEN", .28, .64, -.2, 0)
+        ability_4 = rect_ogl("PINK", .64, 1, -.2, 0)
 
         glEnd()
 
@@ -962,99 +970,7 @@ class Game(object):
 
         return return_button
 
-    def gl_text(self, rect_color, left, right, bot, top, text, x_adjust, y_adjust):
-        glBegin(GL_QUADS)
-        self.rect_ogl(rect_color, left, right, bot, top)
-        glEnd()
-        self.drawText(left, top, text, x_adjust, y_adjust)
 
-    def gl_text_wrap(self, rect_color, left, right, bot, top, text, x_adjust, y_adjust):
-        glBegin(GL_QUADS)
-        self.rect_ogl(rect_color, left, right, bot, top)
-        glEnd()
-        self.drawTextWrap(self.display, text, rect_color, self.font, left, top, x_adjust, y_adjust)
-
-    def shape_color(self, color):
-        if color == "BLUE":
-            glColor3f(0.0, 0.0, 1.0)
-        if color == "RED":
-            glColor3f(1.0, 0.0, 0.0)
-        if color == "GREEN":
-            glColor3f(0.0, 1.0, 0.0)
-        if color == "BLACK":
-            glColor3f(0.0, 0.0, 0.0)
-        if color == "PINK":
-            glColor3f(222.0, 49.0, 99.0)
-
-    def rect_ogl(self, color, left, right, bot, top):
-        self.shape_color(color)
-        vertices = np.array([
-            [left, bot],
-            [left, top],
-            [right, top],
-            [right, bot]
-        ], dtype=np.float32)
-        for vertex_pair in vertices:
-            glVertex2f(vertex_pair[0], vertex_pair[1])
-            if self.debug == 1:
-                print("Drew triangle at vertices " + str(vertex_pair[0]) + " and " + str(vertex_pair[1]) + ".")
-
-    def drawText(self, x, y, text, x_adjust, y_adjust):                                                
-        textSurface = self.font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 0))
-        textData = pygame.image.tostring(textSurface, "RGBA", True)
-        new_x = ((x+1)/2)*width/x_adjust
-        new_y = ((y+1)/2)*height/y_adjust
-        glWindowPos2d(new_x, new_y)
-        glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
-
-    def drawTextWrap(self, surface, text, color, font, x, y, x_adjust, y_adjust, bkg=None, aa=False, center=False):
-        rect = pygame.Rect(x,y,600,100)
-        y = rect.top
-        lineSpacing = 0
-        image = None
-        new_x = ((x+1)/2)*width/x_adjust
-        new_y = ((y+1)/2)*height/y_adjust #- (self.level*100)
-
-        # get the height of the font
-        fontHeight = font.size("Tg")[1]
-
-        while text:
-            i = 1
-
-            # determine if the row of text will be outside our area
-            if y + fontHeight > rect.bottom:
-                break
-
-            # determine maximum width of line
-            while font.size(text[:i])[0] < rect.width-80 and i < len(text):
-                i += 1
-
-            # if we've wrapped the text, then adjust the wrap to the last word      
-            if i < len(text): 
-                i = text.rfind(" ", 0, i) + 1
-
-            # render the line and blit it to the surface
-            textSurface = self.font.render(text[:i], True, (255, 255, 255, 0), (0, 0, 0, 0))
-            textData = pygame.image.tostring(textSurface, "RGBA", True)
-            text_rect = textSurface.get_rect()
-            
-            if center == True:
-                glWindowPos2d(new_x, new_y)
-                glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
-            else:
-                glWindowPos2d(new_x,new_y)
-                glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
-            new_y -= fontHeight + lineSpacing
-
-            # remove the text we just blitted
-            text = text[i:]
-            self.level += 1
-
-        if input == True:
-            return image
-        if text == "":
-            self.level = 0
-        return text
 
 
 if __name__ == '__main__':

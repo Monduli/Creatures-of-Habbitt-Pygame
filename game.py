@@ -16,14 +16,15 @@ def start_screen():
 
     clock = pygame.time.Clock()
 
-    screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode((width, height),
+                                              pygame.DOUBLEBUF|pygame.OPENGL)
 
     base_font = pygame.font.Font("font/VCR.001.ttf", 32)
 
-    color_passive = pygame.Color('black')
-
+    color_passive = "BLACK"
+    color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
     background = retrieve_background("cave")
-
+    
     title_rect = pygame.Rect(width-1100,height-800,500,50)
     start_rect = pygame.Rect(width-900,height-550,200,50)
     town_start_rect = pygame.Rect(width-900,height-475,200,50)
@@ -36,7 +37,8 @@ def start_screen():
         screen.fill(black)
         screen.blit(background, (width+i,0))
         screen.blit(background, (i, 0))
-        color_start, color_town_start, color_options, color_exit = color_passive
+        
+        draw_start_screen(color_start, color_town_start, color_options, color_exit)
         color_exit = pygame.Color('black')
 
         if (i == -width):
@@ -64,20 +66,12 @@ def start_screen():
             color_exit = pygame.Color(200,0,0)
 
         # Draw buttons
-        pygame.draw.rect(screen, color_passive, title_rect)
-        pygame.draw.rect(screen, color_start, start_rect)
-        pygame.draw.rect(screen, color_town_start, town_start_rect)
-        pygame.draw.rect(screen, color_options, options_rect)
-        pygame.draw.rect(screen, color_exit, exit_rect)
+
         
         # Draw the text onto the buttons
-        drawText(screen, "Creatures of Habbitt v.01", pygame.Color(255,255,255,0), title_rect, base_font, False, None, center=True)
-        drawText(screen, "Wake Up", pygame.Color(255,255,255,0), start_rect, base_font, False, None, center=True)
-        drawText(screen, "Skip", pygame.Color(255,255,255,0), town_start_rect, base_font, False, None, center=True)
-        drawText(screen, "Options", pygame.Color(255,255,255,0), options_rect, base_font, False, None, center=True)
-        drawText(screen, "Exit", pygame.Color(255,255,255,0), exit_rect, base_font, False, None, center=True)
 
-        pygame.display.update()
+
+        pygame.display.flip()
         clock.tick(60)
 
 def in_dialog(skip=None):
@@ -542,6 +536,13 @@ def controller():
             in_dialog("To Town")
         elif option == "exit":
             sys.exit()
+
+def draw_start_screen(color_start, color_town_start, color_options, color_exit):
+    gl_text("BLACK", width-1100, width-600, height-750, height-800, "Creatures of Habbitt", 1, 1)
+    gl_text(color_start, width-900, width-700, height-500, height-550, "Start", 1, 1)
+    gl_text(color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
+    gl_text(color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
+    gl_text(color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)
 
 if __name__ == "__main__":
     print(os.getcwd())
