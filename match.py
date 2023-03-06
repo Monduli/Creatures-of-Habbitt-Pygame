@@ -24,7 +24,9 @@ speed = [3, 0]
 
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode((width, height),
+                                              pygame.DOUBLEBUF|pygame.OPENGL)
+pygame.display.set_caption("Creatures of Habbitt v.01")
 
 color_passive = pygame.Color('black')
 
@@ -275,9 +277,7 @@ class Game(object):
         self.clock = pygame.time.Clock()
         #self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
         #                                       pygame.RESIZABLE)
-        self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
-                                              pygame.DOUBLEBUF|pygame.OPENGL)
-        pygame.display.set_caption("Creatures of Habbitt v.01")
+        self.display = screen
         self.board = Board(PUZZLE_COLUMNS, PUZZLE_ROWS, background)
         self.font = pygame.font.Font('font/VCR.001.ttf', FONT_SIZE)
         
@@ -299,9 +299,11 @@ class Game(object):
         pygame.quit()
         sys.exit()
 
-    def play(self, party, dungeon):
+    def play(self, party, dungeon, display=screen):
         self.start()
         blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], 0,0, pygame.image.load("images/loading.png").convert_alpha(), 1, 1, 1)
+        if display != screen:
+            self.display = display
 
         #gluPerspective(45, (1600/900), 0.1, 50.0)
         #glTranslatef(0.0, 0.0, -5)
@@ -966,9 +968,9 @@ class Game(object):
         gl_text(self.font, color_3, 1, .4, .2, .3, "HP: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), .99, .99)
         # enemy 1
         gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
-        gl_text(self.font, "BLACK", 1, .64, -.9, -1, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 1)
+        gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
         # return (DOESN'T WORK)
-        gl_text(self.font, "BLACK", .28, 1, -1, -.9, "RETURN", 1.3, 1)
+        gl_text(self.font, "BLACK", .28, 1, -.9, -1, "RETURN", 1.3, 6)
 
         glBegin(GL_QUADS)
         #party_port_1 = rect_ogl("GREEN", .27, .4, .8, 1)

@@ -9,6 +9,7 @@ def start_screen():
 
     #### SETUP ####
     pygame.init()
+    pygame.display.set_caption("Creatures of Habbitt v.01")
 
     size = width, height = 1600, 900
     black = 0, 0, 0
@@ -16,13 +17,12 @@ def start_screen():
 
     clock = pygame.time.Clock()
 
-    screen = pygame.display.set_mode((width, height),
-                                              pygame.DOUBLEBUF|pygame.OPENGL)
+    screen = pygame.display.set_mode(size)
 
     base_font = pygame.font.Font("font/VCR.001.ttf", 32)
 
-    color_passive = "BLACK"
-    color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
+    color_passive = pygame.Color(0,0,0)
+    
     background = retrieve_background("cave")
     
     title_rect = pygame.Rect(width-1100,height-800,500,50)
@@ -31,19 +31,24 @@ def start_screen():
     options_rect = pygame.Rect(width-900,height-400,200,50)
     exit_rect = pygame.Rect(width-850,height-250,100,50)
 
+    move = True
+
     i = 0
 
     while True:
         screen.fill(black)
-        blit_bg(i)
-        
-        draw_start_screen(base_font, color_start, color_town_start, color_options, color_exit)
+        color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
         color_exit = "BLACK"
 
-        if (i == -width):
-            screen.blit(background, (width+i, 0))
-            i=0
-        i-=1
+        if move == True:
+            screen.blit(background, (width+i,0))
+            screen.blit(background, (i, 0))
+            if (i == -width):
+                screen.blit(background, (width+i, 0))
+                i=0
+            i-=1
+        else:
+            screen.blit(background, (0, 0))
 
         for event in pygame.event.get():                  
             if event.type == pygame.QUIT: sys.exit()
@@ -65,10 +70,18 @@ def start_screen():
             color_exit = pygame.Color(200,0,0)
 
         # Draw buttons
-
+        pygame.draw.rect(screen, color_passive, title_rect)
+        pygame.draw.rect(screen, color_start, start_rect)
+        pygame.draw.rect(screen, color_town_start, town_start_rect)
+        pygame.draw.rect(screen, color_options, options_rect)
+        pygame.draw.rect(screen, color_exit, exit_rect)
         
         # Draw the text onto the buttons
-
+        drawText(screen, "Creatures of Habbitt v.01", (255,255,255), title_rect, base_font, center=True)
+        drawText(screen, "Wake Up", (255,255,255), start_rect, base_font, center=True)
+        drawText(screen, "Skip to Town", (255,255,255), town_start_rect, base_font, center=True)
+        drawText(screen, "Options", (255,255,255), options_rect, base_font, center=True)
+        drawText(screen, "Exit", (255,255,255), exit_rect, base_font, center=True)
 
         pygame.display.flip()
         clock.tick(60)
@@ -162,7 +175,9 @@ def in_dialog(skip=None):
                                 if len(party) > 0:
                                 # Should go to location menu
                                     dungeon = "cave"
-                                    state = match.Game().play(party, get_dungeon(dungeon))
+                                    screen = pygame.display.set_mode((width, height),
+                                              pygame.DOUBLEBUF|pygame.OPENGL)
+                                    state = match.Game().play(party, get_dungeon(dungeon), screen)
                                     if state == "WIN":
                                         user_text = [[[None, "Your party was victorious!"],[None, "[Returning to town.]"]]]
                                     elif state == "DEAD":
@@ -538,7 +553,7 @@ def controller():
 
 def draw_start_screen(font, color_start, color_town_start, color_options, color_exit):
     gl_text(font, "BLACK", cgls(1100, width), cgls(600, width), cgls(750, height), cgls(800, height), "Creatures of Habbitt", 1, 1)
-    gl_text(font, color_start, width-900, width-700, height-500, height-550, "Start", 1, 1)
+    gl_text(font, color_start, cgls(900, width), cgls(700, width), cgls(500, height), cgls(550, height), "Start", 1, 1)
     gl_text(font, color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
     gl_text(font, color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
     gl_text(font, color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)
