@@ -132,15 +132,13 @@ def add_party_member(name):
 def fill_party():
     nsteen = Paladin([15, 10, 10, 10, 10, 10])
     nsteen.set_name("N. Steen")
-    #rabby = Bookish([10,10,10,15,10,10])
-    #rabby.set_name("Radish")
     radish = Bookish([15, 10, 10, 10, 10, 10])
     radish.set_name("Radish")
-    toffee = Martial([20, 20, 20, 20, 20, 20])
-    toffee.set_name("Toffee")
+    cinna = Cleric([15, 10, 10, 10, 10, 10])
+    cinna.set_name("Cinna")
     grapefart = Ranger([20, 20, 20, 20, 20, 20])
     grapefart.set_name("Grapefart")
-    party = [nsteen, radish, toffee, grapefart]
+    party = [nsteen, radish, cinna, grapefart]
     for char in party:
         char.print_stats()
     return party
@@ -193,6 +191,8 @@ def get_portrait_2(character):
         return "images/toffee_portrait_100.png"
     if character == "Grapefart":
         return "images/grapefart_portrait_100.png"
+    if character == "Cinna":
+        return "images/cinna_portrait_100.png"
     if character in ["Gobble"]:
         portrait = pygame.image.load("images/goblin.png")
         portrait = pygame.transform.scale(portrait,(100,100))
@@ -311,17 +311,34 @@ def rect_ogl(color, left, right, bot, top, debug=0):
             if debug == 1:
                 print("Drew triangle at vertices " + str(vertex_pair[0]) + " and " + str(vertex_pair[1]) + ".")
 
+def draw_outline(color, left, right, bot, top, debug=0):
+        shape_color(color)
+        vertices = np.array([
+            [left, bot],
+            [left, top],
+            [right, top],
+            [right, bot],
+        ], dtype=np.float32)
+        glBegin(GL_LINES)
+        for vertex_pair in vertices:
+            glVertex2f(vertex_pair[0], vertex_pair[1])
+        glEnd()
+
 def shape_color(color):
         if color == "BLUE":
             glColor3f(0.0, 0.0, 1.0)
-        if color == "RED":
+        elif color == "RED":
             glColor3f(1.0, 0.0, 0.0)
-        if color == "GREEN":
+        elif color == "GREEN":
             glColor3f(0.0, 1.0, 0.0)
-        if color == "BLACK":
+        elif color == "BLACK":
             glColor3f(0.0, 0.0, 0.0)
-        if color == "PINK":
+        elif color == "PINK":
             glColor3f(222.0, 49.0, 99.0)
+        elif color == "WHITE":
+            glColor3f(255.0, 255.0, 255.0)
+        else:
+            Exception("Wrong format")
 
 def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
     glBegin(GL_QUADS)

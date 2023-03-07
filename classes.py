@@ -127,8 +127,8 @@ class Martial(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
-        self.hp = 99999
-        self.current_hp = 60
+        self.hp = 50
+        self.current_hp = 50
 
     def spread(self, stats):
         Character.distribute_stats(self, ["str", "con", "dex", "wis", "cha", "mag"], stats)
@@ -174,6 +174,19 @@ class Ranger(Character):
         
     def get_magic(self):
         return self.get_dex()
+
+class Cleric(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.hp = 30
+        self.current_hp = 30
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["mag", "cha", "wis", "con", "dex", "str"], stats)
+        
+    def get_magic(self):
+        return self.get_mag()
 
 class Enemy():
     def __init__(self, name, health, att, gua, dex, maggua, xp):
