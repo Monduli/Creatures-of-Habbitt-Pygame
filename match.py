@@ -161,7 +161,6 @@ class Board(object):
                 self.update_matches(self.explosion[f], display)
                 return
             self.update_matches(self.blank, display)
-            print("Refilling columns")
             self.refill = list(self.refill_columns())
         self.explosion_time = 0
         self.matches = self.find_matches()
@@ -272,8 +271,8 @@ class Board(object):
     
 class Game(object):
 
-    def __init__(self):
-        pygame.init()
+    def __init__(self, screen):
+        #pygame.init()
         self.clock = pygame.time.Clock()
         #self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
         #                                       pygame.RESIZABLE)
@@ -401,14 +400,14 @@ class Game(object):
             if self.timing == 1:
                 print("START: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
-            if debug == 1:
+            if self.debug == 1:
                 print("Debug: Starting new loop.")
             if now != "skip":
                 before = pygame.time.get_ticks() - now
-                if turn > 1 and before > 1000:
+                if turn > 1 and before > 1000 and self.debug==1:
                     print("Loop time: " + str(before))
             now = pygame.time.get_ticks()
-            debug = 0
+            self.debug = 0
 
             self.draw_gl_scene(party_current)
             #return_rect = self.draw(self.party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
@@ -447,8 +446,9 @@ class Game(object):
                        pos = pygame.mouse.get_pos()
                        for cell in self.board.board:            
                             if cell.rect.collidepoint(pos):
-                                print("Mouse pos: " + str(pos))
-                                print("Rect location: " + str(cell.rect))
+                                if self.debug == 1:
+                                    print("Mouse pos: " + str(pos))
+                                    print("Rect location: " + str(cell.rect))
                                 cell_dragging = True
                                 cell_to_drag = cell
                                 store_x = cell.x
@@ -471,13 +471,13 @@ class Game(object):
                                     cell = self.board.board[i] 
                                     cell_x = cell.x
                                     cell_y = cell.y
-                                    if debug == 1:
+                                    if self.debug == 1:
                                         print(str(cell_x) + " < " + str(pos[0]) + " < " + str(cell_x+100))
                                         print(str(cell_y) + " < " + str(pos[1]) + " < " + str(cell_y+100))
                                         print(cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100)
                                     if cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100:
                                         # check if in x,y of picked up cell (can't just put tokens wherever)
-                                        if debug == 1:
+                                        if self.debug == 1:
                                             print("Colliding with rect at " + str(pos))
                                         new_i = cell.get_i()
                                         if new_i in possible_matches:
@@ -485,7 +485,7 @@ class Game(object):
                                                 debug_timing("MATCH_TIMER BEGIN", match_timer)
                                                 match_timer = pygame.time.get_ticks()
                                             # check if occupied square is a match
-                                            if debug == 1:
+                                            if self.debug == 1:
                                                 print("Cell is in possible matchable x/y coords")
                                             self.swap(new_i, cell_i)
                                             if len(self.board.find_matches()) > 0:
@@ -499,7 +499,7 @@ class Game(object):
                                                 cell.y = store_y
                                                 cell_to_drag = None
                                                 reset = 1
-                                                debug = 1
+                                                self.debug = 1
                                             else:
                                                 self.swap(new_i, cell_i)
                             if reset != 1:
@@ -533,11 +533,11 @@ class Game(object):
             while len(curr_match) > 0:
                 character_swap_timing = 1
                 for item in curr_match:
-                    print(curr_match)
+                    if self.debug == 1:
+                        print(curr_match[0])
                     state = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
                     curr_match.remove(curr_match[0])
                     if state == "WIN":
-                        self.pyg_wait(5)
                         return "WIN"
                     
             if self.board.busy() == [] and character_swap_timing == 1:
@@ -560,15 +560,13 @@ class Game(object):
                 self.removed = 0
                 
             if now - timer > 5000:
-                print("Enemy attacking")
                 self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
-                print(self.player_active)
                 self.flash_red = self.party.index(self.player_active)
                 timer = now
                 self.e_text = self.enemy_text[0]
         
             # update the box text with what's going on
-            if debug == 1:
+            if self.debug == 1:
                 print("Debug: Updating textboxes") 
             self.p_text = self.party_text[0]
             
@@ -594,7 +592,7 @@ class Game(object):
                     text_timer = pygame.time.get_ticks()
                     hold = 0
 
-            if debug == 1:
+            if self.debug == 1:
                 print("Debug: Checking for 'It is'")
 
             if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
@@ -606,7 +604,7 @@ class Game(object):
                 self.e_text = self.enemy_text[0]
                 text_timer = pygame.time.get_ticks()
 
-            if debug == 1:
+            if self.debug == 1:
                 print("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
 
@@ -621,7 +619,7 @@ class Game(object):
 
             self.board.tick(dt, self.display)
 
-            if debug == 1:
+            if self.debug == 1:
                 print("Debug: Tick complete.")
 
             turn += 1
@@ -654,6 +652,12 @@ class Game(object):
                 self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
                 self.fullscreen = 0
+        elif key == K_d:
+            x = 1600
+            y = 900
+            r = 1600
+            for value in range(0, 100):
+                drawCircleGL(x - value, y - value, 0, r - value, 20)
 
     def swap(self, i, j):
         self.swap_time = 0.0
@@ -716,10 +720,7 @@ class Game(object):
             update_text = enemy_active.get_name() + " has fallen!"
             self.party_text.append(update_text)
             enemy_turns = find_and_remove_from_turn(enemy_turns, enemy_active)
-            print(enemy)
             enemy.remove(enemy_active)
-            print(enemy_turns)
-            print(enemy)
             if len(enemy) == 0:
                 return "WIN"
             
@@ -763,8 +764,9 @@ class Game(object):
             self.enemy_text.append(update_text)
             self.enemy_turns = find_and_remove_from_turn(self.enemy_turns, enemy_active)
             enemy.remove(enemy_active)
-            print(self.enemy_turns)
-            print(enemy)
+            if self.debug == 1:
+                print(self.enemy_turns)
+                print(enemy)
             if len(enemy) == 0:
                 update_text = player_active.get_name() + "'s party is victorious!"
                 self.party_text.append(update_text)
@@ -990,6 +992,9 @@ class Game(object):
         return 
 
 if __name__ == '__main__':
+    pygame.init()
+    screen = pygame.display.set_mode((width, height),
+                                              pygame.DOUBLEBUF|pygame.OPENGL)
     party = fill_party()
-    state = Game().play(party, get_dungeon("cave"))
+    state = Game(screen).play(party, get_dungeon("cave"))
     print("Your final result was: " + state)

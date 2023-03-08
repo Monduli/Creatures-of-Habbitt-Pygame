@@ -5,562 +5,718 @@ from helpers import *
 import match
 from classes import *
 
-def start_screen():
+class MainGame():
+    def __init__(self):
+        self.progress = 0
 
-    #### SETUP ####
-    pygame.init()
-    pygame.display.set_caption("Creatures of Habbitt v.01")
+    def start_screen(self):
 
-    size = width, height = 1600, 900
-    black = 0, 0, 0
-    speed = [3, 0]
+        #### SETUP ####
+        pygame.init()
+        pygame.display.set_caption("Creatures of Habbitt v.01")
+        size = width, height = 1600, 900
+        black = 0, 0, 0
+        speed = [3, 0]
 
-    clock = pygame.time.Clock()
+        clock = pygame.time.Clock()
 
-    screen = pygame.display.set_mode(size)
+        self.screen = pygame.display.set_mode(size)
 
-    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
 
-    color_passive = pygame.Color(0,0,0)
-    
-    background = retrieve_background("cave")
-    
-    title_rect = pygame.Rect(width-1100,height-800,500,50)
-    start_rect = pygame.Rect(width-900,height-550,200,50)
-    town_start_rect = pygame.Rect(width-900,height-475,200,50)
-    options_rect = pygame.Rect(width-900,height-400,200,50)
-    exit_rect = pygame.Rect(width-850,height-250,100,50)
-
-    move = True
-
-    i = 0
-
-    while True:
-        screen.fill(black)
-        color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
-        color_exit = "BLACK"
-
-        if move == True:
-            screen.blit(background, (width+i,0))
-            screen.blit(background, (i, 0))
-            if (i == -width):
-                screen.blit(background, (width+i, 0))
-                i=0
-            i-=1
-        else:
-            screen.blit(background, (0, 0))
-
-        for event in pygame.event.get():                  
-            if event.type == pygame.QUIT: sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if start_rect.collidepoint(event.pos):
-                    return "dialog"
-                if town_start_rect.collidepoint(event.pos):
-                    return "dialog skip"
-                if exit_rect.collidepoint(event.pos):
-                    return "exit"
-
-        if start_rect.collidepoint(pygame.mouse.get_pos()):
-            color_start = pygame.Color(200,0,0)
-        if town_start_rect.collidepoint(pygame.mouse.get_pos()):
-            color_town_start = pygame.Color(200,0,0)
-        if options_rect.collidepoint(pygame.mouse.get_pos()):
-            color_options = pygame.Color(200,0,0)
-        if exit_rect.collidepoint(pygame.mouse.get_pos()):
-            color_exit = pygame.Color(200,0,0)
-
-        # Draw buttons
-        pygame.draw.rect(screen, color_passive, title_rect)
-        pygame.draw.rect(screen, color_start, start_rect)
-        pygame.draw.rect(screen, color_town_start, town_start_rect)
-        pygame.draw.rect(screen, color_options, options_rect)
-        pygame.draw.rect(screen, color_exit, exit_rect)
+        color_passive = pygame.Color(0,0,0)
         
-        # Draw the text onto the buttons
-        drawText(screen, "Creatures of Habbitt v.01", (255,255,255), title_rect, base_font, center=True)
-        drawText(screen, "Wake Up", (255,255,255), start_rect, base_font, center=True)
-        drawText(screen, "Skip to Town", (255,255,255), town_start_rect, base_font, center=True)
-        drawText(screen, "Options", (255,255,255), options_rect, base_font, center=True)
-        drawText(screen, "Exit", (255,255,255), exit_rect, base_font, center=True)
-
-        pygame.display.flip()
-        clock.tick(60)
-
-def in_dialog(skip=None):
-
-    #### SETUP ####
-    size = width, height = 1600, 900
-    speed = [3, 0]
-    black = 0, 0, 0
-
-    clock = pygame.time.Clock()
-
-    screen = pygame.display.set_mode(size)
-
-    background = retrieve_background("cave")
-
-    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-    user_text = dia.dialog_start
-
-    dialog_rect = pygame.Rect(width-1550,height-250,1500,200)
-    name_rect = pygame.Rect(width-1550, height-320, 300, 50)
-    color_passive = pygame.Color('black')
-
-    i = 0
-    advance = 0
-    exit_next = 0
-    move = True
-    global progress
-    global party
-    party = []
-
-    curr_text = user_text[0][advance][1]
-    if curr_text in ["inn"]:
-        choice = inn_menu(screen, progress, background)
-
-    if skip:
-        user_text = [[[None, "To Town"]]]
-
-    while True:
-        screen.fill(black)
+        background = retrieve_background("cave")
         
-        if move == True:
-            screen.blit(background, (width+i,0))
-            screen.blit(background, (i, 0))
-            if (i == -width):
-                screen.blit(background, (width+i, 0))
-                i=0
-            i-=1
-        else:
-            screen.blit(background, (0, 0))
+        title_rect = pygame.Rect(width-1100,height-800,500,50)
+        start_rect = pygame.Rect(width-900,height-550,200,50)
+        town_start_rect = pygame.Rect(width-900,height-475,200,50)
+        options_rect = pygame.Rect(width-900,height-400,200,50)
+        exit_rect = pygame.Rect(width-850,height-250,100,50)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if dialog_rect.collidepoint(event.pos):
-                    background, move = determine_background(user_text[0][advance][1], background, move)
-                    if exit_next == 1:
-                        sys.exit()
-                    elif user_text[0][advance][1] == "[Bear N. Steen has joined your party.]":
-                        party.append(add_party_member("nsteen"))
-                        advance += 1
-                    elif user_text[0][advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
-                        if progress == 1:
-                            choice = town_options(screen, "Inn", "???", "inn", None, "???", "Add Party", None, "party_debug", "Venture Out", "leave", background)
-                            if choice == "party_debug":
-                                party.append(add_party_member("nsteen"))
-                                party.append(add_party_member("radish"))
-                                party.append(add_party_member("toffee"))
-                                party.append(add_party_member("grapefart"))
-                                user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
-                                progress += 1
-                                advance = 0
-                            if choice == "inn":
-                                user_text = dia.determine_dialog(choice, progress)
-                                progress += 1
-                                advance = 0
-                            if choice == "leave":
-                                user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
-                                advance = 0
-                        elif progress == 2:
-                            choice = town_options(screen, "Inn", "Smithy", "inn", "blacksmith", "???", "???", None, None, "Venture Out", "leave", background)
-                            if choice == "blacksmith":
-                                user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
-                                advance = 0
-                            elif choice == "inn":
-                                choice = inn_menu(screen, progress, background)
-                                user_text = dia.determine_dialog(choice, progress)
-                                advance = 0
-                            elif choice == "leave":
-                                if len(party) > 0:
-                                # Should go to location menu
-                                    dungeon = "cave"
-                                    screen = pygame.display.set_mode((width, height),
-                                              pygame.DOUBLEBUF|pygame.OPENGL)
-                                    state = match.Game().play(party, get_dungeon(dungeon), screen)
-                                    if state == "WIN":
-                                        user_text = [[[None, "Your party was victorious!"],[None, "[Returning to town.]"]]]
-                                    elif state == "DEAD":
-                                        user_text = [[[None, "Your party was wiped out..."],[None, "[Returning to town.]"]]]
-                                    elif state == "RAN":
-                                        user_text = [[[None, "[Returning to town.]"]]]
-                                    advance = 0
-                    elif user_text[0][advance][1] == "[You leave him to his devices.]":
-                        choice = inn_menu(screen, progress, background)
-                        user_text = dia.determine_dialog(choice, progress)
-                        advance = 0
-                    elif user_text[0][advance][1] == "Please select an option.":
-                        choice = dialog_options(screen, user_text[0][advance+1][1], user_text[0][advance+2][1], user_text[1], user_text[2], background)
-                        proceed = sort_options(choice)
-                        user_text = dia.determine_dialog(choice, progress)
-                        advance = 0
-                    elif user_text[0][advance][1] == "Please type into the box.":
-                        array = input_box(user_text[1], background)
-                        temp = user_text[1]
-                        user_text, name = array[0], array[1]
-                        global name_global
-                        name_global = name
-                        sort_options(temp)
-                        advance = 0
-                    elif 0 <= advance+1 < len(user_text[0]):
-                        advance += 1
-                    else:
-                        user_text = [["End of text."]]
-                        exit_next = 1
-                        advance = 0
+        move = True
 
-        
-        if user_text[0][advance][0] != None:
-            pygame.draw.rect(screen, color_passive, name_rect)
-            drawText(screen, user_text[0][advance][0], (255,255,255), name_rect, base_font, center=True)
-            character = retrieve_character(user_text[0][advance][0])
-            screen.blit(character, (width/2, 0))
-        pygame.draw.rect(screen, color_passive, dialog_rect)
-        #text_surface = base_font.render(user_text, True, (255,255,255))
-        #screen.blit(text_surface, (input_rect.x+20, input_rect.y+20))
-        #input_rect.w = max(1500, text_surface.get_width()+10)
-        drawText(screen, user_text[0][advance][1], (255,255,255), dialog_rect, base_font)
+        i = 0
 
-        pygame.display.update()
-        clock.tick(60)
+        while True:
+            self.screen.fill(black)
+            color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
+            color_exit = "BLACK"
 
-def dialog_options(screen, text_left, text_right, target_left, target_right, background):
-    size = width, height = 1600, 900
-    clock = pygame.time.Clock()
-    black = 0, 0, 0
+            if move == True:
+                self.screen.blit(background, (width+i,0))
+                self.screen.blit(background, (i, 0))
+                if (i == -width):
+                    self.screen.blit(background, (width+i, 0))
+                    i=0
+                i-=1
+            else:
+                self.screen.blit(background, (0, 0))
 
-    screen = pygame.display.set_mode(size)
+            for event in pygame.event.get():                  
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if start_rect.collidepoint(event.pos):
+                        return "dialog"
+                    if town_start_rect.collidepoint(event.pos):
+                        return "dialog skip"
+                    if exit_rect.collidepoint(event.pos):
+                        return "exit"
 
-    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+            if start_rect.collidepoint(pygame.mouse.get_pos()):
+                color_start = pygame.Color(200,0,0)
+            if town_start_rect.collidepoint(pygame.mouse.get_pos()):
+                color_town_start = pygame.Color(200,0,0)
+            if options_rect.collidepoint(pygame.mouse.get_pos()):
+                color_options = pygame.Color(200,0,0)
+            if exit_rect.collidepoint(pygame.mouse.get_pos()):
+                color_exit = pygame.Color(200,0,0)
 
-    color_passive = pygame.Color('black')
-
-    left_rect = pygame.Rect(width-1550,height-250,700,50)
-    right_rect = pygame.Rect(width-750,height-250,700,50)
-
-    i = 0
-
-    while True:
-        screen.fill(black)
-        screen.blit(background, (width+i,0))
-        screen.blit(background, (i, 0))
-        color_left = pygame.Color('black')
-        color_right = pygame.Color('black')
-
-        if (i == -width):
-            screen.blit(background, (width+i, 0))
-            i=0
-        i-=1
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if left_rect.collidepoint(event.pos):
-                    return target_left
-                if right_rect.collidepoint(event.pos):
-                    return target_right
+            # Draw buttons
+            pygame.draw.rect(self.screen, color_passive, title_rect)
+            pygame.draw.rect(self.screen, color_start, start_rect)
+            pygame.draw.rect(self.screen, color_town_start, town_start_rect)
+            pygame.draw.rect(self.screen, color_options, options_rect)
+            pygame.draw.rect(self.screen, color_exit, exit_rect)
             
-        if left_rect.collidepoint(pygame.mouse.get_pos()):
-            color_left = pygame.Color(200,0,0)
-        if right_rect.collidepoint(pygame.mouse.get_pos()):
-            color_right = pygame.Color(200,0,0)
+            # Draw the text onto the buttons
+            drawText(self.screen, "Creatures of Habbitt v.01", (255,255,255), title_rect, base_font, center=True)
+            drawText(self.screen, "Wake Up", (255,255,255), start_rect, base_font, center=True)
+            drawText(self.screen, "Skip to Town", (255,255,255), town_start_rect, base_font, center=True)
+            drawText(self.screen, "Options", (255,255,255), options_rect, base_font, center=True)
+            drawText(self.screen, "Exit", (255,255,255), exit_rect, base_font, center=True)
 
-        pygame.draw.rect(screen, color_left, left_rect)
-        drawText(screen, text_left, (255,255,255), left_rect, base_font)
-        pygame.draw.rect(screen, color_right, right_rect)
-        drawText(screen, text_right, (255,255,255), right_rect, base_font)
+            pygame.display.flip()
+            clock.tick(60)
 
-        pygame.display.update()
-        clock.tick(60)
+    def in_dialog(self, skip=None):
 
+        #### SETUP ####
+        size = width, height = 1600, 900
+        speed = [3, 0]
+        black = 0, 0, 0
 
-def town_options(screen, text_top_left, text_top_right, target_top_left, target_top_right, 
-    text_bot_left, text_bot_right, target_bot_left, target_bot_right, text_leave, target_leave, background):
+        clock = pygame.time.Clock()
 
-    size = width, height = 1600, 900
-    clock = pygame.time.Clock()
-    black = 0, 0, 0
+        self.screen = pygame.display.set_mode(size)
 
-    screen = pygame.display.set_mode(size)
+        background = retrieve_background("cave")
 
-    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+        user_text = dia.dialog_start
 
-    color_passive = pygame.Color('black')
+        dialog_rect = pygame.Rect(width-1550,height-250,1500,200)
+        name_rect = pygame.Rect(width-1550, height-320, 300, 50)
+        color_passive = pygame.Color('black')
 
-    top_left_rect = pygame.Rect(width-1550,height-350,700,50)
-    top_right_rect = pygame.Rect(width-750,height-350,700,50)
-    bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
-    bot_right_rect = pygame.Rect(width-750,height-250,700,50)
-    leave_rect = pygame.Rect(width-750,height-150,700,50)
-
-    while True:
-        screen.fill(black)
-        screen.blit(background, (0,0))
-        color_top_left = color_passive
-        color_top_right = color_passive
-        color_bot_left = color_passive
-        color_bot_right = color_passive
-        color_leave = color_passive
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if top_left_rect.collidepoint(event.pos):
-                    return target_top_left
-                if top_right_rect.collidepoint(event.pos):
-                    return target_top_right
-                if bot_left_rect.collidepoint(event.pos):
-                    return target_bot_left
-                if bot_right_rect.collidepoint(event.pos):
-                    return target_bot_right
-                if leave_rect.collidepoint(event.pos):
-                    return target_leave
-
-        if top_left_rect.collidepoint(pygame.mouse.get_pos()):
-            color_top_left = pygame.Color(200,0,0)
-        if top_right_rect.collidepoint(pygame.mouse.get_pos()):
-            color_top_right = pygame.Color(200,0,0) 
-        if bot_left_rect.collidepoint(pygame.mouse.get_pos()):
-            color_bot_left = pygame.Color(200,0,0)
-        if bot_right_rect.collidepoint(pygame.mouse.get_pos()):
-            color_bot_right = pygame.Color(200,0,0)
-        if leave_rect.collidepoint(pygame.mouse.get_pos()):
-            color_leave = pygame.Color(200,0,0)
-
-        pygame.draw.rect(screen, color_top_left, top_left_rect)
-        drawText(screen, text_top_left, (255,255,255), top_left_rect, base_font)
-        pygame.draw.rect(screen, color_top_right, top_right_rect)
-        drawText(screen, text_top_right, (255,255,255), top_right_rect, base_font)
-        pygame.draw.rect(screen, color_bot_left, bot_left_rect)
-        drawText(screen, text_bot_left, (255,255,255), bot_left_rect, base_font)
-        pygame.draw.rect(screen, color_bot_right, bot_right_rect)
-        drawText(screen, text_bot_right, (255,255,255), bot_right_rect, base_font)
-        pygame.draw.rect(screen, color_leave, leave_rect)
-        drawText(screen, text_leave, (255,255,255), leave_rect, base_font)
-
-
-        pygame.display.update()
-        clock.tick(60)
-
-def inn_menu(screen, progress, background):
-
-    size = width, height = 1600, 900
-    clock = pygame.time.Clock()
-    black = 0, 0, 0
-
-    screen = pygame.display.set_mode(size)
-
-    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-    color_passive = pygame.Color('black')
-
-    title_rect = pygame.Rect(width-1500,height-800,1400,50)
-    top_left_rect = pygame.Rect(width-1550,height-350,700,50)
-    top_right_rect = pygame.Rect(width-750,height-350,700,50)
-    bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
-    bot_right_rect = pygame.Rect(width-750,height-250,700,50)
-    leave_rect = pygame.Rect(width-750,height-150,700,50)
-
-    while True:
-        screen.fill(black)
-        screen.blit(background, (0,0))
-        color_top_left = color_passive
-        color_top_right = color_passive
-        color_bot_left = color_passive
-        color_bot_right = color_passive
-        color_leave = color_passive
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if top_left_rect.collidepoint(event.pos):
-                    return "nsteen"
-                if top_right_rect.collidepoint(event.pos):
-                    if progress >= 3:
-                        return "radish"
-                if bot_left_rect.collidepoint(event.pos):
-                    pass
-                if bot_right_rect.collidepoint(event.pos):
-                    pass
-                if leave_rect.collidepoint(event.pos):
-                    return "town"
-
-        if top_left_rect.collidepoint(pygame.mouse.get_pos()):
-            color_top_left = pygame.Color(200,0,0)
-        if top_right_rect.collidepoint(pygame.mouse.get_pos()):
-            color_top_right = pygame.Color(200,0,0) 
-        if bot_left_rect.collidepoint(pygame.mouse.get_pos()):
-            color_bot_left = pygame.Color(200,0,0)
-        if bot_right_rect.collidepoint(pygame.mouse.get_pos()):
-            color_bot_right = pygame.Color(200,0,0)
-        if leave_rect.collidepoint(pygame.mouse.get_pos()):
-            color_leave = pygame.Color(200,0,0)
-
+        i = 0
+        advance = 0
+        exit_next = 0
+        move = True
+        global progress
         global party
-        pygame.draw.rect(screen, color_passive, title_rect)
-        drawText(screen, "Who would you like to speak to?", (255,255,255), title_rect, base_font)
-        pygame.draw.rect(screen, color_top_left, top_left_rect)
-        drawText(screen, "Bear N. Steen", (255,255,255), top_left_rect, base_font)
-        pygame.draw.rect(screen, color_top_right, top_right_rect)
-        if in_party("Radish"):
-            drawText(screen, "Radish Rabbit", (255,255,255), top_right_rect, base_font)
-        else:
-            drawText(screen, "???", (255,255,255), top_right_rect, base_font)
-        pygame.draw.rect(screen, color_bot_left, bot_left_rect)
-        if in_party("Name"):
-            drawText(screen, "Not Found", (255,255,255), bot_left_rect, base_font)
-        else:
-            drawText(screen, "???", (255,255,255), bot_left_rect, base_font)
-        pygame.draw.rect(screen, color_bot_right, bot_right_rect)
-        if in_party("Name"):
-            drawText(screen, "Not Found", (255,255,255), bot_right_rect, base_font)
-        else:
-            drawText(screen, "???", (255,255,255), bot_right_rect, base_font)
-        pygame.draw.rect(screen, color_leave, leave_rect)
-        drawText(screen, "Leave", (255,255,255), leave_rect, base_font)
+        party = []
 
+        curr_text = user_text[0][advance][1]
+        if curr_text in ["inn"]:
+            choice = self.inn_menu(self.screen, progress, retrieve_background("tavern"))
 
-        pygame.display.update()
-        clock.tick(60)
+        if skip:
+            user_text = [[[None, "To Town"]]]
 
-def input_box(target, background):
-    size = width, height = 1600, 900
-    clock = pygame.time.Clock()
-    black = 0, 0, 0
-
-    screen = pygame.display.set_mode(size)
-
-    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-    color_passive = pygame.Color('black')
-
-    i = 0
-
-    user_text = ''
-    
-    # create rectangle
-    input_rect = pygame.Rect(width-750, height/2, 200, 50)
-    input_rect.center = (width/2, height/2)
-
-    color_active = pygame.Color('red')
-
-    color = color_passive
-    
-    active = False
-    
-    while True:
-        screen.fill(black)
-        screen.blit(background, (width+i,0))
-        screen.blit(background, (i, 0))
-
-        if (i == -width):
-            screen.blit(background, (width+i, 0))
-            i=0
-        i-=1
-        for event in pygame.event.get():
-    
-        # if user types QUIT then the screen will close
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-    
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if input_rect.collidepoint(event.pos):
-                    active = True
-                else:
-                    active = False
-    
-            if event.type == pygame.KEYDOWN:
-    
-                # Check for backspace
-                if event.key == pygame.K_BACKSPACE:
-    
-                    # get text input from 0 to -1 i.e. end.
-                    user_text = user_text[:-1]
-    
-                # Unicode standard is used for string
-                # formation
-                else:
-                    user_text += event.unicode
-                
-                if event.key == pygame.K_RETURN:
-                    return [dia.determine_dialog(target, 0, user_text[:-1]), user_text[:-1]]
-    
-        if active:
-            color = color_active
-        else:
-            color = color_passive
+        while True:
+            self.screen.fill(black)
             
-        # draw rectangle and argument passed which should
-        # be on screen
-        pygame.draw.rect(screen, color, input_rect)
-    
-        rect = drawText(screen, user_text, pygame.Color('white'), input_rect, base_font, center=True, input=True)
+            if move == True:
+                self.screen.blit(background, (width+i,0))
+                self.screen.blit(background, (i, 0))
+                if (i == -width):
+                    self.screen.blit(background, (width+i, 0))
+                    i=0
+                i-=1
+            else:
+                self.screen.blit(background, (0, 0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if dialog_rect.collidepoint(event.pos):
+                        background, move = self.determine_background(user_text[0][advance][1], background, move)
+                        if exit_next == 1:
+                            sys.exit()
+                        elif user_text[0][advance][1] == "[Bear N. Steen has joined your party.]":
+                            party.append(add_party_member("nsteen"))
+                            advance += 1
+                        elif user_text[0][advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
+                            background == retrieve_background("villageinn")
+                            if progress == 1:
+                                choice = self.town_options(self.screen, "Inn", "???", "inn", None, "???", "Add Party", None, "party_debug", "Venture Out", "leave", background)
+                                if choice == "party_debug":
+                                    party = fill_party()
+                                    user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
+                                    progress += 1
+                                    advance = 0
+                                if choice == "inn":
+                                    user_text = dia.determine_dialog(choice, progress)
+                                    progress += 1
+                                    advance = 0
+                                if choice == "leave":
+                                    user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
+                                    advance = 0
+                            elif progress == 2:
+                                choice = self.town_options(self.screen, "Inn", "Smithy", "inn", "blacksmith", "???", "???", None, None, "Venture Out", "leave", background)
+                                if choice == "blacksmith":
+                                    user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
+                                    advance = 0
+                                elif choice == "inn":
+                                    choice = self.inn_menu(self.screen, progress, retrieve_background("tavern"))
+                                    user_text = dia.determine_dialog(choice, progress)
+                                    advance = 0
+                                elif choice == "leave":
+                                    if len(party) > 0:
+                                    # Should go to location menu
+                                        state = self.location_menu()
+                                        if state == "WIN":
+                                            user_text = [[[None, "Your party was victorious!"],[None, "[Returning to town.]"]]]
+                                        elif state == "DEAD":
+                                            user_text = [[[None, "Your party was wiped out..."],[None, "[Returning to town.]"]]]
+                                        elif state == "RAN" or "LEFT":
+                                            user_text = [[[None, "[Returning to town.]"]]]
+                                        advance = 0
+                        elif user_text[0][advance][1] == "[You leave him to his devices.]" or user_text[0][advance][1] == "[You leave her to her devices.]":
+                            choice = self.inn_menu(self.screen, progress, background)
+                            user_text = dia.determine_dialog(choice, progress)
+                            advance = 0
+                        elif user_text[0][advance][1] == "Please select an option.":
+                            choice = self.dialog_options(self.screen, user_text[0][advance+1][1], user_text[0][advance+2][1], user_text[1], user_text[2], background)
+                            proceed = self.sort_options(choice)
+                            user_text = dia.determine_dialog(choice, progress)
+                            advance = 0
+                        elif user_text[0][advance][1] == "Please type into the box.":
+                            array = self.input_box(user_text[1], background)
+                            temp = user_text[1]
+                            user_text, name = array[0], array[1]
+                            global name_global
+                            name_global = name
+                            self.sort_options(temp)
+                            advance = 0
+                        elif 0 <= advance+1 < len(user_text[0]):
+                            advance += 1
+                        else:
+                            user_text = [["End of text."]]
+                            exit_next = 1
+                            advance = 0
+
+            
+            if user_text[0][advance][0] != None:
+                pygame.draw.rect(self.screen, color_passive, name_rect)
+                drawText(self.screen, user_text[0][advance][0], (255,255,255), name_rect, base_font, center=True)
+                character = retrieve_character(user_text[0][advance][0])
+                self.screen.blit(character, (width/2, 0))
+            pygame.draw.rect(self.screen, color_passive, dialog_rect)
+            #text_surface = base_font.render(user_text, True, (255,255,255))
+            #self.screen.blit(text_surface, (input_rect.x+20, input_rect.y+20))
+            #input_rect.w = max(1500, text_surface.get_width()+10)
+            drawText(self.screen, user_text[0][advance][1], (255,255,255), dialog_rect, base_font)
+
+            pygame.display.update()
+            clock.tick(60)
+
+    def dialog_options(self, screen, text_left, text_right, target_left, target_right, background):
+        size = width, height = 1600, 900
+        clock = pygame.time.Clock()
+        black = 0, 0, 0
+
+        self.screen = pygame.display.set_mode(size)
+
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+        color_passive = pygame.Color('black')
+
+        left_rect = pygame.Rect(width-1550,height-250,700,50)
+        right_rect = pygame.Rect(width-750,height-250,700,50)
+
+        i = 0
+
+        while True:
+            self.screen.fill(black)
+            self.screen.blit(background, (width+i,0))
+            self.screen.blit(background, (i, 0))
+            color_left = pygame.Color('black')
+            color_right = pygame.Color('black')
+
+            if (i == -width):
+                self.screen.blit(background, (width+i, 0))
+                i=0
+            i-=1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if left_rect.collidepoint(event.pos):
+                        return target_left
+                    if right_rect.collidepoint(event.pos):
+                        return target_right
+                
+            if left_rect.collidepoint(pygame.mouse.get_pos()):
+                color_left = pygame.Color(200,0,0)
+            if right_rect.collidepoint(pygame.mouse.get_pos()):
+                color_right = pygame.Color(200,0,0)
+
+            pygame.draw.rect(self.screen, color_left, left_rect)
+            drawText(self.screen, text_left, (255,255,255), left_rect, base_font)
+            pygame.draw.rect(self.screen, color_right, right_rect)
+            drawText(self.screen, text_right, (255,255,255), right_rect, base_font)
+
+            pygame.display.update()
+            clock.tick(60)
+
+
+    def town_options(self, screen, text_top_left, text_top_right, target_top_left, target_top_right, 
+        text_bot_left, text_bot_right, target_bot_left, target_bot_right, text_leave, target_leave, background):
+
+        size = width, height = 1600, 900
+        clock = pygame.time.Clock()
+        black = 0, 0, 0
+
+        self.screen = pygame.display.set_mode(size)
+
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+        color_passive = pygame.Color('black')
+
+        top_left_rect = pygame.Rect(width-1550,height-350,700,50)
+        top_right_rect = pygame.Rect(width-750,height-350,700,50)
+        bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
+        bot_right_rect = pygame.Rect(width-750,height-250,700,50)
+        leave_rect = pygame.Rect(width-750,height-150,700,50)
+
+        while True:
+            self.screen.fill(black)
+            self.screen.blit(background, (0,0))
+            color_top_left = color_passive
+            color_top_right = color_passive
+            color_bot_left = color_passive
+            color_bot_right = color_passive
+            color_leave = color_passive
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if top_left_rect.collidepoint(event.pos):
+                        return target_top_left
+                    if top_right_rect.collidepoint(event.pos):
+                        return target_top_right
+                    if bot_left_rect.collidepoint(event.pos):
+                        return target_bot_left
+                    if bot_right_rect.collidepoint(event.pos):
+                        return target_bot_right
+                    if leave_rect.collidepoint(event.pos):
+                        return target_leave
+
+            if top_left_rect.collidepoint(pygame.mouse.get_pos()):
+                color_top_left = pygame.Color(200,0,0)
+            if top_right_rect.collidepoint(pygame.mouse.get_pos()):
+                color_top_right = pygame.Color(200,0,0) 
+            if bot_left_rect.collidepoint(pygame.mouse.get_pos()):
+                color_bot_left = pygame.Color(200,0,0)
+            if bot_right_rect.collidepoint(pygame.mouse.get_pos()):
+                color_bot_right = pygame.Color(200,0,0)
+            if leave_rect.collidepoint(pygame.mouse.get_pos()):
+                color_leave = pygame.Color(200,0,0)
+
+            pygame.draw.rect(self.screen, color_top_left, top_left_rect)
+            drawText(self.screen, text_top_left, (255,255,255), top_left_rect, base_font)
+            pygame.draw.rect(self.screen, color_top_right, top_right_rect)
+            drawText(self.screen, text_top_right, (255,255,255), top_right_rect, base_font)
+            pygame.draw.rect(self.screen, color_bot_left, bot_left_rect)
+            drawText(self.screen, text_bot_left, (255,255,255), bot_left_rect, base_font)
+            pygame.draw.rect(self.screen, color_bot_right, bot_right_rect)
+            drawText(self.screen, text_bot_right, (255,255,255), bot_right_rect, base_font)
+            pygame.draw.rect(self.screen, color_leave, leave_rect)
+            drawText(self.screen, text_leave, (255,255,255), leave_rect, base_font)
+
+
+            pygame.display.update()
+            clock.tick(60)
+
+    def inn_menu(self, screen, progress, background):
+
+        size = width, height = 1600, 900
+        clock = pygame.time.Clock()
+        black = 0, 0, 0
+
+        self.screen = pygame.display.set_mode(size)
+
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+        color_passive = pygame.Color('black')
+
+        title_rect = pygame.Rect(width-1500,height-800,1400,50)
+        character1_rect = pygame.Rect(width-1550,height-550,700,50)
+        character2_rect = pygame.Rect(width-750,height-550,700,50)
+        character3_rect = pygame.Rect(width-1550,height-450,700,50)
+        character4_rect = pygame.Rect(width-750,height-450,700,50)
+        character5_rect = pygame.Rect(width-1550,height-350,700,50)
+        character6_rect = pygame.Rect(width-750,height-350,700,50)
+        character7_rect = pygame.Rect(width-1550,height-250,700,50)
+        character8_rect = pygame.Rect(width-750,height-250,700,50)
+        next_rect = pygame.Rect(width-1550,height-150,700,50)
+        leave_rect = pygame.Rect(width-750,height-150,700,50)
+
+        background = retrieve_background("tavern")
+
+        while True:
+            self.screen.fill(black)
+            self.screen.blit(background, (0,0))
+            color_c1 = color_passive
+            color_c2 = color_passive
+            color_c3 = color_passive
+            color_c4 = color_passive
+            color_c5 = color_passive
+            color_c6 = color_passive
+            color_c7 = color_passive
+            color_c8 = color_passive
+            color_next = color_passive
+            color_leave = color_passive
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if character1_rect.collidepoint(event.pos):
+                        return "nsteen"
+                    if character2_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if character3_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if character4_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if character5_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if character6_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if character7_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if character8_rect.collidepoint(event.pos):
+                        if progress >= 3:
+                            return "radish"
+                    if leave_rect.collidepoint(event.pos):
+                        return "town"
+                    if next_rect.collidepoint(event.pos):
+                        pass
+
+            if character1_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c1 = pygame.Color(200,0,0)
+            if character2_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c2 = pygame.Color(200,0,0) 
+            if character3_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c3 = pygame.Color(200,0,0)
+            if character4_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c4 = pygame.Color(200,0,0)
+            if character5_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c5 = pygame.Color(200,0,0)
+            if character6_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c6 = pygame.Color(200,0,0) 
+            if character7_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c7 = pygame.Color(200,0,0)
+            if character8_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c8 = pygame.Color(200,0,0)
+            if leave_rect.collidepoint(pygame.mouse.get_pos()):
+                color_leave = pygame.Color(200,0,0)
+            if next_rect.collidepoint(pygame.mouse.get_pos()):
+                color_next = pygame.Color(200,0,0)
+
+            global party
+            pygame.draw.rect(self.screen, color_passive, title_rect)
+            pygame.draw.rect(self.screen, color_c1, character1_rect)
+            pygame.draw.rect(self.screen, color_c2, character2_rect)
+            pygame.draw.rect(self.screen, color_c3, character3_rect)
+            pygame.draw.rect(self.screen, color_c4, character4_rect)
+            pygame.draw.rect(self.screen, color_c5, character5_rect)
+            pygame.draw.rect(self.screen, color_c6, character6_rect)
+            pygame.draw.rect(self.screen, color_c7, character7_rect)
+            pygame.draw.rect(self.screen, color_c8, character8_rect)
+            pygame.draw.rect(self.screen, color_next, next_rect)
+            pygame.draw.rect(self.screen, color_leave, leave_rect)
+
+            drawText(self.screen, "Who would you like to speak to?", (255,255,255), title_rect, base_font)
+
+            drawText(self.screen, "Bear N. Steen", (255,255,255), character1_rect, base_font)
+
+            if self.in_party("Radish"):
+                drawText(self.screen, "Radish Rabbit", (255,255,255), character2_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character2_rect, base_font)
+
+            if self.in_party("Cinna"):
+                drawText(self.screen, "Cinnamon Bun", (255,255,255), character3_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character3_rect, base_font)
+
+            if self.in_party("Grapefart"):
+                drawText(self.screen, "Gilbert Grapefart", (255,255,255), character4_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character4_rect, base_font)
+
+            if self.in_party("???"):
+                drawText(self.screen, "Name", (255,255,255), character5_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character5_rect, base_font)
+
+            if self.in_party("???"):
+                drawText(self.screen, "Name", (255,255,255), character6_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character6_rect, base_font)
+
+            if self.in_party("???"):
+                drawText(self.screen, "Name", (255,255,255), character7_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character7_rect, base_font)
+
+            if self.in_party("???"):
+                drawText(self.screen, "Name", (255,255,255), character8_rect, base_font)
+            else:
+                drawText(self.screen, "???", (255,255,255), character8_rect, base_font)
+
+            drawText(self.screen, "Next", (255,255,255), next_rect, base_font)
+            drawText(self.screen, "Leave", (255,255,255), leave_rect, base_font)
+
+            pygame.display.update()
+            clock.tick(60)
+
+    def input_box(self, target, background):
+        size = width, height = 1600, 900
+        clock = pygame.time.Clock()
+        black = 0, 0, 0
+
+        self.screen = pygame.display.set_mode(size)
+
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+        color_passive = pygame.Color('black')
+
+        i = 0
+
+        user_text = ''
         
-        # set width of textfield so that text cannot get
-        # outside of user's text input
-        if rect != None:
-            input_rect.w = max(100, rect.get_width()+10)
-            input_rect.center = (width/2, height/2)
+        # create rectangle
+        input_rect = pygame.Rect(width-750, height/2, 200, 50)
+        input_rect.center = (width/2, height/2)
+
+        color_active = pygame.Color('red')
+
+        color = color_passive
         
-        # display.flip() will update only a portion of the
-        # screen to updated, not full area
-        pygame.display.update()
+        active = False
         
-        # clock.tick(60) means that for every second at most
-        # 60 frames should be passed.
-        clock.tick(60)
+        while True:
+            self.screen.fill(black)
+            self.screen.blit(background, (width+i,0))
+            self.screen.blit(background, (i, 0))
 
-def sort_options(choice):
-    if choice == "martial_choice":
-        prof = classes.Martial([12,10,10,10,10,10])
-        prof.set_name = name_global 
-        return ["class", prof]
-    elif choice == "bookish_choice":
-        prof = classes.Bookish([10,10,10,12,10,10])
-        prof.set_name(name_global )
-        return ["class", prof]
+            if (i == -width):
+                self.screen.blit(background, (width+i, 0))
+                i=0
+            i-=1
+            for event in pygame.event.get():
+        
+            # if user types QUIT then the self.screen will close
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+        
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if input_rect.collidepoint(event.pos):
+                        active = True
+                    else:
+                        active = False
+        
+                if event.type == pygame.KEYDOWN:
+        
+                    # Check for backspace
+                    if event.key == pygame.K_BACKSPACE:
+        
+                        # get text input from 0 to -1 i.e. end.
+                        user_text = user_text[:-1]
+        
+                    # Unicode standard is used for string
+                    # formation
+                    else:
+                        user_text += event.unicode
+                    
+                    if event.key == pygame.K_RETURN:
+                        return [dia.determine_dialog(target, 0, user_text[:-1]), user_text[:-1]]
+        
+            if active:
+                color = color_active
+            else:
+                color = color_passive
+                
+            # draw rectangle and argument passed which should
+            # be on self.screen
+            pygame.draw.rect(self.screen, color, input_rect)
+        
+            rect = drawText(self.screen, user_text, pygame.Color('white'), input_rect, base_font, center=True, input=True)
+            
+            # set width of textfield so that text cannot get
+            # outside of user's text input
+            if rect != None:
+                input_rect.w = max(100, rect.get_width()+10)
+                input_rect.center = (width/2, height/2)
+            
+            # display.flip() will update only a portion of the
+            # self.screen to updated, not full area
+            pygame.display.update()
+            
+            # clock.tick(60) means that for every second at most
+            # 60 frames should be passed.
+            clock.tick(60)
 
-def determine_background(dialog, bg, move):
-    if dialog == "Regardless of your choice, I'm taking you outside.":
-        return retrieve_background("forest"), True
-    if dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
-        return retrieve_background("village"), False
-    else:
-        return bg, move
+    def location_menu(self):
+        size = width, height = 1600, 900
+        clock = pygame.time.Clock()
+        black = 0, 0, 0
+        progress = self.progress
 
+        self.screen = pygame.display.set_mode(size)
 
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
 
-def in_party(name):
-    global party
-    for member in party:
-        if member.get_name() == name:
-            return True
-    return False
+        color_passive = pygame.Color('black')
+        page = 1
+        self.background = retrieve_background("map")
 
-def controller():
-    global name_global
-    global progress
-    progress = 1
-    while True:
-        option = start_screen()
-        if option == "dialog":
-            in_dialog()
-        elif option == "dialog skip":
-            name_global = "Dan"
-            in_dialog("To Town")
-        elif option == "exit":
-            sys.exit()
+        dungeon_1_rect = pygame.Rect(width-1550,height-350,700,50)
+        dungeon_2_rect = pygame.Rect(width-750,height-350,700,50)
+        dungeon_3_rect = pygame.Rect(width-1550,height-250,700,50)
+        dungeon_4_rect = pygame.Rect(width-750,height-250,700,50)
+        leave_rect = pygame.Rect(width-750,height-150,700,50)
 
-def draw_start_screen(font, color_start, color_town_start, color_options, color_exit):
-    gl_text(font, "BLACK", cgls(1100, width), cgls(600, width), cgls(750, height), cgls(800, height), "Creatures of Habbitt", 1, 1)
-    gl_text(font, color_start, cgls(900, width), cgls(700, width), cgls(500, height), cgls(550, height), "Start", 1, 1)
-    gl_text(font, color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
-    gl_text(font, color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
-    gl_text(font, color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)
+        while True:
+            self.screen.fill(black)
+            self.screen.blit(self.background, (0,0))
+            color_top_left = color_passive
+            color_top_right = color_passive
+            color_bot_left = color_passive
+            color_bot_right = color_passive
+            color_leave = color_passive
+
+            if page == 1:
+                dungeon_1 = "Cave"
+                dungeon_2 = self.process_map(1, "Temple")
+                dungeon_3 = self.process_map(2, "Grassland")
+                dungeon_4 = self.process_map(3, "Forest")
+            else:
+                dungeon_1 = "Error"
+                dungeon_2 = "Error"
+                dungeon_3 = "Error"
+                dungeon_4 = "Error"
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if dungeon_1_rect.collidepoint(event.pos):
+                        return self.load_dungeon("cave")
+                    if dungeon_2_rect.collidepoint(event.pos) and progress > 1:
+                        return self.load_dungeon("Temple")
+                    if dungeon_3_rect.collidepoint(event.pos) and progress > 2:
+                        return self.load_dungeon("Grasslands")
+                    if dungeon_4_rect.collidepoint(event.pos) and progress > 3:
+                        return self.load_dungeon("Forest")
+                    if leave_rect.collidepoint(event.pos):
+                        return "LEFT"
+
+            if dungeon_1_rect.collidepoint(pygame.mouse.get_pos()):
+                color_top_left = pygame.Color(200,0,0)
+            if dungeon_2_rect.collidepoint(pygame.mouse.get_pos()) and progress > 1:
+                color_top_right = pygame.Color(200,0,0) 
+            if dungeon_3_rect.collidepoint(pygame.mouse.get_pos()) and progress > 2:
+                color_bot_left = pygame.Color(200,0,0)
+            if dungeon_4_rect.collidepoint(pygame.mouse.get_pos()) and progress > 3:
+                color_bot_right = pygame.Color(200,0,0)
+            if leave_rect.collidepoint(pygame.mouse.get_pos()):
+                color_leave = pygame.Color(200,0,0)
+
+            pygame.draw.rect(self.screen, color_top_left, dungeon_1_rect)
+            drawText(self.screen, dungeon_1, (255,255,255), dungeon_1_rect, base_font)
+            pygame.draw.rect(self.screen, color_top_right, dungeon_2_rect)
+            drawText(self.screen, dungeon_2, (255,255,255), dungeon_2_rect, base_font)
+            pygame.draw.rect(self.screen, color_bot_left, dungeon_3_rect)
+            drawText(self.screen, dungeon_3, (255,255,255), dungeon_3_rect, base_font)
+            pygame.draw.rect(self.screen, color_bot_right, dungeon_4_rect)
+            drawText(self.screen, dungeon_4, (255,255,255), dungeon_4_rect, base_font)
+            pygame.draw.rect(self.screen, color_leave, leave_rect)
+            drawText(self.screen, "Leave", (255,255,255), leave_rect, base_font)
+
+            pygame.display.update()
+            clock.tick(60)
+
+    def load_dungeon(self, dungeon):
+        self.screen = pygame.display.set_mode((width, height),
+                                              pygame.DOUBLEBUF|pygame.OPENGL)
+        state = match.Game(self.screen).play(party, get_dungeon(dungeon), self.screen)
+        self.screen = self.screen = pygame.display.set_mode((width, height))
+        return state
+
+    def sort_options(self, choice):
+        if choice == "martial_choice":
+            prof = classes.Martial([12,10,10,10,10,10])
+            prof.set_name = name_global 
+            return ["class", prof]
+        elif choice == "bookish_choice":
+            prof = classes.Bookish([10,10,10,12,10,10])
+            prof.set_name(name_global )
+            return ["class", prof]
+
+    def determine_background(self, dialog, bg, move):
+        if dialog == "Regardless of your choice, I'm taking you outside.":
+            return retrieve_background("forest"), True
+        if dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
+            return retrieve_background("villageinn"), False
+        else:
+            return bg, move
+        
+    def process_map(self, pnum, map_name):
+        if self.progress > pnum:
+            return map_name
+        else:
+            return "???"
+
+    def in_party(self, name):
+        global party
+        for member in party:
+            if member.get_name() == name:
+                return True
+        return False
+
+    def controller(self):
+        global name_global
+        global progress
+        progress = 1
+        while True:
+            option = self.start_screen()
+            if option == "dialog":
+                self.in_dialog()
+            elif option == "dialog skip":
+                name_global = "Dan"
+                self.in_dialog("To Town")
+            elif option == "exit":
+                sys.exit()
+
+    def draw_start_screen(font, color_start, color_town_start, color_options, color_exit):
+        gl_text(font, "BLACK", cgls(1100, width), cgls(600, width), cgls(750, height), cgls(800, height), "Creatures of Habbitt", 1, 1)
+        gl_text(font, color_start, cgls(900, width), cgls(700, width), cgls(500, height), cgls(550, height), "Start", 1, 1)
+        gl_text(font, color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
+        gl_text(font, color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
+        gl_text(font, color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)
 
 if __name__ == "__main__":
-    print(os.getcwd())
-    controller()
+    MainGame().controller()
 
 
 

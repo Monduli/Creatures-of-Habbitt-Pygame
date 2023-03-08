@@ -32,6 +32,9 @@ def determine_dialog(target, progress, name="Default"):
         case "nsteen":
             if progress >= 2:
                 return nsteen_neutral
+        case "radish":
+            if progress >= 2:
+                return radish_neutral
 
 dialog_start = [[
     [None, """You find yourself in a dark cave."""],
@@ -83,4 +86,91 @@ inn_dialog_1 = [[
 nsteen_neutral = [[
     ["N. Steen", "Hey, how's it going?"],
     [None, "[You leave him to his devices.]"]
+]]
+
+radish_neutral = [[
+    ["Radish", "You. What do you want, oh high and mighty lord of the manor?"],
+    [None, "[You leave her to her devices.]"]
+]]
+
+intro = [[
+    [None, "The city of [city]. A peaceful place, at the moment."],
+    [None, "Here, animalkind can live its best life under the caring rule of [King and Queen]."],
+    [None, "The King and Queen make plenty of social visits and are well loved across their kingdom as benevolent and relatable leaders."],
+    [None, "However... one day, disaster struck."],
+    [None, "The King and Queen were mysteriously killed while [out doing something]."],
+    [None, "This shocking news rocked the kingdom to its core. How could they live without the guidance of their beloved rulers?"],
+    [None, "But, fret not, citizens of [city], for there is one hope that remains."],
+    [None, "Deep in the recesses of the castle lives a youth with a heart as peaceful and benevolent as their recently departed ancestors."],
+    [None, "The child of [king and queen] awakens one day, unaware of any goings-on..."],
+    [None, "[Character creation]"]
+]]
+
+intro_2 = [[
+    [None, "You get out of bed and stretch your arms. Today seems like a good day to do nothing as usual."],
+    ["Player", "Ah... another day in [city]. Another day of hiding away..."],
+    [None, "As a matter of fact, you have never met the people of [city] yourself. Your parents are content to hide you away to ensure that you stay alive in the case of their unlikely demise."],
+    [None, "Suddenly, there is a rapid knock at on your door. It seems as if the force behind it is likely to break it down."],
+    ["Player", "Yes? Come in, there's no need to ruin my furniture."],
+    [None, "A craggily old fox enters the room with a smirk, practically twirling his moustache with glee."],
+    ["Vizier", "Yes, yes, child. I have come to deliver some news that you may be interested in."],
+    ["Player", "Oh, it's you. You know, speaking of, I've found better company in my furnishings than I have in you."],
+    ["Vizier", "No need for the open hostilities, your highness. Didn't your parents ever teach you better?"],
+    ["Player", "As it stands, they told me not to talk to strangers, and frankly, you look stranger every time I see you."],
+    ["Vizier", "Yes, of course, your snideness. Before you burn the rest of me to a crisp, I have some unfortunate news."],
+    ["Player", "I woke up and you appeared in my room. It appears I've already been met with some... unfortunate news."],
+    ["Vizier", "Would you just let me finish? Your parents are dead."],
+    ["Vizier", "See? Now you've taken all the steam out of my big reveal. I hope you can relish in that fact."],
+    ["Player", "D-d-dead? My parents? W-what happened to them?"],
+    ["Vizier", "Do you think someone like me would know that? It's not like I was there."],
+    ["Player", "Actually, if anyone was there to do that deed, it probably would be you, huh?"],
+    ["Vizier", "This is no time for jokes. We have to get you out of here before the killer finds you."],
+    ["Player", "What? But I've never really left the castle... what life exists for me out there? I need to rule my kingdom."],
+    ["Vizier", "No, no. You can come back and rule the kingdom later once we apprehend the one who did this. In the meantime, you will be delivered somewhere safe instead."],
+    [None, "You feel quite confused, especially on account of just waking up to your dead parents. Before you have time to collect your thoughts, a hulking brute enters the room, taking the door off of its hinges."],
+    ["Vizier", "Don't you worry. I will rule over [city] in your stead. In the meantime, this man will take you somewhere safe."],
+    ["Player", "You'll what?? You are beyond suspici--"],
+    [None, "Before you have a chance to accuse and waggle your finger at the fox, the brutish creature picks you up and starts running."],
+    [None, "After a short time of jostling and confusing, you are deposited out the back door of the castle. The brute laughs at you and runs off, locking the door behind him."],
+    [None, "You crash down to your knees. All of this is beyond overwhelming, especially to someone who has been sheltered their whole life."],
+    ["Player", "I have nothing, and outside of this city I am nothing... what am I supposed to do now?"],
+    [None, "A guard walks up and taps your shoulder with the hilt of his sword."],
+    ["Guard", "Oi. I don't know who you are, but we're on orders to keep someone with your description out."],
+    ["Player", "I am the child of [king and queen]! You must let me back in, this is my city!"],
+    ["Guard", "Yeah, yeah, sure thing, boss. I'm Big Beefington, Captain of the Royal Dawn Brigade."],
+    ["Player", "Oh, uh, nice to meet you, Mr. Beefington."],
+    ["Big Beefington", "Hahahaha! You vagabond fools will fall for anything. Do I need to stick this in you to get you moving?"],
+    [None, "From behind you, leaning on the castle wall, a large bear wearing plate armor meanders into your conversational space."],
+    ["???", "That will be quite enough, ah, Captain Beefington..."],
+    ["Big Beefington", "What? Another one? You don't look like a vagabond, though."],
+    ["???", "My identity is none of your business. I'm here to collect my client. He's been through a bit of a rough patch, you see. Just lost his parents."],
+    ["Big Beefington", "Is that so? Well, get him off of the property. I'm under orders to dispose of him, and I'm not much in the mood to make a kebob out of this pitiful creature."],
+    ["???", "This way, your highness..."],
+    [None, "Having nowhere else to go, you follow the large, cheerful looking bear across a field and onto a road. The two of you climb up a hill and he turns back to look at you."],
+    ["???", "Bear N. Steen, at your service. I'm sure you have questions, but now isn't the time to ask them."],
+    [None, "What are you doing here?"],
+    [None, "Who are you?"]
+], "intro_3", "intro_3"]
+
+intro_3 = [[
+    ["N. Steen", "Didn't I just ask you not to ask any questions? I know I'm a forgetful bear, but that was approximately... ten seconds ago."],
+    ["N. Steen", "That is, unless you lingered unnecessarily staring at me on this hill before your pointless attempt at querying me. I wasn't really paying attention."],
+    [None, "He chuckles to himself as he continues walking, expecting you to follow him."],
+    ["N. Steen", "All you need to know about me is that I come from far away, and I'm here to help you."],
+    ["N. Steen", "I know all about your situation. Your parents just died and you presumably just got kicked out of your own castle by a wily fox with a twirly moustache."],
+    ["N. Steen", "No need to worry about that right now. All solutions will come in due time, my friend!"],
+    [None, "You cross what feels like an endless number of hills until you come upon a single building in a clearing."],
+    ["N. Steen", "Ah, yes. Here we are! Welcome to Habbitt."],
+    [None, "You look around, quite puzzled by the lack of city in front of you. Is Habbitt the name of the region? You've studied many maps in your isolation, but Habbitt was not a name that comes to your mind."],
+    ["Player", "There's... just an inn. Is the inn called 'Habbitt'? Does someone live inside named 'Habbitt'?"],
+    ["N. Steen", "Oh, I can understand your confusion, especially since I just revealed to you that I have a somewhat unreliable memory. But do not worry."],
+    ["N. Steen", "This area is going to become a town named Habbitt. Does that make more sense?"],
+    ["Player", "So, let me get this straight. An armorer bear picked me up from certain doom, chastised me for asking a question, and then took me to a construction site?"],
+    ["N. Steen", "You know as well as me that there's more nuance to this situation than that. Besides, I have a name! I have it for a reason!"],
+    ["Player", "Can I at least stay in this inn until I find somewhere to go?"],
+    ["N. Steen", "Friend, you're thinking too small. You've been raised to be a ruler in the event of your parents' demise, correct?"],
+    [None, "The little wires in your head representing logic finally connect. This bear wants you to do your job!"],
+    ["Player", "You want me to rule over this inn? That seems a little... short-sighted. And tyrannical, to be honest."],
+    ["N. Steen", "I suppose you'll get better at the whole ruling thing after you get some experience."],
+    ["N. Steen", "Additionally, I hate to tell you this, but we don't actually have anyone to run the inn."],
 ]]
