@@ -33,13 +33,27 @@ def retrieve_background(choice):
         background = pygame.transform.scale(background,(1600,900))
     return background
 
-def retrieve_character(choice):
+def retrieve_character(choice, mc):
+    char_name = mc.get_name()
     folder = "images/"
-    if choice == "N. Steen":
-        character = pygame.image.load(folder + "bear.png")
-        #character = pygame.transform.scale(character,(1600,900))
-        return character
+    if choice == "N. Steen" or choice == "Mysterious Bear":
+        return pygame.image.load(folder + "bear.png")
+    if choice == char_name:
+        return pygame.image.load(mc.get_portrait())
+    if choice == "Vizier":
+        return pygame.image.load(folder + "vizier_port.png")
+    if choice == "Guard":
+        return pygame.image.load(folder + "guard.png")
 
+def circle_fade_out(screen, counter_x, counter_y, fade):
+    fade = pygame.transform.scale(fade,(12800 - counter_x,7200 - counter_y))
+    screen.blit(fade, (-5600+counter_x/2, -3150+counter_y/2))
+    pygame.display.flip()
+
+def circle_fade_in(screen, counter_x, counter_y, fade):
+    fade = pygame.transform.scale(fade,(0 + counter_x,0 + counter_y))
+    screen.blit(fade, (7200-counter_x/2, 4050-counter_y/2))
+    pygame.display.flip()
 
 def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False, input=False):
     rect = pygame.Rect(rect)
@@ -114,7 +128,7 @@ def find_and_remove_from_turn(turns, character):
             return turns
 
 
-def add_party_member(name):
+def add_party_member(name, char=None):
     if name == "nsteen":
         nsteen = Paladin([15, 10, 10, 10, 10, 10])
         nsteen.set_name("N. Steen")
@@ -133,6 +147,8 @@ def add_party_member(name):
         grapefart = Ranger([20, 20, 20, 20, 20, 20])
         grapefart.set_name("Grapefart")
         return grapefart
+    if name == "maincharacter":
+        return char
 
 
 def fill_party():

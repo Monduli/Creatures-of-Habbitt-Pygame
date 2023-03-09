@@ -35,6 +35,13 @@ def determine_dialog(target, progress, name="Default"):
         case "radish":
             if progress >= 2:
                 return radish_neutral
+        case "intro_2":
+            temp = intro_2
+            for x in temp:
+                for y in x:
+                    if y[0] == "Player":
+                        y[0] = name
+            return temp
 
 dialog_start = [[
     [None, """You find yourself in a dark cave."""],
@@ -93,7 +100,7 @@ radish_neutral = [[
     [None, "[You leave her to her devices.]"]
 ]]
 
-intro = [[
+intro_1 = [[
     [None, "The city of [city]. A peaceful place, at the moment."],
     [None, "Here, animalkind can live its best life under the caring rule of [King and Queen]."],
     [None, "The King and Queen make plenty of social visits and are well loved across their kingdom as benevolent and relatable leaders."],
@@ -107,6 +114,9 @@ intro = [[
 ]]
 
 intro_2 = [[
+    ["Player", "Test."],
+    ["N. Steen", "Test."],
+    ["Guard", "Test."],
     [None, "You get out of bed and stretch your arms. Today seems like a good day to do nothing as usual."],
     ["Player", "Ah... another day in [city]. Another day of hiding away..."],
     [None, "As a matter of fact, you have never met the people of [city] yourself. Your parents are content to hide you away to ensure that you stay alive in the case of their unlikely demise."],
@@ -131,7 +141,7 @@ intro_2 = [[
     ["Vizier", "Don't you worry. I will rule over [city] in your stead. In the meantime, this man will take you somewhere safe."],
     ["Player", "You'll what?? You are beyond suspici--"],
     [None, "Before you have a chance to accuse and waggle your finger at the fox, the brutish creature picks you up and starts running."],
-    [None, "After a short time of jostling and confusing, you are deposited out the back door of the castle. The brute laughs at you and runs off, locking the door behind him."],
+    ["VIZGONE", "After a short time of jostling and confusing, you are deposited out the back door of the castle. The brute laughs at you and runs off, locking the door behind him."],
     [None, "You crash down to your knees. All of this is beyond overwhelming, especially to someone who has been sheltered their whole life."],
     ["Player", "I have nothing, and outside of this city I am nothing... what am I supposed to do now?"],
     [None, "A guard walks up and taps your shoulder with the hilt of his sword."],
@@ -139,15 +149,15 @@ intro_2 = [[
     ["Player", "I am the child of [king and queen]! You must let me back in, this is my city!"],
     ["Guard", "Yeah, yeah, sure thing, boss. I'm Big Beefington, Captain of the Royal Dawn Brigade."],
     ["Player", "Oh, uh, nice to meet you, Mr. Beefington."],
-    ["Big Beefington", "Hahahaha! You vagabond fools will fall for anything. Do I need to stick this in you to get you moving?"],
+    ["Guard", "Hahahaha! You vagabond fools will fall for anything. Do I need to stick this in you to get you moving?"],
     [None, "From behind you, leaning on the castle wall, a large bear wearing plate armor meanders into your conversational space."],
-    ["???", "That will be quite enough, ah, Captain Beefington..."],
-    ["Big Beefington", "What? Another one? You don't look like a vagabond, though."],
-    ["???", "My identity is none of your business. I'm here to collect my client. He's been through a bit of a rough patch, you see. Just lost his parents."],
-    ["Big Beefington", "Is that so? Well, get him off of the property. I'm under orders to dispose of him, and I'm not much in the mood to make a kebob out of this pitiful creature."],
-    ["???", "This way, your highness..."],
-    [None, "Having nowhere else to go, you follow the large, cheerful looking bear across a field and onto a road. The two of you climb up a hill and he turns back to look at you."],
-    ["???", "Bear N. Steen, at your service. I'm sure you have questions, but now isn't the time to ask them."],
+    ["Mysterious Bear", "That will be quite enough, ah, Captain Beefington..."],
+    ["Guard", "What? Another one? You don't look like a vagabond, though."],
+    ["Mysterious Bear", "My identity is none of your business. I'm here to collect my client. He's been through a bit of a rough patch, you see. Just lost his parents."],
+    ["Guard", "Is that so? Well, get him off of the property. I'm under orders to dispose of him, and I'm not much in the mood to make a kebob out of this pitiful creature."],
+    ["Mysterious Bear", "This way, your highness..."],
+    ["GUARDGONE", "Having nowhere else to go, you follow the large, cheerful looking bear across a field and onto a road. The two of you climb up a hill and he turns back to look at you."],
+    ["Mysterious Bear", "Bear N. Steen, at your service. I'm sure you have questions, but now isn't the time to ask them."],
     [None, "What are you doing here?"],
     [None, "Who are you?"]
 ], "intro_3", "intro_3"]
@@ -173,4 +183,18 @@ intro_3 = [[
     ["Player", "You want me to rule over this inn? That seems a little... short-sighted. And tyrannical, to be honest."],
     ["N. Steen", "I suppose you'll get better at the whole ruling thing after you get some experience."],
     ["N. Steen", "Additionally, I hate to tell you this, but we don't actually have anyone to run the inn."],
+    [None, "You stare blankly back at the bear. Nobody running the inn? What kind of city has only one abandoned building?"],
+    ["Player", "What kind of city has only one abandoned building?"],
+    [None, "N. Steen scoffs at you."],
+    ["N. Steen", "Now now, you can't possibly think I don't have a plan here. I just built this inn myself with some help. We just have to find someone to run it."],
+    ["Player", "Do you know any innkeepers? Surely where you come from, there must have been someone. What about the help you had?"],
+    ["N. Steen", "Ah, well, actually, they aren't much of an innkeeper. They gave me a hard time about having to come here and build it, too."],
+    ["N. Steen", "But, fear not, I have some reports of an adventurous tavernkeeper who gave up their innkeeping job to be... an adventurer, as it sounds."],
+    ["Player", "So your plan is to tear them away from their new adventurous life and thrust them back into the fold?"],
+    ["N. Steen", "I don't think I've ever heard someone refer to innkeeping as 'the fold'. How exciting do you think innkeeping is?"],
+    ["Player", "Look, Bear, I've been cooped up in a castle for a long time. I don't think I've ever even met an innkeeper."],
+    ["N. Steen", "Well, rest assured that I will teach you what it takes to find this innkeeper, and I will help you with this new town."],
+    ["N. Steen", "Follow me. I know where they are."],
+    [None, "He wanders off in a direction, away from the inn. You quickly step into the inn, drop off what belongings you have, and follow the bear."],
+    [None, "dungeon_1"]
 ]]

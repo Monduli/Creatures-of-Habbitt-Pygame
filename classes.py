@@ -122,6 +122,19 @@ class Character:
                   " WIS: " + str(self.wisdom) +
                    " CHA: " + str(self.charisma))
 
+class MainCharacter(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.hp = 20
+        self.current_hp = 20
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["str", "con", "dex", "wis", "cha", "mag"], stats)
+
+    def get_magic(self):
+        return self.get_mag()
+
 
 class Martial(Character):
     def __init__(self, stats) -> None:
@@ -136,12 +149,13 @@ class Martial(Character):
     def get_magic(self):
         return self.get_mag()
 
-class Paladin(Character):
+class BearKnight(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
         self.hp = 50
         self.current_hp = 50
+        self.portrait = "images/bear.png"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["cha", "str", "con", "dex", "wis", "mag"], stats)
