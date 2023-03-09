@@ -114,9 +114,6 @@ intro_1 = [[
 ]]
 
 intro_2 = [[
-    ["Player", "Test."],
-    ["N. Steen", "Test."],
-    ["Guard", "Test."],
     [None, "You get out of bed and stretch your arms. Today seems like a good day to do nothing as usual."],
     ["Player", "Ah... another day in [city]. Another day of hiding away..."],
     [None, "As a matter of fact, you have never met the people of [city] yourself. Your parents are content to hide you away to ensure that you stay alive in the case of their unlikely demise."],

@@ -148,15 +148,15 @@ class MainGame():
             if slots[1] != 0:
                 character = retrieve_character(slots[1], self.main_character)
                 if slots[1] == "N. Steen":
-                    self.screen.blit(character, (width/2-200, 0))
+                    self.screen.blit(character, (width/2-300, 0))
                 else:
-                    self.screen.blit(character, (width/2-200, 0))
+                    self.screen.blit(character, (width/2-150, 0))
             if slots[2] != 0:
                 character = retrieve_character(slots[2], self.main_character)
-                if slots[1] == "N. Steen":
-                    self.screen.blit(character, (width - (width/2/2), 0))
+                if slots[2] == "N. Steen":
+                    self.screen.blit(character, (width - (width/2/2)-300, 0))
                 else:
-                    self.screen.blit(character, (width - (width/2/2)-550, 0))
+                    self.screen.blit(character, (width - (width/2/2), 0))
             if slots[1] != 0 and slots[2] == 0:
                 slots[2] = slots[1]
                 slots[1] = 0
