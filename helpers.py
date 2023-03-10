@@ -12,6 +12,7 @@ width = 1600
 height = 900
 
 def retrieve_background(choice):
+    background = None
     folder = "images/"
     if choice == "cave":
         background = pygame.image.load(folder + "cave.png")
@@ -28,10 +29,15 @@ def retrieve_background(choice):
     elif choice == "villageinn":
         background = pygame.image.load(folder + "villagemenuinn.png")
         background = pygame.transform.scale(background,(1600,900))
+    elif choice == "villageinnnight":
+        background = pygame.image.load(folder + "villagemenuinnnight.png")
+        background = pygame.transform.scale(background,(1600,900))
     elif choice == "tavern":
         background = pygame.image.load(folder + "tavern.png")
         background = pygame.transform.scale(background,(1600,900))
-    return background
+    if background != None:
+        return background
+    return Exception()
 
 def retrieve_character(choice, mc):
     char_name = mc.get_name()
@@ -44,6 +50,21 @@ def retrieve_character(choice, mc):
         return pygame.image.load(folder + "vizier_port.png")
     if choice == "Guard":
         return pygame.image.load(folder + "guard.png")
+    
+def remove_portrait(name, slots):
+    if name == "VIZGONE":
+        for x in range(0,3):
+            if slots[x] == "Vizier":
+                slots[x] = 0
+    elif name == "GUARDGONE":
+        for x in range(0,3):
+            if slots[x] == "Guard":
+                slots[x] = 0
+    elif name == "MYSTBEARGONE":
+        for x in range(0,3):
+            if slots[x] == "Mysterious Bear":
+                slots[x] = 0
+    return slots
 
 def circle_fade_out(screen, counter_x, counter_y, fade):
     fade = pygame.transform.scale(fade,(12800 - counter_x,7200 - counter_y))
@@ -152,7 +173,7 @@ def add_party_member(name, char=None):
 
 
 def fill_party():
-    nsteen = Paladin([15, 10, 10, 10, 10, 10])
+    nsteen = BearKnight([15, 10, 10, 10, 10, 10])
     nsteen.set_name("N. Steen")
     radish = Bookish([15, 10, 10, 10, 10, 10])
     radish.set_name("Radish")
@@ -431,16 +452,19 @@ def drawTextWrap(rect_color, font, surface, text, color, x, y, x_adjust, y_adjus
         level = 0
     return text
 
-def blit_bg(i):
-    background = pygame.image.load("images/cave.png").convert_alpha()
+def blit_bg(i, bg="cave.png", move=True):
+    background = pygame.image.load("images/" + bg).convert_alpha()
     background = pygame.transform.scale(background,(1600,900))
-    blit_image([width, height], width+i, 0, background, 1, 1, 1)
-    blit_image([width, height], i, 0, background, 1, 1, 1)
-    if (i == -width):
+    if move == True:
         blit_image([width, height], width+i, 0, background, 1, 1, 1)
-        i=0
-    i-=1
-    return i
+        blit_image([width, height], i, 0, background, 1, 1, 1)
+        if (i == -width):
+            blit_image([width, height], width+i, 0, background, 1, 1, 1)
+            i=0
+        i-=1
+        return i
+    else: blit_image([width, height], 0, 0, background, 1, 1, 1)
+
 
 def cgls(value, length):
     return ((value/length) * 2) - 1

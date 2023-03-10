@@ -109,11 +109,13 @@ class MainGame():
         self.background = retrieve_background("cave")
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-        self.user_text = dia.intro_1
+        self.user_text = dia.intro_1_quick
 
         dialog_rect = pygame.Rect(width-1550,height-250,1500,200)
         name_rect = pygame.Rect(width-1550, height-320, 300, 50)
         color_passive = pygame.Color('black')
+
+        remove = ["VIZGONE", "GUARDGONE", "MYSTBEARGONE"]
 
         i = 0
         global progress
@@ -129,7 +131,7 @@ class MainGame():
             self.user_text = [[[None, "To Town"]]]
 
         while True:            
-            self.determine_dialog()
+            self.pick_dialog()
             self.screen.fill(black)
             
             if self.background_move == True:
@@ -142,18 +144,20 @@ class MainGame():
             else:
                 self.screen.blit(self.background, (0, 0))
                 
+            if slots != [0,0,0]:
+                print(slots)    
             if slots[0] != 0:
                 character = retrieve_character(slots[0], self.main_character)
                 self.screen.blit(character, (width-1500, 100))
             if slots[1] != 0:
                 character = retrieve_character(slots[1], self.main_character)
-                if slots[1] == "N. Steen":
+                if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
                     self.screen.blit(character, (width/2-300, 0))
                 else:
                     self.screen.blit(character, (width/2-150, 0))
             if slots[2] != 0:
                 character = retrieve_character(slots[2], self.main_character)
-                if slots[2] == "N. Steen":
+                if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
                     self.screen.blit(character, (width - (width/2/2)-300, 0))
                 else:
                     self.screen.blit(character, (width - (width/2/2), 0))
@@ -163,14 +167,8 @@ class MainGame():
 
             speaking_name = self.user_text[0][self.advance][0]
             if speaking_name != None:
-                if speaking_name == "VIZGONE":
-                    for x in range(0,3):
-                        if slots[x] == "Vizier":
-                            slots[x] = 0
-                elif speaking_name == "GUARDGONE":
-                    for x in range(0,3):
-                        if slots[x] == "Guard":
-                            slots[x] = 0
+                if speaking_name in remove:
+                    slots = remove_portrait(speaking_name, slots)
                 else:
                     pygame.draw.rect(self.screen, color_passive, name_rect)
                     drawText(self.screen, speaking_name, (255,255,255), name_rect, base_font, center=True)
@@ -198,7 +196,7 @@ class MainGame():
                             self.advance += 1
                             fade_out = 1
                         else:
-                            self.determine_dialog()
+                            self.pick_dialog()
 
             pygame.display.update()
             clock.tick(60)
@@ -249,10 +247,9 @@ class MainGame():
             drawText(self.screen, text_right, (255,255,255), right_rect, base_font)
 
             pygame.display.update()
-            clock.tick(60)
-            
+            clock.tick(60)       
 
-    def determine_dialog(self):
+    def pick_dialog(self):
         self.background, self.background_move = self.determine_background(self.user_text[0][self.advance][1], self.background, self.background_move)
         if self.exit_next == 1:
             sys.exit()
@@ -262,6 +259,9 @@ class MainGame():
             self.user_text = dia.determine_dialog("intro_2", self.progress, self.char_name)
             self.advance = 0
             return
+        elif self.user_text[0][self.advance][1] == "[Dungeon]":
+            state = self.load_dungeon(self.user_text[1])
+            self.user_text = process_state("cave_dungeon", state)
         elif self.user_text[0][self.advance][1] == "[Bear N. Steen has joined your party.]":
             self.party.append(add_party_member("nsteen"))
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
@@ -286,7 +286,7 @@ class MainGame():
                     self.advance = 0
                 elif choice == "inn":
                     choice = self.inn_menu(self.screen, progress, retrieve_background("tavern"))
-                    self.user_text = dia.determine_dialog(choice, progress)
+                    self.user_text = dia.determine_dialog(choice, progress, self.char_name)
                     self.advance = 0
                 elif choice == "leave":
                     if len(party) > 0:
@@ -301,12 +301,16 @@ class MainGame():
                         self.advance = 0
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
             choice = self.inn_menu(self.screen, progress, self.background)
-            self.user_text = dia.determine_dialog(choice, progress)
+            self.user_text = dia.determine_dialog(choice, progress, self.char_name)
             self.advance = 0
-        elif self.user_text[0][self.advance][1] == "Please select an option.":
-            choice = self.dialog_options(self.screen, self.user_text[0][self.advance+1][1], self.user_text[0][self.advance+2][1], self.user_text[1], self.user_text[2])
+        elif self.user_text[0][self.advance][1] == "SELECTION":
+            left_option = self.user_text[0][self.advance+1][1]
+            right_option = self.user_text[0][self.advance+2][1]
+            left_target = self.user_text[1]
+            right_target = self.user_text[2]
+            choice = self.dialog_options(self.screen, left_option, right_option, left_target, right_target)
             proceed = self.sort_options(choice)
-            self.user_text = dia.determine_dialog(choice, progress)
+            self.user_text = dia.determine_dialog(choice, progress, self.char_name)
             self.advance = 0
         elif self.user_text[0][self.advance][1] == "Please type into the box.":
             array = self.input_box(self.user_text[1], self.background)
@@ -822,6 +826,104 @@ class MainGame():
             # 60 frames should be passed.
             clock.tick(60)
 
+    def dungeon_map(self):
+        # show party member 1 portrait at the bottom corner with dialog box
+        #### SETUP ####
+        size = width, height = 1600, 900
+        speed = [3, 0]
+        black = 0, 0, 0
+
+        clock = pygame.time.Clock()
+
+        self.screen = pygame.display.set_mode(size)
+
+        self.background = retrieve_background("cave")
+
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+        self.user_text = [["N. Steen", "Where should we go?"]]
+
+        dialog_rect = pygame.Rect(width-1350,height-250,1300,200)
+        name_rect = pygame.Rect(width-1350, height-320, 300, 50)
+        speaker_rect = pygame.Rect(width-1550,height-250,200,200)
+        color_passive = pygame.Color('black')
+
+        i = 0
+        global progress
+        global party
+
+        while True:            
+            self.screen.fill(black)
+            
+            if self.background_move == True:
+                self.screen.blit(self.background, (width+i,0))
+                self.screen.blit(self.background, (i, 0))
+                if (i == -width):
+                    self.screen.blit(self.background, (width+i, 0))
+                    i=0
+                i-=1
+            else:
+                self.screen.blit(self.background, (0, 0))
+                
+            if slots != [0,0,0]:
+                print(slots)    
+            if slots[0] != 0:
+                character = retrieve_character(slots[0], self.main_character)
+                self.screen.blit(character, (width-1500, 100))
+            if slots[1] != 0:
+                character = retrieve_character(slots[1], self.main_character)
+                if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
+                    self.screen.blit(character, (width/2-300, 0))
+                else:
+                    self.screen.blit(character, (width/2-150, 0))
+            if slots[2] != 0:
+                character = retrieve_character(slots[2], self.main_character)
+                if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
+                    self.screen.blit(character, (width - (width/2/2)-300, 0))
+                else:
+                    self.screen.blit(character, (width - (width/2/2), 0))
+            if slots[1] != 0 and slots[2] == 0:
+                slots[2] = slots[1]
+                slots[1] = 0
+
+            speaking_name = self.user_text[0][self.advance][0]
+            if speaking_name != None:
+                if speaking_name in remove:
+                    slots = remove_portrait(speaking_name, slots)
+                else:
+                    pygame.draw.rect(self.screen, color_passive, name_rect)
+                    drawText(self.screen, speaking_name, (255,255,255), name_rect, base_font, center=True)
+                    # Arg 1 is the name of the character to be portraited, Arg 2 is always main character
+                    character = retrieve_character(speaking_name, self.main_character)
+                    # slots[0] is left, slots[1] is middle, slots[2] is right
+                    if slots[0] == 0 and slots[1] != speaking_name and slots[2] != speaking_name:
+                        slots[0] = speaking_name
+                    elif slots[2] == 0 and slots[0] != speaking_name and slots[1] != speaking_name:
+                        slots[2] = speaking_name
+                    elif slots[1] == 0 and slots[0] != speaking_name and slots[2] != speaking_name:
+                        slots[1] = speaking_name
+
+            pygame.draw.rect(self.screen, color_passive, dialog_rect)
+            #text_surface = base_font.render(self.user_text, True, (255,255,255))
+            #self.screen.blit(text_surface, (input_rect.x+20, input_rect.y+20))
+            #input_rect.w = max(1500, text_surface.get_width()+10)
+            drawText(self.screen, self.user_text[0][self.advance][1], (255,255,255), dialog_rect, base_font)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if dialog_rect.collidepoint(event.pos):
+                        if 0 <= self.advance+1 < len(self.user_text[0]):
+                            self.advance += 1
+                            fade_out = 1
+                        else:
+                            self.pick_dialog()
+
+            pygame.display.update()
+            clock.tick(60)
+        # draw map which is generated based on the dungeon
+        # map has boxes and arrows going between them
+        # only render the boxes that the player has progressed to
+
     def load_dungeon(self, dungeon):
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
@@ -864,8 +966,10 @@ class MainGame():
     def determine_background(self, dialog, bg, move):
         if dialog == "Regardless of your choice, I'm taking you outside.":
             return retrieve_background("forest"), True
-        if dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
+        elif dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
             return retrieve_background("villageinn"), False
+        elif dialog == "Ah, yes. Here we are! Welcome to Habbitt.":
+            return retrieve_background("villageinnnight"), True
         else:
             return bg, move
         

@@ -42,6 +42,18 @@ def determine_dialog(target, progress, name="Default"):
                     if y[0] == "Player":
                         y[0] = name
             return temp
+        case "intro_3":
+            temp = intro_3
+            for x in temp:
+                for y in x:
+                    if y[0] == "Player":
+                        y[0] = name
+            return temp
+
+def process_state(dungeon, state):
+    if dungeon == "cave_dungeon":
+        if state == "WIN":
+            return recruit_keeper
 
 dialog_start = [[
     [None, """You find yourself in a dark cave."""],
@@ -53,7 +65,7 @@ dialog_start_2 = [[
     [None, "Your name is name."],
     [None, "Hello name!"],
     [None, "Let's get you out of this cave."],
-    [None, "Please select an option."],
+    [None, "SELECTION"],
     [None, "Exit Cave"],
     [None, "Don't Exit Cave"]
 ], "cave_exit", "cave_exit"]
@@ -65,7 +77,7 @@ outside_cave_1 = [[
     [None, "Did you really think breathing cave air for all this time was good for you?"],
     [None, "If you thought that, you would be completely wrong."],
     [None, "You feel the urge to think really hard about what kind of person you built yourself into."],
-    [None, "Please select an option."],
+    [None, "SELECTION"],
     [None, "Martial (Physical, Melee)"],
     [None, "Bookish (Magic, Ranged)"]
 ], "martial_choice", "bookish_choice"]
@@ -113,6 +125,10 @@ intro_1 = [[
     [None, "[Character creation]"]
 ]]
 
+intro_1_quick = [[
+    [None, "[Character creation]"]
+]]
+
 intro_2 = [[
     [None, "You get out of bed and stretch your arms. Today seems like a good day to do nothing as usual."],
     ["Player", "Ah... another day in [city]. Another day of hiding away..."],
@@ -155,11 +171,13 @@ intro_2 = [[
     ["Mysterious Bear", "This way, your highness..."],
     ["GUARDGONE", "Having nowhere else to go, you follow the large, cheerful looking bear across a field and onto a road. The two of you climb up a hill and he turns back to look at you."],
     ["Mysterious Bear", "Bear N. Steen, at your service. I'm sure you have questions, but now isn't the time to ask them."],
+    [None, "SELECTION"],
     [None, "What are you doing here?"],
     [None, "Who are you?"]
 ], "intro_3", "intro_3"]
 
 intro_3 = [[
+    ["MYSTBEARGONE", "N. Steen walks away and puts his head in his hands, then shakes it around. He wanders back towards you."],
     ["N. Steen", "Didn't I just ask you not to ask any questions? I know I'm a forgetful bear, but that was approximately... ten seconds ago."],
     ["N. Steen", "That is, unless you lingered unnecessarily staring at me on this hill before your pointless attempt at querying me. I wasn't really paying attention."],
     [None, "He chuckles to himself as he continues walking, expecting you to follow him."],
@@ -172,7 +190,7 @@ intro_3 = [[
     ["Player", "There's... just an inn. Is the inn called 'Habbitt'? Does someone live inside named 'Habbitt'?"],
     ["N. Steen", "Oh, I can understand your confusion, especially since I just revealed to you that I have a somewhat unreliable memory. But do not worry."],
     ["N. Steen", "This area is going to become a town named Habbitt. Does that make more sense?"],
-    ["Player", "So, let me get this straight. An armorer bear picked me up from certain doom, chastised me for asking a question, and then took me to a construction site?"],
+    ["Player", "So, let me get this straight. An armored bear picked me up from certain doom, chastised me for asking a question, and then took me to a construction site?"],
     ["N. Steen", "You know as well as me that there's more nuance to this situation than that. Besides, I have a name! I have it for a reason!"],
     ["Player", "Can I at least stay in this inn until I find somewhere to go?"],
     ["N. Steen", "Friend, you're thinking too small. You've been raised to be a ruler in the event of your parents' demise, correct?"],
@@ -193,5 +211,59 @@ intro_3 = [[
     ["N. Steen", "Well, rest assured that I will teach you what it takes to find this innkeeper, and I will help you with this new town."],
     ["N. Steen", "Follow me. I know where they are."],
     [None, "He wanders off in a direction, away from the inn. You quickly step into the inn, drop off what belongings you have, and follow the bear."],
-    [None, "dungeon_1"]
-]]
+    [None, "You eventually come upon the entrance to a dangerous looking cave."],
+    ["N. Steen", "Let me guess. They never taught you how to fight in the castle?"],
+    [None, "You shake your head dejectedly."],
+    ["Player", "Not a whole lot to fight in a castle that is constantly cleaned by attendants. I'm guessing you know how to?"],
+    ["N. Steen", "Of course."],
+    [None, "N. Steen tosses you a stick."],
+    ["N. Steen", "Just wave this around and we'll see what happens."],
+    ["Player", "Wave it around? What, do you think some fireballs are going to come out of this piece of wood?"],
+    ["N. Steen", "Us sophisticated folk call that a stick, friend."],
+    ["Player", "That doesn't make it any better!"],
+    ["N. Steen", "If anything threatening comes near you, just whack it with the stick and hopefully it'll go away."],
+    ["Player", "Go away? You mean we aren't going to kill anything?"],
+    ["N. Steen", "No. Why would we? These creatures have lives of their own. We're just persuading them to leave us alone."],
+    ["Player", "Why are they going to bother us in the first place?"],
+    ["N. Steen", "Wouldn't you want to defend your home? We are intruding on their domicile."],
+    ["Player", "That is... a resoundingly good point. I suppose this stick will have to do."],
+    ["N. Steen", "Oh, and I'll have you lead the way. It should be good practice for leading."],
+    ["Player", "What? I've never navigated a dungeon before."],
+    ["N. Steen", "A dungeon? You've been playing too many fantasy games. Who calls a cave a dungeon?"],
+    ["N. Steen", "Just imagine it this way. The cave is made up of sections. Look around if you'd like, and then move on to the next section."],
+    ["N. Steen", "I'll be with you in case any creatures need persuading. Maybe we'll find something fun in here other than our new friend."],
+    ["Player", "Fun? What kind of demented bear are you?"],
+    ["N. Steen", "Now, now, no need for name calling. I mean, maybe we'll find you a better weapon than a stick."],
+    ["N. Steen", "Or, even better, we'll find some materials for making you a better weapon."],
+    ["N. Steen", "Although, we don't have a blacksmith, so that might have to wait. Better collect stuff just in case."],
+    [None, "You nod and walk forward into the dark cave."],
+    [None, "[Dungeon]"]
+], "cave", "recruit_keeper"]
+
+intro_cave_loss = [[
+    ["Player", "Ouch..."],
+    ["N. Steen", "Well, that could've gone better."],
+    ["N. Steen", "Turns out we were persuaded to leave instead of them."],
+    ["N. Steen", "Oh well. Muster your courage, we will try again. Here we go!"],
+    [None, "[Dungeon]"]
+], "cave", "recruit_keeper"]
+
+recruit_keeper = [[
+    [None, "You appear to be in the deepest part of the cave."],
+    ["Player", "Well, looks like we're here."],
+    ["N. Steen", "Look! There's someone in a cage over there!"],
+    [None, "There is a figure collapsed in a cage in the far corner of the room. You approach the cage carefully."],
+    ["Player", "It's a good thing we were here to save them when we... huh?"],
+    [None, "Upon closer inspection, the cage is unlocked and the door is slightly ajar."],
+    ["N. Steen", "What's the matter? ... Huh. The cage is not locked. This person is not a captive."],
+    [None, "Your bear companion squints at the figure, pulls out a drawing on a scroll, then returns the drawing to his possessions pocket."],
+    ["N. Steen", "This appears to be who we are searching for, and it appears that they are fast asleep."],
+    ["Player", "Should we wake them up?"],
+    ["N. Steen", "No, we should leave them here after coming all this way. After all, they appear to require rest."],
+    [None, "N. Steen pinches the bridge of his snout."],
+    ["N. Steen", "Yes, of course we should wake them up."],
+    ["Player", "No need to be so snappy with me, it was just a question."],
+    ["N. Steen", "Yes, yes, no stupid questions."],
+    [None, "He pulls a tiny gong out of his posessions pocket and hits it with a tiny mallet."],
+    [None, "END DIALOG"]
+    ]]
