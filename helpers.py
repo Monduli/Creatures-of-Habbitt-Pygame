@@ -130,7 +130,7 @@ def find_and_remove_from_turn(turns, character):
 
 def add_party_member(name, char=None):
     if name == "nsteen":
-        nsteen = Paladin([15, 10, 10, 10, 10, 10])
+        nsteen = BearKnight([15, 10, 10, 10, 10, 10])
         nsteen.set_name("N. Steen")
         #rabby = Bookish([10,10,10,15,10,10])
         #rabby.set_name("Radish")
@@ -152,7 +152,7 @@ def add_party_member(name, char=None):
 
 
 def fill_party():
-    nsteen = Paladin([15, 10, 10, 10, 10, 10])
+    nsteen = BearKnight([15, 10, 10, 10, 10, 10])
     nsteen.set_name("N. Steen")
     radish = Bookish([15, 10, 10, 10, 10, 10])
     radish.set_name("Radish")
