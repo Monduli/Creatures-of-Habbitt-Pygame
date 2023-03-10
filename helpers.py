@@ -224,6 +224,10 @@ def get_portrait(character):
         portrait = pygame.image.load("images/gabble.png")
         portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
+    if character in ["dogdude"]:
+        portrait = pygame.image.load("images/dogdude.png")
+        portrait = pygame.transform.scale(portrait,(60,120))
+        return portrait
     
 def get_portrait_2(character):
     if character == "N. Steen":
