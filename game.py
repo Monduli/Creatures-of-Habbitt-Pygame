@@ -4,6 +4,7 @@ import classes
 from helpers import *
 import match
 from classes import *
+import crawler
 
 class MainGame():
     def __init__(self):
@@ -255,14 +256,16 @@ class MainGame():
             sys.exit()
         elif self.user_text[0][self.advance][1] == "[Character creation]":
             self.main_character = self.character_creator()
-            self.party.append(add_party_member(self.main_character))
-            self.user_text = dia.determine_dialog("intro_2", self.progress, self.char_name)
+            print(self.main_character)
+            self.party.append(self.main_character)
+            self.user_text = dia.determine_dialog(self.user_text[1], self.progress, self.char_name)
             self.advance = 0
             return
-        elif self.user_text[0][self.advance][1] == "[Dungeon]":
+        elif self.user_text[0][self.advance][1] == "[Dungeon CAVE]":
+            self.party.append(add_party_member("nsteen"))
+            print(self.party)
             state = self.load_dungeon(self.user_text[1])
-            pygame.quit()
-            self.user_text = self.process_state("cave_dungeon", state)
+            self.user_text = dia.process_state("cave_dungeon", state)
         elif self.user_text[0][self.advance][1] == "[Bear N. Steen has joined your party.]":
             self.party.append(add_party_member("nsteen"))
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
@@ -747,6 +750,8 @@ class MainGame():
             self.screen.blit(self.background, (width+i,0))
             self.screen.blit(self.background, (i, 0))
 
+            if len(input_text) > 16:
+                input_text = input_text[:14]
             if (i == -width):
                 self.screen.blit(self.background, (width+i, 0))
                 i=0
@@ -798,7 +803,8 @@ class MainGame():
                     if event.key == pygame.K_RETURN:
                         char = MainCharacter([10,10,10,10,10,10])
                         char.set_name(input_text[:-1])
-                        char.set_portrait(poss_images[curr_image] + "_port.png")
+                        char.set_portrait(poss_images[curr_image] + "_port_100.png")
+                        char.set_portrait_dungeon(poss_images[curr_image] + ".png")
                         self.char_name = input_text[:-1]
                         return char
         
@@ -842,6 +848,7 @@ class MainGame():
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
         self.user_text = [["N. Steen", "Where should we go?"]]
+        remove = ["VIZGONE", "GUARDGONE", "MYSTBEARGONE"]
 
         dialog_rect = pygame.Rect(width-1350,height-250,1300,200)
         name_rect = pygame.Rect(width-1350, height-320, 300, 50)
@@ -864,9 +871,7 @@ class MainGame():
                 i-=1
             else:
                 self.screen.blit(self.background, (0, 0))
-                
-            if slots != [0,0,0]:
-                print(slots)    
+                  
             if slots[0] != 0:
                 character = retrieve_character(slots[0], self.main_character)
                 self.screen.blit(character, (width-1500, 100))
@@ -928,7 +933,7 @@ class MainGame():
     def load_dungeon(self, dungeon):
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
-        state = match.Game(self.screen).play(party, get_dungeon(dungeon), self.screen)
+        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon))
         self.screen = pygame.display.set_mode((width, height))
         return state
 

@@ -436,8 +436,10 @@ class Game(object):
 
             # TODO: Both are true but fade does not start!!
             if self.state == "WAITING" and now - wait_timer > 4000:
+                print("In")
                 self.start_fade = 1
                 self.counter_x = 0
+                self.state = "WAITING 2"
 
             self.draw_gl_scene(party_current)
 
@@ -1006,31 +1008,31 @@ class Game(object):
         
         # blit images - NEED TO SHRINK PORTRAITS TO 100x100
         if len(party) > 0:    
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, pygame.image.load(get_portrait_2(party[0].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, party[0].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 1:    
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, pygame.image.load(get_portrait_2(party[1].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, pygame.image.load(get_portrait_2(party[2].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, party[2].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 3:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, pygame.image.load(get_portrait_2(party[3].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, party[3].get_portrait().convert_alpha(), 1, 1, 1)
 
         if len(enemy) > 0:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-386,height-857, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
         if len(enemy) > 1:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-482,height-857, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
         if len(enemy) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)        
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)   
+
+        self.update_box()     
 
         if self.end_fade == 1:
             blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-            print(self.counter_x)
             self.counter_x += 100
             if self.counter_x >= 1700:
                 self.end_fade = 0
 
         if self.start_fade == 1:
             blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-            print(self.counter_x)
             if self.counter_x < 200:
                 self.counter_x += 50
             elif self.counter_x < 500:
@@ -1040,8 +1042,6 @@ class Game(object):
             if self.counter_x >= 1700:
                 self.start_fade = 0
                 self.return_to_crawl = 1
-
-        self.update_box()
 
         pygame.display.flip()
 

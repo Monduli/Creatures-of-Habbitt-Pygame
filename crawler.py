@@ -17,7 +17,7 @@ class Creature():
         self.rect = pygame.Rect(self.x, self.y, 96, 96)
 
     def draw(self):
-        blit_image([width, height], self.x, self.y, self.image, 1, 1, 1)
+        blit_image([width, height], self.x, self.y, self.image.convert_alpha(), 1, 1, 1)
 
     def get_rect(self):
         return self.rect
@@ -54,18 +54,18 @@ class Crawler():
         goblin = Enemy("Goblin", 10, 10, 10, 10, 10, 10)
         self.enemy = EnemyMap(self.screen, goblin, width/2, height/2, get_portrait("Goblin_Stand"))
         character = BearKnight([10,10,10,10,10,10])
-        self.player = PlayerMap(character, self.screen, 740, 125, get_portrait("dogdude"))
+        self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon())
 
     def quit(self):
         pygame.quit()
         sys.exit()
 
     def play(self, party, dungeon):
+        self.party = party
         self.start()
         #gluPerspective(45, (1600/900), 0.1, 50.0)
         #glTranslatef(0.0, 0.0, -5)
         # Set all party member HPs to max before beginning
-        self.party = party
 
         player_rect = self.player.get_rect()
         enemy_rect = self.enemy.get_rect()
@@ -142,7 +142,7 @@ class Crawler():
                     #    return "RAN"
                     if event.button == 1:
                        pos = pygame.mouse.get_pos()
-                       for x in range(0, 4):
+                       for x in range(0, len(self.party)):
                         if self.party_ports[x].collidepoint(pos):
                             is_expanded = self.check_for_expand(x)
                             if is_expanded == False:
@@ -226,8 +226,8 @@ class Crawler():
         #glTranslatef(0.0,0.0,-10.0)
 
         self.blit_bg_camera(dungeon_rooms[current_room], False)
-        self.player.draw()
         self.enemy.draw()
+        self.player.draw()
         top = cgls(height-100, height)
         bot = cgls(height-10, height)
         nums = [[width-400, width-310, width-220, width-130],[height-100]]
@@ -245,30 +245,37 @@ class Crawler():
 
         glEnd()
         
+        self.party_ports = []
         port1_rect = pygame.Rect(nums[0][0],height-850,90,90)
-        port2_rect = pygame.Rect(nums[0][1],height-850,90,90)
-        port3_rect = pygame.Rect(nums[0][2],height-850,90,90)
-        port4_rect = pygame.Rect(nums[0][3],height-850,90,90)
-        self.party_ports = [port1_rect, port2_rect, port3_rect, port4_rect]
+        self.party_ports.append(port1_rect)
+        if len(self.party) > 1:
+            port2_rect = pygame.Rect(nums[0][1],height-850,90,90)
+            self.party_ports.append(port2_rect)
+        if len(self.party) > 2:
+            port3_rect = pygame.Rect(nums[0][2],height-850,90,90)
+            self.party_ports.append(port3_rect)
+        if len(self.party) > 3:
+            port4_rect = pygame.Rect(nums[0][3],height-850,90,90)
+            self.party_ports.append(port4_rect)
 
         shape_color("BLACK")
         if len(party) > 0:    
-            blit_image([width, height], width-400,height-100, pygame.image.load(get_portrait_2(party[0].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([width, height], width-400,height-100, party[0].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 1:    
-            blit_image([width, height], width-310,height-100, pygame.image.load(get_portrait_2(party[1].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([width, height], width-310,height-100, party[1].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 2:
-            blit_image([width, height], width-220,height-100, pygame.image.load(get_portrait_2(party[2].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([width, height], width-220,height-100, party[2].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 3:
-            blit_image([width, height], width-130,height-100, pygame.image.load(get_portrait_2(party[3].get_name())).convert_alpha(), 1, 1, 1)
+            blit_image([width, height], width-130,height-100, party[3].get_portrait().convert_alpha(), 1, 1, 1)
 
         if self.expand == 0:
-            self.write_details_gl(0, nums)
+            self.write_details_gl(0, nums, party)
         if self.expand == 1:
-            self.write_details_gl(1, nums)
+            self.write_details_gl(1, nums, party)
         if self.expand == 2:
-            self.write_details_gl(2, nums)
+            self.write_details_gl(2, nums, party)
         if self.expand == 3:
-            self.write_details_gl(3, nums)
+            self.write_details_gl(3, nums, party)
 
         gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
 
@@ -302,7 +309,7 @@ class Crawler():
         background = pygame.transform.scale(background,(1600,900))
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
-    def write_details_gl(self, party_member, nums):
+    def write_details_gl(self, party_member, nums, party):
         gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-210, height), cgls(height-160, height), self.get_actual_name(party[party_member].get_name()), 1, 1)
         gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-270, height), cgls(height-220, height), str(party[party_member].get_role()), 1, 1)
         gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-330, height), cgls(height-280, height), "HP: " + str(party[party_member].get_hp()) + "/" + str(party[party_member].get_hp()), 1, 1)
@@ -334,6 +341,8 @@ class Crawler():
             return "Cinnamon Bun"
         if name == "Grapefart":
             return "Gil Grapefart"
+        else:
+            return name
         
     def fade(self, counter_x, counter_y, fade_dir):
         if fade_dir == 1:

@@ -175,12 +175,16 @@ def add_party_member(name, char=None):
 def fill_party():
     nsteen = BearKnight([15, 10, 10, 10, 10, 10])
     nsteen.set_name("N. Steen")
+    nsteen.set_portrait_dungeon("bear.png")
     radish = Bookish([15, 10, 10, 10, 10, 10])
     radish.set_name("Radish")
+    radish.set_portrait("rabbit_portrait_100.png")
     cinna = Cleric([15, 10, 10, 10, 10, 10])
     cinna.set_name("Cinna")
+    cinna.set_portrait("cinna_portrait_100.png")
     grapefart = Merchant([20, 20, 20, 20, 20, 20])
     grapefart.set_name("Grapefart")
+    grapefart.set_portrait("grapefart_portrait_100.png")
     party = [nsteen, radish, cinna, grapefart]
     for char in party:
         char.print_stats()

@@ -49,6 +49,8 @@ def determine_dialog(target, progress, name="Default"):
                     if y[0] == "Player":
                         y[0] = name
             return temp
+        case "intro_3_quick":
+            return intro_3_quick
 
 def process_state(dungeon, state):
     if dungeon == "cave_dungeon":
@@ -123,11 +125,11 @@ intro_1 = [[
     [None, "Deep in the recesses of the castle lives a youth with a heart as peaceful and benevolent as their recently departed ancestors."],
     [None, "The child of [king and queen] awakens one day, unaware of any goings-on..."],
     [None, "[Character creation]"]
-]]
+], "intro_2"]
 
 intro_1_quick = [[
     [None, "[Character creation]"]
-]]
+], "intro_3_quick"]
 
 intro_2 = [[
     [None, "You get out of bed and stretch your arms. Today seems like a good day to do nothing as usual."],
@@ -237,7 +239,12 @@ intro_3 = [[
     ["N. Steen", "Or, even better, we'll find some materials for making you a better weapon."],
     ["N. Steen", "Although, we don't have a blacksmith, so that might have to wait. Better collect stuff just in case."],
     [None, "You nod and walk forward into the dark cave."],
-    [None, "[Dungeon]"]
+    [None, "[Dungeon CAVE]"]
+], "cave", "recruit_keeper"]
+
+intro_3_quick = [[
+    [None, "You nod and walk forward into the dark cave."],
+    [None, "[Dungeon CAVE]"]
 ], "cave", "recruit_keeper"]
 
 intro_cave_loss = [[
@@ -245,7 +252,7 @@ intro_cave_loss = [[
     ["N. Steen", "Well, that could've gone better."],
     ["N. Steen", "Turns out we were persuaded to leave instead of them."],
     ["N. Steen", "Oh well. Muster your courage, we will try again. Here we go!"],
-    [None, "[Dungeon]"]
+    [None, "[Dungeon CAVE]"]
 ], "cave", "recruit_keeper"]
 
 recruit_keeper = [[

@@ -4,6 +4,7 @@
 # Fighter
 # Paladin
 ########
+import pygame
 
 class Character:
     def __init__(self) -> None:
@@ -20,6 +21,7 @@ class Character:
         self.name = ""
         self.background = ""
         self.portrait = "images/"
+        self.portrait_dungeon = "images/"
         self.role = ""
     
     def get_hp(self):
@@ -61,6 +63,9 @@ class Character:
     def get_portrait(self):
         return self.portrait
     
+    def get_portrait_dungeon(self):
+        return self.portrait_dungeon
+    
     def get_role(self):
         return self.role
 
@@ -101,7 +106,12 @@ class Character:
         self.name = value
 
     def set_portrait(self, value):
-        self.portrait = self.portrait + value
+        self.portrait = pygame.image.load("images/" + value)
+
+    def set_portrait_dungeon(self, value):
+        portrait = pygame.image.load("images/" + value)
+        portrait = pygame.transform.scale(portrait,(60,120))
+        self.portrait_dungeon = portrait
 
     def distribute_stats(self, spread, stats):
         temp = stats
@@ -182,7 +192,8 @@ class BearKnight(Character):
         self.spread(stats)
         self.hp = 50
         self.current_hp = 50
-        self.portrait = "images/bear.png"
+        self.set_portrait("bear_portrait_100.png")
+        self.set_portrait_dungeon("bear.png")
         self.role = "BEAR KNIGHT"
 
     def spread(self, stats):
@@ -199,6 +210,7 @@ class Bookish(Character):
         self.hp = 20
         self.current_hp = 20
         self.role = "BOOKKEEPER"
+        self.set_portrait("rabbit_portrait_100.png")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["mag", "con", "dex", "wis", "cha", "str"], stats)
@@ -214,6 +226,7 @@ class Merchant(Character):
         self.hp = 30
         self.current_hp = 30
         self.role = "MERCHANT"
+        self.set_portrait("grapefart_portrait_100.png")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["dex", "wis", "con", "str", "cha", "mag"], stats)
@@ -229,6 +242,7 @@ class Cleric(Character):
         self.hp = 30
         self.current_hp = 30
         self.role = "APOTHECARY"
+        self.set_portrait("cinna_portrait_100.png")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["mag", "cha", "wis", "con", "dex", "str"], stats)
