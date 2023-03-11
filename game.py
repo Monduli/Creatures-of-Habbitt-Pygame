@@ -261,7 +261,8 @@ class MainGame():
             return
         elif self.user_text[0][self.advance][1] == "[Dungeon]":
             state = self.load_dungeon(self.user_text[1])
-            self.user_text = process_state("cave_dungeon", state)
+            pygame.quit()
+            self.user_text = self.process_state("cave_dungeon", state)
         elif self.user_text[0][self.advance][1] == "[Bear N. Steen has joined your party.]":
             self.party.append(add_party_member("nsteen"))
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
@@ -928,7 +929,7 @@ class MainGame():
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
         state = match.Game(self.screen).play(party, get_dungeon(dungeon), self.screen)
-        self.screen = self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((width, height))
         return state
 
     def sort_options(self, choice):

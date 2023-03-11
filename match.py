@@ -289,6 +289,10 @@ class Game(object):
             self.spread.append(x)
         self.fullscreen = 0
         self.removed = 0
+        self.counter_x = 0
+        self.counter_y = 0
+        self.fade_out = 0
+        self.fade_image = pygame.image.load("images/circlefade.png")
 
     def start(self):
         self.board.randomize()
@@ -299,9 +303,8 @@ class Game(object):
         pygame.quit()
         sys.exit()
 
-    def play(self, party, dungeon, display=screen):
+    def play(self, party, dungeon, display=screen, need_fade=0):
         self.start()
-        blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], 0,0, pygame.image.load("images/loading.png").convert_alpha(), 1, 1, 1)
         if display != screen:
             self.display = display
 
@@ -392,6 +395,8 @@ class Game(object):
                 matches = False
 
         while True:
+            if need_fade == 1:
+                self.process_fade()
             party_turns = turn_order(self.party)
             next_turn = 0
             if self.enemy_active not in self.enemy:
@@ -797,7 +802,7 @@ class Game(object):
         # enemy goes
         party = self.party
         e_attack = enemy_active.get_attack()
-        p_defense = player_active.get_defense()
+        p_defense = player_active.get_phys_guard()
         attacker = enemy_active
         target = player_active
         if e_attack > p_defense:
@@ -990,6 +995,23 @@ class Game(object):
         pygame.display.flip()
 
         return 
+    
+    def process_fade(self):
+        go = 1
+        while go == 1:
+            print("Fading in")
+            self.counter_x += 256
+            self.counter_y += 144
+            self.crawler_fade_in()
+            if self.counter_x >= 12800 or self.counter_y >= 7200:
+                self.counter_x = 0
+                self.counter_y = 0
+                go = 0
+
+    def crawler_fade_in(self):
+        fade = pygame.transform.scale(fade,(0 + self.counter_x,0 + self.counter_y))
+        blit_image((1600,900), 7200-self.counter_x/2, 4050-self.counter_y/2, fade, 1,1,1)
+        pygame.display.flip()
 
 if __name__ == '__main__':
     pygame.init()

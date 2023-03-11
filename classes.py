@@ -9,7 +9,8 @@ class Character:
     def __init__(self) -> None:
         self.hp = 0
         self.current_hp = 0
-        self.defense = 0
+        self.phys_guard = 0
+        self.magic_guard = 0
         self.strength = 0
         self.dexterity = 0
         self.constitution = 0
@@ -19,6 +20,7 @@ class Character:
         self.name = ""
         self.background = ""
         self.portrait = "images/"
+        self.role = ""
     
     def get_hp(self):
         return self.hp
@@ -26,8 +28,11 @@ class Character:
     def get_chp(self):
         return self.current_hp
     
-    def get_defense(self):
-        return self.defense
+    def get_phys_guard(self):
+        return self.phys_guard
+    
+    def get_mag_guard(self):
+        return self.magic_guard
 
     def get_str(self):
         return self.strength
@@ -55,6 +60,9 @@ class Character:
     
     def get_portrait(self):
         return self.portrait
+    
+    def get_role(self):
+        return self.role
 
     def set_hp(self, value):
         self.hp = value
@@ -62,8 +70,11 @@ class Character:
     def set_chp(self, value):
         self.current_hp = value
 
-    def set_defense(self, value):
-        self.defense = value
+    def set_phys_guard(self, value):
+        self.phys_guard = value
+
+    def set_mag_guard(self, value):
+        self.magic_guard = value
 
     def set_str(self, value):
         self.strength = value
@@ -114,6 +125,18 @@ class Character:
                 self.set_cha(max(temp))
                 stats.remove(max(temp))
 
+    def calculate_stats(self):
+        armor_phys = 0
+        armor_mag = 0
+        #physical guard
+        self.set_phys_guard(armor_phys + self.get_con())
+        #magical guard
+        self.set_mag_guard(armor_mag + self.get_mag())
+        #health
+        self.set_hp(10*self.get_con())
+        self.set_chp(10*self.get_con())
+
+
     def print_stats(self):
         print("STR: " + str(self.strength) +
               " DEX: " + str(self.dexterity) +
@@ -128,9 +151,11 @@ class MainCharacter(Character):
         self.spread(stats)
         self.hp = 20
         self.current_hp = 20
+        self.role = "DISPLACED RULER"
 
     def spread(self, stats):
-        Character.distribute_stats(self, ["str", "con", "dex", "wis", "cha", "mag"], stats)
+        self.distribute_stats(["str", "con", "dex", "wis", "cha", "mag"], stats)
+        self.calculate_stats()
 
     def get_magic(self):
         return self.get_mag()
@@ -142,9 +167,11 @@ class Martial(Character):
         self.spread(stats)
         self.hp = 50
         self.current_hp = 50
+        self.role = "MARTIAL ADEPT"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["str", "con", "dex", "wis", "cha", "mag"], stats)
+        self.calculate_stats(self)
 
     def get_magic(self):
         return self.get_mag()
@@ -156,9 +183,11 @@ class BearKnight(Character):
         self.hp = 50
         self.current_hp = 50
         self.portrait = "images/bear.png"
+        self.role = "BEAR KNIGHT"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["cha", "str", "con", "dex", "wis", "mag"], stats)
+        self.calculate_stats()
 
     def get_magic(self):
         return self.get_cha()
@@ -169,22 +198,26 @@ class Bookish(Character):
         self.spread(stats)
         self.hp = 20
         self.current_hp = 20
+        self.role = "BOOKKEEPER"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["mag", "con", "dex", "wis", "cha", "str"], stats)
+        self.calculate_stats()
 
     def get_magic(self):
         return self.get_mag()
 
-class Ranger(Character):
+class Merchant(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
         self.hp = 30
         self.current_hp = 30
+        self.role = "MERCHANT"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["dex", "wis", "con", "str", "cha", "mag"], stats)
+        self.calculate_stats()
         
     def get_magic(self):
         return self.get_dex()
@@ -195,9 +228,11 @@ class Cleric(Character):
         self.spread(stats)
         self.hp = 30
         self.current_hp = 30
+        self.role = "APOTHECARY"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["mag", "cha", "wis", "con", "dex", "str"], stats)
+        self.calculate_stats()
         
     def get_magic(self):
         return self.get_mag()

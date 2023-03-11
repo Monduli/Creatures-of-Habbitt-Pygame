@@ -165,7 +165,7 @@ def add_party_member(name, char=None):
         toffee.set_name("Toffee")
         return toffee
     if name == "grapefart":
-        grapefart = Ranger([20, 20, 20, 20, 20, 20])
+        grapefart = Merchant([20, 20, 20, 20, 20, 20])
         grapefart.set_name("Grapefart")
         return grapefart
     if name == "maincharacter":
@@ -179,7 +179,7 @@ def fill_party():
     radish.set_name("Radish")
     cinna = Cleric([15, 10, 10, 10, 10, 10])
     cinna.set_name("Cinna")
-    grapefart = Ranger([20, 20, 20, 20, 20, 20])
+    grapefart = Merchant([20, 20, 20, 20, 20, 20])
     grapefart.set_name("Grapefart")
     party = [nsteen, radish, cinna, grapefart]
     for char in party:
@@ -214,6 +214,10 @@ def get_portrait(character):
         return portrait
     if character in ["Gobble"]:
         portrait = pygame.image.load("images/goblin.png")
+        portrait = pygame.transform.scale(portrait,(96,96))
+        return portrait
+    if character in ["Goblin_Stand"]:
+        portrait = pygame.image.load("images/goblin_stand.png")
         portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
     if character in ["Goobble"]:
