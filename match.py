@@ -293,6 +293,11 @@ class Game(object):
         self.counter_y = 0
         self.fade_out = 0
         self.fade_image = pygame.image.load("images/circlefade.png")
+        self.end_fade = 0
+        self.start_fade = 0
+        self.state = "PLAY"
+        self.return_to_crawl = 0
+        self.enemy_active = None
 
     def start(self):
         self.board.randomize()
@@ -305,6 +310,7 @@ class Game(object):
 
     def play(self, party, dungeon, display=screen, need_fade=0):
         self.start()
+        self.end_fade = need_fade
         if display != screen:
             self.display = display
 
@@ -333,7 +339,8 @@ class Game(object):
         self.enemy_current = 0
 
         # The enemy whose turn it is.
-        self.enemy_active = self.enemy_turns[self.enemy_current][0]
+        if len(self.enemy_turns) > 0:
+            self.enemy_active = self.enemy_turns[self.enemy_current][0]
 
         # Governs the current matches that exist on the board.
         global curr_match
@@ -379,6 +386,7 @@ class Game(object):
         debug = self.debug
         self.timing = 0
         self.debug_timer = pygame.time.get_ticks()
+        wait_timer = 0
 
         # Determines if there are matches on the board, for randomization.
         global matches
@@ -395,14 +403,12 @@ class Game(object):
                 matches = False
 
         while True:
-            if need_fade == 1:
-                self.process_fade()
             party_turns = turn_order(self.party)
             next_turn = 0
-            if self.enemy_active not in self.enemy:
+            if self.enemy_active not in self.enemy and len(self.enemy) > 0:
                 self.enemy_active = self.enemy[0]
                 self.e_text = "It is " + self.enemy_active.get_name() + "'s turn."
-            if self.timing == 1:
+            if self.debug == 1:
                 print("START: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
             if self.debug == 1:
@@ -414,7 +420,29 @@ class Game(object):
             now = pygame.time.get_ticks()
             self.debug = 0
 
+            if self.state == "WIN":
+                self.party_text = ["Your party was victorious!"]
+                self.p_text = self.party_text[0]
+                self.e_text = self.enemy_text[0]
+                xp = 0
+                for foe in dungeon[0]:
+                    print(foe.get_xp())
+                    xp += foe.get_xp()
+                xp_string = "Your party receives XP experience points!"
+                replaced_xp = xp_string.replace("XP", str(xp))
+                self.enemy_text = [replaced_xp]
+                wait_timer = pygame.time.get_ticks()
+                self.state = "WAITING"
+
+            # TODO: Both are true but fade does not start!!
+            if self.state == "WAITING" and now - wait_timer > 4000:
+                self.start_fade = 1
+                self.counter_x = 0
+
             self.draw_gl_scene(party_current)
+
+            if self.return_to_crawl == 1:
+                return "WIN"
             #return_rect = self.draw(self.party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
             if self.timing == 1:
                 print("DRAW: " + str(self.debug_timer - pygame.time.get_ticks()))
@@ -444,7 +472,7 @@ class Game(object):
                 # FIXED! - Gems are dropped onto xy coords of mouse not where original gem was
                 # Fixed - When gem is "swapped", original gem does swap with something, but it's not the correct gem
                 ##
-                elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy():
+                elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy() and self.state == "PLAY":
                     #if return_rect.collidepoint(event.pos):
                     #    return "RAN"
                     if event.button == 1:
@@ -534,89 +562,89 @@ class Game(object):
 
             # If any matches are made by the player  
             # TODO: Make it not change party members in the middle of a combo 
-               
-            while len(curr_match) > 0:
-                character_swap_timing = 1
-                for item in curr_match:
-                    if self.debug == 1:
-                        print(curr_match[0])
-                    state = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
-                    curr_match.remove(curr_match[0])
-                    if state == "WIN":
-                        return "WIN"
-                    
-            if self.board.busy() == [] and character_swap_timing == 1:
-                character_swap_timer = pygame.time.get_ticks()
-                time_to_swap = 1
-            
-            # if matches have been made previously and the board isn't processing them
-            if (pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1) or self.removed == 1:
-                print("Changing party member")
-                if self.removed != 1:
-                    if party_current+1 < len(party_turns):
-                        party_current += 1
-                    else:
-                        party_current = 0
-                self.player_active = party_turns[party_current][0]
-                self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
-                curr_match = []
-                character_swap_timer = 0
-                time_to_swap = 0
-                self.removed = 0
+            if self.state == "PLAY":   
+                while len(curr_match) > 0:
+                    character_swap_timing = 1
+                    for item in curr_match:
+                        if self.debug == 1:
+                            print(curr_match[0])
+                        result = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
+                        curr_match.remove(curr_match[0])
+                        if result == "WIN":
+                            self.state = "WIN"
+                        
+            if self.state == "PLAY": 
+                if self.board.busy() == [] and character_swap_timing == 1:
+                    character_swap_timer = pygame.time.get_ticks()
+                    time_to_swap = 1
                 
-            if now - timer > 5000:
-                self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
-                self.flash_red = self.party.index(self.player_active)
-                timer = now
-                self.e_text = self.enemy_text[0]
+                # if matches have been made previously and the board isn't processing them
+                if (pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1) or self.removed == 1:
+                    print("Changing party member")
+                    if self.removed != 1:
+                        if party_current+1 < len(party_turns):
+                            party_current += 1
+                        else:
+                            party_current = 0
+                    self.player_active = party_turns[party_current][0]
+                    self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
+                    curr_match = []
+                    character_swap_timer = 0
+                    time_to_swap = 0
+                    self.removed = 0
+
+                if now - timer > 5000:
+                    self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
+                    self.flash_red = self.party.index(self.player_active)
+                    timer = now
+                    self.e_text = self.enemy_text[0]
         
-            # update the box text with what's going on
-            if self.debug == 1:
-                print("Debug: Updating textboxes") 
-            self.p_text = self.party_text[0]
+                # update the box text with what's going on
+                if self.debug == 1:
+                    print("Debug: Updating textboxes") 
+                self.p_text = self.party_text[0]
             
-            if self.timing == 1:
-                print("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
-                self.debug_timer = pygame.time.get_ticks()
-            if now - text_timer > 1000:
-                if len(self.party_text) > 1:
-                    self.party_text.remove(self.p_text)
-                    if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
-                        self.party_text.remove(self.party_text[0])
-                    text_timer = pygame.time.get_ticks()
-            if now - text_timer < 2000:
-                if now - text_timer > 1000 and hold == 0:
+                if self.debug == 1:
+                    print("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
+                    self.debug_timer = pygame.time.get_ticks()
+                if now - text_timer > 1000:
+                    if len(self.party_text) > 1:
+                        self.party_text.remove(self.p_text)
+                        if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
+                            self.party_text.remove(self.party_text[0])
+                        text_timer = pygame.time.get_ticks()
+                if now - text_timer < 2000:
+                    if now - text_timer > 1000 and hold == 0:
+                        if len(self.enemy_text) > 1:
+                            self.enemy_text.remove(self.e_text)
+                            self.e_text = self.enemy_text[0]
+                            hold = 1
+                else:
                     if len(self.enemy_text) > 1:
                         self.enemy_text.remove(self.e_text)
                         self.e_text = self.enemy_text[0]
-                        hold = 1
-            else:
-                if len(self.enemy_text) > 1:
-                    self.enemy_text.remove(self.e_text)
+                        text_timer = pygame.time.get_ticks()
+                        hold = 0
+
+                if self.debug == 1:
+                    print("Debug: Checking for 'It is'")
+                if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
+                    self.party_text.remove(self.party_text[0])
+                    text_timer = pygame.time.get_ticks()
+                    
+                if self.enemy_text[0][0:5] == "It is" and len(self.enemy_text) > 1:
+                    self.enemy_text.remove(self.enemy_text[0])
                     self.e_text = self.enemy_text[0]
                     text_timer = pygame.time.get_ticks()
-                    hold = 0
 
-            if self.debug == 1:
-                print("Debug: Checking for 'It is'")
+                if self.debug == 1:
+                    print("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))
+                    self.debug_timer = pygame.time.get_ticks()
 
-            if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
-                self.party_text.remove(self.party_text[0])
-                text_timer = pygame.time.get_ticks()
-                
-            if self.enemy_text[0][0:5] == "It is" and len(self.enemy_text) > 1:
-                self.enemy_text.remove(self.enemy_text[0])
-                self.e_text = self.enemy_text[0]
-                text_timer = pygame.time.get_ticks()
-
-            if self.debug == 1:
-                print("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))
-                self.debug_timer = pygame.time.get_ticks()
-
-            if pygame.time.get_ticks() - text_timer > 2000:
-                if len(self.party_text) < 2:
-                    if self.party_text[0][0:5] != "It is":
-                        self.party_text.append("It is " + party_turns[party_current][0].get_name() + "'s turn.")
+                if pygame.time.get_ticks() - text_timer > 2000:
+                    if len(self.party_text) < 2:
+                        if self.party_text[0][0:5] != "It is":
+                            self.party_text.append("It is " + party_turns[party_current][0].get_name() + "'s turn.")
 
             if self.timing == 1:
                 print("TICK START: " + str(self.debug_timer - pygame.time.get_ticks()))
@@ -691,7 +719,10 @@ class Game(object):
         action = item
         update_text = None
         if enemy_active not in enemy:
-            enemy_active = enemy[0]
+            if len(enemy) == 0:
+                return
+            else:
+                enemy_active = enemy[0]
         if action == "red":
             # do physical damage
             return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
@@ -700,7 +731,7 @@ class Game(object):
             return self.purple_attack(player_active, enemy_active, enemy)
         elif action == "green":
             # heal active party member
-            return self.green_heal(player_active)
+            return self.green_heal(player_active, party)
         elif action == "orange":
             return self.orange_attack(player_active, party)
             # should grant support points
@@ -777,7 +808,7 @@ class Game(object):
                 self.party_text.append(update_text)
                 return "WIN"
             
-    def green_heal(self, player_active):
+    def green_heal(self, player_active, party):
         heal = player_active.get_magic()
         if player_active.get_chp() >= player_active.get_hp():
             heal_target = None
@@ -850,9 +881,9 @@ class Game(object):
                         target = party[i+1]
                     else:
                         target = party[0]
-                state = self.enemy_attack(party, self.enemy, target, enemy_active)
+                self.state = self.enemy_attack(party, self.enemy, target, enemy_active)
                 flash_red = party.index(target)
-                if state == "DEAD":
+                if self.state == "DEAD":
                     self.draw(party, self.enemy, self.player_active, "Your party dead!", "Your party was wiped out...", flash_red)
                     self.pyg_wait(5)
                     return "DEAD"
@@ -938,8 +969,8 @@ class Game(object):
             gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
             gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
         else:
-            gl_text(self.font, "BLACK", 1, .64, -.7, -.9, "No Enemy Remains", .995, 1.4)
-            gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: 0/0", .995, 2)
+            gl_text(self.font, "BLACK", 1, .28, -.7, -.9, "No Enemy Remains", .995, 1.4)
+            gl_text(self.font, "BLACK", 1, .28, -.8, -9, "HP: 0/0", .995, 2)
         # return (DOESN'T WORK)
         gl_text(self.font, "BLACK", .28, 1, -.9, -1, "RETURN", 1.3, 6)
 
@@ -990,6 +1021,26 @@ class Game(object):
         if len(enemy) > 2:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)        
 
+        if self.end_fade == 1:
+            blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            print(self.counter_x)
+            self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.end_fade = 0
+
+        if self.start_fade == 1:
+            blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            print(self.counter_x)
+            if self.counter_x < 200:
+                self.counter_x += 50
+            elif self.counter_x < 500:
+                self.counter_x += 75
+            else:
+                self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.start_fade = 0
+                self.return_to_crawl = 1
+
         self.update_box()
 
         pygame.display.flip()
@@ -1012,6 +1063,15 @@ class Game(object):
         fade = pygame.transform.scale(fade,(0 + self.counter_x,0 + self.counter_y))
         blit_image((1600,900), 7200-self.counter_x/2, 4050-self.counter_y/2, fade, 1,1,1)
         pygame.display.flip()
+
+    def scoot(self, counter_x):
+        transfer = 1
+        black_pass = pygame.image.load("images/black_pass.png")
+        while transfer == 1:
+            blit_image((1600,900), width-counter_x, height, black_pass, 1,1,1)
+            counter_x += 1
+            if counter_x >= 1600:
+                transfer = 0
 
 if __name__ == '__main__':
     pygame.init()

@@ -14,7 +14,7 @@ class Creature():
         self.y = y
         self.image = image
         self.display = display
-        self.rect = pygame.Rect(x, y, 96, 96)
+        self.rect = pygame.Rect(self.x, self.y, 96, 96)
 
     def draw(self):
         blit_image([width, height], self.x, self.y, self.image, 1, 1, 1)
@@ -46,7 +46,9 @@ class Crawler():
         self.counter_x = 0
         self.counter_y = 0
         self.fade_out = 0
-        self.fade_image = pygame.image.load("images/circlefade.png")
+        self.move_to_match = 0
+        self.start_fade = 0
+        self.end_fade = 0
 
     def start(self):
         goblin = Enemy("Goblin", 10, 10, 10, 10, 10, 10)
@@ -67,8 +69,9 @@ class Crawler():
 
         player_rect = self.player.get_rect()
         enemy_rect = self.enemy.get_rect()
-        start_fade = 0
+        
         stop = "not done"
+        in_play = 0
 
         self.clock = pygame.time.Clock()
 
@@ -81,22 +84,35 @@ class Crawler():
         current_room = 0
         dungeon_rooms = ["testroom.png"]
 
+        self.black_pass = pygame.image.load("images/black_pass.png")
+        self.black_pass = pygame.transform.scale(self.black_pass,(1600,900))
+
         while True:
             now = pygame.time.get_ticks()
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
             player_rect.x, player_rect.y = self.player.x, self.player.y
             enemy_rect.x, enemy_rect.y = self.enemy.x, self.enemy.y
 
-            if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y):
-                start_fade = 1
+            if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y) and in_play == 0:
+                in_play = 1
+                self.start_fade = 1
 
-            if start_fade == 1:
-                stop = self.fade(self.counter_x, self.counter_y, 1)
+            if self.start_fade == 1:
+                pass
+                #stop = self.fade(self.counter_x, self.counter_y, 1)
+                #self.move_to_match = self.scoot(self.counter_x)
                 
-            if stop == "done":
+            if self.move_to_match == 1:
+                print("Moving to match")
                 state = match.Game(self.screen).play(party, dungeon, self.screen, 1)
+                if state == "WIN":
+                    self.enemy.x = 3200
+                    self.enemy.y = 3200
+                self.counter_x = 0
+                self.end_fade = 1
+                self.move_to_match = 0
 
-            self.draw_gl_scene(dungeon_rooms, current_room, party, start_fade)
+            self.draw_gl_scene(dungeon_rooms, current_room, party)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
 
             pressed = pygame.key.get_pressed()
@@ -115,7 +131,8 @@ class Crawler():
 
             for event in pygame.event.get():
                 if event.type == KEYUP:
-                    self.input(event.key)
+                    if self.start_fade == 0:
+                        self.input(event.key)
                 elif event.type == QUIT:
                     #self.event.set()
                     self.quit()
@@ -145,65 +162,66 @@ class Crawler():
         pass
     
     def input(self, key = None, pressed = False):
-        if pressed != False:
-            keys = pressed  #checking pressed keys
-            if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 677:
-                if self.speed_y < 0:
-                    self.speed_y += 2
-                else:
-                    if self.speed_y < 10:
-                        self.speed_y += 1
-                self.player.y += self.speed_y
-            if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.player.x > 485:
-                if self.speed_x > 0:
-                    self.speed_x -= 2
-                else:
-                    if self.speed_x > -10:
-                        self.speed_x -= 1
-                self.player.x += self.speed_x
-            if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.player.x < 1055:
-                if self.speed_x < 0:
-                    self.speed_x += 2
-                else:
-                    if self.speed_x < 10:
-                        self.speed_x += 1
-                self.player.x += self.speed_x
-            if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.player.y > 143:
-                if self.speed_y > 0:
-                    self.speed_y -= 2
-                else:
-                    if self.speed_y > -10:
-                        self.speed_y -= 1
-                self.player.y += self.speed_y
-        else:
-            if key == K_q:
-                self.quit()
-                """
-            elif (key == K_RIGHT or key == K_d) and self.player.x < 1200:
-                self.player.x += self.speed_x
-            elif (key == K_LEFT or key == K_a) and self.player.x > 400:
-                self.player.x += self.speed_x
-            elif (key == K_DOWN or key == K_s) and self.player.y > 200:
-                self.player.y += self.speed_y
-            elif (key == K_UP or key == K_w) and self.player.y < 700:
-                self.player.y += self.speed_y
-                """
-            elif key == K_r:
-                if self.fullscreen == 0:
-                    self.display = pygame.display.set_mode((width, height),
-                                                pygame.DOUBLEBUF|pygame.OPENGL|pygame.FULLSCREEN)
-                    self.fullscreen = 1
-                else:
-                    self.display = pygame.display.set_mode((width, height),
-                                                pygame.DOUBLEBUF|pygame.OPENGL)
-                    self.fullscreen = 0
+        if self.start_fade != 1 and self.end_fade != 1:
+            if pressed != False:
+                keys = pressed  #checking pressed keys
+                if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 677:
+                    if self.speed_y < 0:
+                        self.speed_y += 2
+                    else:
+                        if self.speed_y < 10:
+                            self.speed_y += 1
+                    self.player.y += self.speed_y
+                if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.player.x > 485:
+                    if self.speed_x > 0:
+                        self.speed_x -= 2
+                    else:
+                        if self.speed_x > -10:
+                            self.speed_x -= 1
+                    self.player.x += self.speed_x
+                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.player.x < 1055:
+                    if self.speed_x < 0:
+                        self.speed_x += 2
+                    else:
+                        if self.speed_x < 10:
+                            self.speed_x += 1
+                    self.player.x += self.speed_x
+                if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.player.y > 143:
+                    if self.speed_y > 0:
+                        self.speed_y -= 2
+                    else:
+                        if self.speed_y > -10:
+                            self.speed_y -= 1
+                    self.player.y += self.speed_y
+            else:
+                if key == K_q:
+                    self.quit()
+                    """
+                elif (key == K_RIGHT or key == K_d) and self.player.x < 1200:
+                    self.player.x += self.speed_x
+                elif (key == K_LEFT or key == K_a) and self.player.x > 400:
+                    self.player.x += self.speed_x
+                elif (key == K_DOWN or key == K_s) and self.player.y > 200:
+                    self.player.y += self.speed_y
+                elif (key == K_UP or key == K_w) and self.player.y < 700:
+                    self.player.y += self.speed_y
+                    """
+                elif key == K_r:
+                    if self.fullscreen == 0:
+                        self.display = pygame.display.set_mode((width, height),
+                                                    pygame.DOUBLEBUF|pygame.OPENGL|pygame.FULLSCREEN)
+                        self.fullscreen = 1
+                    else:
+                        self.display = pygame.display.set_mode((width, height),
+                                                    pygame.DOUBLEBUF|pygame.OPENGL)
+                        self.fullscreen = 0
 
     def slow_down(self, keys):
         if keys[pygame.K_UP] or keys[pygame.K_DOWN] or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_w] or keys[pygame.K_a] or keys[pygame.K_s] or keys[pygame.K_d]:
             return True
         return False
 
-    def draw_gl_scene(self, dungeon_rooms, current_room, party, start_fade):
+    def draw_gl_scene(self, dungeon_rooms, current_room, party):
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
@@ -254,8 +272,26 @@ class Crawler():
 
         gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
 
-        if start_fade == 1:
-            blit_image((1600,900), -5600+self.counter_x/2, -3150+self.counter_y/2, self.fade_image, 1,1,1)
+        if self.start_fade == 1:
+            blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            print(self.counter_x)
+            if self.counter_x < 200:
+                self.counter_x += 50
+            elif self.counter_x < 500:
+                self.counter_x += 75
+            else:
+                self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.start_fade = 0
+                self.move_to_match = 1
+
+        if self.end_fade == 1:
+            # Add in party members vs. enemies portraits on sliding black screen
+            blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            print(self.counter_x)
+            self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.end_fade = 0
 
         pygame.display.flip()
 
@@ -316,6 +352,18 @@ class Crawler():
                 counter_x = 0
                 counter_y = 0
         return "not done"
+    
+    def scoot(self, counter_x):
+        transfer = 1
+        black_pass = pygame.image.load("images/black_pass.png")
+        black_pass = pygame.transform.scale(black_pass,(1600,900))
+        while transfer == 1:
+            blit_image([width, height], width+counter_x, 0, black_pass, 1, 1, 1)
+            print(counter_x)
+            counter_x += 1
+            pygame.display.flip()
+            if counter_x >= 1600:
+                transfer = 0
 
     def crawler_fade_out(self, counter_x, counter_y):
         self.fade_image = pygame.transform.scale(self.fade_image,(12800 - counter_x,7200 - counter_y))
@@ -323,7 +371,6 @@ class Crawler():
     def crawler_fade_in(self, counter_x, counter_y, fade):
         self.fade_image = pygame.transform.scale(self.fade_image,(0 + counter_x,0 + counter_y))
         blit_image((1600,900), 7200-counter_x/2, 4050-counter_y/2, fade, 1,1,1)
-
 
 
 if __name__ == '__main__':
