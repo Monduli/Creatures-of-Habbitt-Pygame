@@ -174,7 +174,7 @@ def fill_party():
     mc = create_default_main_character()
     nsteen = BearKnight([15, 10, 10, 5, 5, 0])
     nsteen.set_name("N. Steen")
-    nsteen.set_portrait_dungeon("bear.png")
+    nsteen.set_portrait_dungeon("bear")
     radish = Bookish([15, 10, 10, 5, 5, 0])
     radish.set_name("Radish")
     radish.set_portrait("rabbit_portrait_100.png")
@@ -190,7 +190,7 @@ def create_default_main_character():
     char = MainCharacter([10,10,10,10,10,10])
     char.set_name("Dog")
     char.set_portrait("dogdude_port_100.png")
-    char.set_portrait_dungeon("dogdude.png")
+    char.set_portrait_dungeon("dogdude")
     return char
 
 def drawStyleRect(surface, x, y):

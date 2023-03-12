@@ -78,6 +78,9 @@ class Character:
     def get_portrait_dungeon(self):
         return self.portrait_dungeon
     
+    def get_portrait_dungeon_name(self):
+        return self.portrait_dungeon_name
+    
     def get_role(self):
         return self.role
 
@@ -119,11 +122,13 @@ class Character:
 
     def set_portrait(self, value):
         self.portrait = pygame.image.load("images/" + value)
+        self.portrait_name = "images/" + value
 
     def set_portrait_dungeon(self, value):
-        portrait = pygame.image.load("images/" + value)
+        portrait = pygame.image.load("images/" + value + ".png")
         portrait = pygame.transform.scale(portrait,(60,120))
         self.portrait_dungeon = portrait
+        self.portrait_dungeon_name = "images/" + value
 
     def distribute_stats(self, spread, stats):
         temp = stats
@@ -227,7 +232,7 @@ class BearKnight(Character):
         super().__init__()
         self.spread(stats)
         self.set_portrait("bear_portrait_100.png")
-        self.set_portrait_dungeon("bear.png")
+        self.set_portrait_dungeon("bear")
         self.role = "BEAR KNIGHT"
 
     def spread(self, stats):

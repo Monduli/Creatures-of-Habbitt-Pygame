@@ -120,6 +120,8 @@ class Board(object):
         global curr_match
         curr_match = []
         self.wait = 0
+        self.boom_played = 0
+        self.boom_sound = pygame.mixer.Sound("audio/sfx/boom.wav")
         
 
     def randomize(self):
@@ -222,6 +224,9 @@ class Board(object):
                 # TODO: Make circle that expands outward (with transparency) with every match
                 #circle = pygame.transform.scale(circle, (50, 50))
                 self.board[position].image = image
+                if self.boom_played == 0:
+                    self.boom_sound.play()
+                    self.boom_played = 1
                 #for x in range(0, 100):
                     # drawStyleCircle(display, self.board[match[0]].x, self.board[match[0]].y, circle_width)
                     #circle = pygame.transform.scale(circle, (50+x, 50+x))
@@ -229,6 +234,7 @@ class Board(object):
                     #pygame.display.update()
 
     def refill_columns(self):
+        self.boom_played = 0
         for i in range(self.w):
             target = self.size - i - 1
             for pos in range(target, -1, -self.w):
@@ -297,6 +303,12 @@ class Game(object):
         self.state = "PLAY"
         self.return_to_crawl = 0
         self.enemy_active = None
+        self.mc_name = None
+
+        # the length of the currently playing victory line
+        self.talking_length = 0
+        self.talking_timer = 0
+ 
 
     def start(self):
         self.board.randomize()
@@ -312,6 +324,7 @@ class Game(object):
         self.end_fade = need_fade
         if display != screen:
             self.display = display
+        self.mc_name = party[0].get_name()
 
         #gluPerspective(45, (1600/900), 0.1, 50.0)
         #glTranslatef(0.0, 0.0, -5)
@@ -420,9 +433,11 @@ class Game(object):
             self.debug = 0
 
             if self.state == "WIN":
+                self.talking_length = self.play_victory_line() * 1000
+                self.talking_timer = pygame.time.get_ticks()
+                self.talking = 2
                 self.party_text = ["Your party was victorious!"]
                 self.p_text = self.party_text[0]
-                self.e_text = self.enemy_text[0]
                 xp = 0
                 for foe in dungeon[0]:
                     print(foe.get_xp())
@@ -430,6 +445,7 @@ class Game(object):
                 xp_string = "Your party receives XP experience points!"
                 replaced_xp = xp_string.replace("XP", str(xp))
                 self.enemy_text = [replaced_xp]
+                self.e_text = self.enemy_text[0]
                 wait_timer = pygame.time.get_ticks()
                 self.state = "WAITING"
 
@@ -771,8 +787,8 @@ class Game(object):
                 choices.append(player)
         target = random.choice(choices)
         update_text = player_active.get_name() + " received " + str(sup_num) + " support points with " + target.get_name() + "!"
-        target.add_support_points(player_active.get_name(), sup_num)
-        player_active.add_support_points(target.get_name(), sup_num)
+        target.add_support_points(player_active.get_name(), sup_num, self.mc_name)
+        player_active.add_support_points(target.get_name(), sup_num, self.mc_name)
         self.party_text.append(update_text) 
 
     def blue_debuff(self, player_active, enemy):
@@ -1014,9 +1030,15 @@ class Game(object):
         
         # blit images - NEED TO SHRINK PORTRAITS TO 100x100
         if len(party) > 0:    
+            #if self.talking == 1:
+                #blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait(), 1, 1, 1)
+            #else:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, party[0].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 1:    
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
+            if self.talking == 2:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait("nsteen"), 1, 1, 1)
+            else:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 2:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, party[2].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 3:
@@ -1079,8 +1101,21 @@ class Game(object):
             if counter_x >= 1600:
                 transfer = 0
 
+    def play_victory_line(self):
+        clip = random.randint(0,1)
+        to_load = "audio/voice/nsteen/victoryline_" + str(clip) + ".wav"
+        victory_line = pygame.mixer.Sound(to_load)
+        victory_line.play()
+        return victory_line.get_length()
+    
+    # TODO: Implementing talking portrait while victory line is being spoken!
+    def current_talking_portrait(self):
+        if self.talking_timer % 200 == 0:
+            pass
+
 if __name__ == '__main__':
     pygame.init()
+    pygame.mixer.init()
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
     party = fill_party()
