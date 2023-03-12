@@ -136,7 +136,7 @@ def get_dungeon(dungeon):
 def turn_order(group):
     turns = []
     for character in group:
-        roll = random.randint(0, character.get_dex())
+        roll = random.randint(0, character.get_quickness())
         turns.append((character, roll, "p"))
     turns = sorted(turns, key=lambda turn:turn[1], reverse=True)
     return turns
@@ -151,21 +151,19 @@ def find_and_remove_from_turn(turns, character):
 
 def add_party_member(name, char=None):
     if name == "nsteen":
-        nsteen = BearKnight([15, 10, 10, 10, 10, 10])
+        nsteen = BearKnight([15, 15, 10, 10, 10, 10])
         nsteen.set_name("N. Steen")
-        #rabby = Bookish([10,10,10,15,10,10])
-        #rabby.set_name("Radish")
         return nsteen
     if name == "radish":
-        radish = Bookish([15, 10, 10, 10, 10, 10])
+        radish = Bookish([15, 15, 10, 10, 10, 10])
         radish.set_name("Radish")
         return radish
     if name == "toffee":
-        toffee = Martial([20, 20, 20, 20, 20, 20])
+        toffee = Martial([15, 15, 20, 20, 20, 20])
         toffee.set_name("Toffee")
         return toffee
     if name == "grapefart":
-        grapefart = Merchant([20, 20, 20, 20, 20, 20])
+        grapefart = Merchant([15, 15, 10, 10, 10, 10])
         grapefart.set_name("Grapefart")
         return grapefart
     if name == "maincharacter":
@@ -173,23 +171,27 @@ def add_party_member(name, char=None):
 
 
 def fill_party():
-    nsteen = BearKnight([15, 10, 10, 10, 10, 10])
+    mc = create_default_main_character()
+    nsteen = BearKnight([15, 10, 10, 5, 5, 0])
     nsteen.set_name("N. Steen")
     nsteen.set_portrait_dungeon("bear.png")
-    radish = Bookish([15, 10, 10, 10, 10, 10])
+    radish = Bookish([15, 10, 10, 5, 5, 0])
     radish.set_name("Radish")
     radish.set_portrait("rabbit_portrait_100.png")
-    cinna = Cleric([15, 10, 10, 10, 10, 10])
+    cinna = Cleric([15, 10, 10, 5, 5, 0])
     cinna.set_name("Cinna")
     cinna.set_portrait("cinna_portrait_100.png")
-    grapefart = Merchant([20, 20, 20, 20, 20, 20])
-    grapefart.set_name("Grapefart")
-    grapefart.set_portrait("grapefart_portrait_100.png")
-    party = [nsteen, radish, cinna, grapefart]
+    party = [mc, nsteen, radish, cinna]
     for char in party:
         char.print_stats()
     return party
 
+def create_default_main_character():
+    char = MainCharacter([10,10,10,10,10,10])
+    char.set_name("Dog")
+    char.set_portrait("dogdude_port_100.png")
+    char.set_portrait_dungeon("dogdude.png")
+    return char
 
 def drawStyleRect(surface, x, y):
     for i in range(4):

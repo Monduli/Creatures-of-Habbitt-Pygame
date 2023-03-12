@@ -279,7 +279,6 @@ class Game(object):
         self.display = screen
         self.board = Board(PUZZLE_COLUMNS, PUZZLE_ROWS, background)
         self.font = pygame.font.Font('font/VCR.001.ttf', FONT_SIZE)
-        
         self.party_text = []
         self.enemy_text = []
         self.i = 0
@@ -596,8 +595,9 @@ class Game(object):
                     self.removed = 0
 
                 if now - timer > 5000:
-                    self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
-                    self.flash_red = self.party.index(self.player_active)
+                    flash = self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
+                    if flash != 0:
+                        self.flash_red = self.party.index(self.player_active)
                     timer = now
                     self.e_text = self.enemy_text[0]
         
@@ -618,7 +618,7 @@ class Game(object):
                 if now - text_timer < 2000:
                     if now - text_timer > 1000 and hold == 0:
                         if len(self.enemy_text) > 1:
-                            self.enemy_text.remove(self.e_text)
+                            self.enemy_text.remove(self.enemy_text[0])
                             self.e_text = self.enemy_text[0]
                             hold = 1
                 else:
@@ -735,7 +735,7 @@ class Game(object):
             # heal active party member
             return self.green_heal(player_active, party)
         elif action == "orange":
-            return self.orange_attack(player_active, party)
+            return self.orange_support(player_active, party)
             # should grant support points
         elif action == "blue":
             return self.blue_debuff(player_active, enemy)
@@ -746,7 +746,7 @@ class Game(object):
         return update_text
           
     def red_attack(self, player_active, enemy_active, enemy, enemy_turns):
-        att = player_active.get_str()
+        att = player_active.get_physical_attack()
         gua = enemy_active.get_guard()
         dmg = att - gua
         if dmg < 0:
@@ -762,8 +762,8 @@ class Game(object):
             if len(enemy) == 0:
                 return "WIN"
             
-    def orange_attack(self, player_active, party):
-        sup_num = 10
+    def orange_support(self, player_active, party):
+        sup_num = 10 * player_active.get_chutzpah()
         choices = []
         name = player_active.get_name()
         for player in party:
@@ -771,6 +771,8 @@ class Game(object):
                 choices.append(player)
         target = random.choice(choices)
         update_text = player_active.get_name() + " received " + str(sup_num) + " support points with " + target.get_name() + "!"
+        target.add_support_points(player_active.get_name(), sup_num)
+        player_active.add_support_points(target.get_name(), sup_num)
         self.party_text.append(update_text) 
 
     def blue_debuff(self, player_active, enemy):
@@ -789,8 +791,8 @@ class Game(object):
         self.party_text.append(update_text)
 
     def purple_attack(self, player_active, enemy_active, enemy):
-        att = player_active.get_magic()
-        gua = enemy_active.get_maggua()
+        att = player_active.get_magic_attack()
+        gua = enemy_active.get_magical_guard()
         dmg = att - gua
         if dmg < 0:
             dmg = 0
@@ -811,7 +813,7 @@ class Game(object):
                 return "WIN"
             
     def green_heal(self, player_active, party):
-        heal = player_active.get_magic()
+        heal = player_active.get_healing()
         if player_active.get_chp() >= player_active.get_hp():
             heal_target = None
             for player in party:
@@ -835,7 +837,7 @@ class Game(object):
         # enemy goes
         party = self.party
         e_attack = enemy_active.get_attack()
-        p_defense = player_active.get_phys_guard()
+        p_defense = player_active.get_physical_guard()
         attacker = enemy_active
         target = player_active
         if e_attack > p_defense:
@@ -854,6 +856,10 @@ class Game(object):
                 else:
                     return enemy_text
             return "DEAD"
+        else:
+            enemy_text = attacker.get_name() + "'s attack against " + target.get_name() + " was fruitless!"
+            self.enemy_text.append(enemy_text)
+            return 0
         
     def pyg_wait(self, seconds):
         last = pygame.time.get_ticks()
