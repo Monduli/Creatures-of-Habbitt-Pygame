@@ -275,7 +275,7 @@ class Board(object):
                 yield c
     """
     
-class Game(object):
+class MatchGame(object):
 
     def __init__(self, screen):
         #pygame.init()
@@ -308,6 +308,7 @@ class Game(object):
         # the length of the currently playing victory line
         self.talking_length = 0
         self.talking_timer = 0
+        self.talking = 0
  
 
     def start(self):
@@ -1035,10 +1036,10 @@ class Game(object):
             #else:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, party[0].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 1:    
-            if self.talking == 2:
-                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait("nsteen"), 1, 1, 1)
-            else:
-                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
+            #if self.talking == 2:
+            #    blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait("nsteen"), 1, 1, 1)
+            #else:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 2:
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, party[2].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 3:
@@ -1119,5 +1120,5 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
     party = fill_party()
-    state = Game(screen).play(party, get_dungeon("cave"))
+    state = MatchGame(screen).play(party, get_dungeon("cave"))
     print("Your final result was: " + state)
