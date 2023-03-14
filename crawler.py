@@ -4,6 +4,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import match
+import dungeon_layouts as dl
 
 size = width, height = 1600, 900
 FPS = 60
@@ -68,13 +69,16 @@ class Crawler():
         self.counter_y = 0
         self.fade_out = 0
         self.move_to_match = 0
-        self.start_fade = 0
-        self.end_fade = 0
+        self.start_fade_transfer = 0
+        self.end_fade_transfer = 0
 
         # Room of the dungeon we're in
         self.current_room = 0
 
-        self.fade_dir = None
+        self.fade_dir = "None"
+
+        self.transfer = 0
+        self.transfer_complete = 0
 
     def start(self, prefix):
         goblin_frames = [get_portrait("Goblin_Stand")]
@@ -123,12 +127,17 @@ class Crawler():
         animation_timer = pygame.time.get_ticks()
 
         current_room = 0
-        dungeon_rooms = ["testroom.png"]
+
+        dungeon_rooms = dl.get_dungeon_layout("cave")
 
         self.black_pass = pygame.image.load("images/black_pass.png")
         self.black_pass = pygame.transform.scale(self.black_pass,(1600,900))
 
         while True:
+            left_door = pygame.Rect(447,388,50,90)
+            right_door = pygame.Rect(1000,388,50,90)
+            
+            top_door = pygame.Rect(900, 700, 50, 200)
             now = pygame.time.get_ticks()
             
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
@@ -138,9 +147,34 @@ class Crawler():
             
             if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y) and in_play == 0:
                 in_play = 1
-                self.start_fade = 1
+                self.start_fade_transfer = 1  
+            if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0:
+                self.fade_dir = "fade_left"
+                direction = "left"
+                self.transfer = 1
+            if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0:
+                self.fade_dir = "fade_up"
+                direction = "up"
+                self.transfer = 1
+            if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0:
+                self.fade_dir = "fade_right"
+                direction = "right"
+                self.transfer = 1
 
-            if self.start_fade == 1:
+            if self.transfer == 2:
+                if direction == "left":
+                    current_room = dungeon_rooms[current_room][1]
+                    self.player.x = 1000
+                if direction == "up":
+                    current_room = dungeon_rooms[current_room][2]
+                    self.player.y = 125
+                if direction == "right":
+                    current_room = dungeon_rooms[current_room][3]
+                    self.player.x = 500
+                self.transfer = 3
+
+
+            if self.start_fade_transfer == 1:
                 pass
                 #stop = self.fade(self.counter_x, self.counter_y, 1)
                 #self.move_to_match = self.scoot(self.counter_x)
@@ -156,7 +190,7 @@ class Crawler():
                     self.enemy.x = 3200
                     self.enemy.y = 3200
                 self.counter_x = 0
-                self.end_fade = 1
+                self.end_fade_transfer = 1
                 self.move_to_match = 0
 
             self.draw_gl_scene(dungeon_rooms, current_room, party)
@@ -182,7 +216,7 @@ class Crawler():
             for event in pygame.event.get():
                 if event.type == KEYUP:
                     self.player.image_stop()
-                    if self.start_fade == 0:
+                    if self.start_fade_transfer == 0:
                         self.input(event.key)
                 elif event.type == QUIT:
                     #self.event.set()
@@ -192,28 +226,35 @@ class Crawler():
                     #if return_rect.collidepoint(event.pos):
                     #    return "RAN"
                     if event.button == 1:
-                       pos = pygame.mouse.get_pos()
-                       for x in range(0, len(self.party)):
-                        if self.party_ports[x].collidepoint(pos):
-                            is_expanded = self.check_for_expand(x)
-                            if is_expanded == False:
-                                if x == 0:
-                                    self.expand = 0
-                                elif x == 1:
-                                    self.expand = 1
-                                elif x == 2:
-                                    self.expand = 2
-                                elif x == 3:
-                                    self.expand = 3
-                                break
-                            else:
-                                self.expand = 4
+                        pos = pygame.mouse.get_pos()
+                        print(pos)
+                        if left_door.collidepoint(pos):
+                           print("Clicked on Left Door")
+                        if right_door.collidepoint(pos):
+                           print("Clicked on Right Door")
+                        if top_door.collidepoint(pos):
+                           print("Clicked on Top Door")
+                        for x in range(0, len(self.party)):
+                            if self.party_ports[x].collidepoint(pos):
+                                is_expanded = self.check_for_expand(x)
+                                if is_expanded == False:
+                                    if x == 0:
+                                        self.expand = 0
+                                    elif x == 1:
+                                        self.expand = 1
+                                    elif x == 2:
+                                        self.expand = 2
+                                    elif x == 3:
+                                        self.expand = 3
+                                    break
+                                else:
+                                    self.expand = 4
 
     def draw(self):
         pass
     
     def input(self, key = None, pressed = False):
-        if self.start_fade != 1 and self.end_fade != 1:
+        if self.start_fade_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
                 if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 677:
@@ -276,7 +317,7 @@ class Crawler():
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
-        self.blit_bg_camera(dungeon_rooms[current_room], False)
+        self.blit_bg_camera(dungeon_rooms[current_room][0], False)
         if self.player.y < self.enemy.y:
             self.enemy.draw()
             self.player.draw()
@@ -297,6 +338,9 @@ class Crawler():
 
         if self.expand != 4:
             explain_box = rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
+
+        left, right, bottom, top = 500,400,380,480
+        #rect_ogl("BLACK", cgls(width-left, width),cgls(width-right, width),cgls(height-bottom, height),cgls(height-top, height))
 
         glEnd()
         
@@ -334,7 +378,7 @@ class Crawler():
 
         gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
 
-        if self.start_fade == 1:
+        if self.start_fade_transfer == 1:
             blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
             print(self.counter_x)
             if self.counter_x < 200:
@@ -344,18 +388,18 @@ class Crawler():
             else:
                 self.counter_x += 100
             if self.counter_x >= 1700:
-                self.start_fade = 0
+                self.start_fade_transfer = 0
                 self.move_to_match = 1
 
-        if self.end_fade == 1:
+        if self.end_fade_transfer == 1:
             # Add in party members vs. enemies portraits on sliding black screen
             blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
             print(self.counter_x)
             self.counter_x += 100
             if self.counter_x >= 1700:
-                self.end_fade = 0
+                self.end_fade_transfer = 0
 
-        if self.start_fade == 1:
+        if self.start_fade_transfer == 1:
             blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
             print(self.counter_x)
             if self.counter_x < 200:
@@ -365,32 +409,30 @@ class Crawler():
             else:
                 self.counter_x += 100
             if self.counter_x >= 1700:
-                self.start_fade = 0
+                self.start_fade_transfer = 0
                 self.move_to_match = 1
 
-        if self.fade_dir == "room_up":
-            blit_image([width, height], 0, height-self.counter_x, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-            print(self.counter_x)
-            if self.counter_x < 200:
-                self.counter_x += 50
-            elif self.counter_x < 500:
-                self.counter_x += 75
-            else:
-                self.counter_x += 100
-            if self.counter_x >= 900:
-                self.fade_dir = "room_up_finish"
-
-        if self.fade_dir == "room_up_finish":
-            blit_image([width, height], 0, 0-self.counter_x, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-            print(self.counter_x)
-            if self.counter_x < 200:
-                self.counter_x += 50
-            elif self.counter_x < 500:
-                self.counter_x += 75
-            else:
-                self.counter_x += 100
-            if self.counter_x >= 900:
-                self.fade_dir = None
+        status = False
+        if self.fade_dir == "fade_left_finish" and self.transfer == 3:
+            self.fade_finish_x(width, "fade_left")
+        if self.fade_dir == "fade_right_finish" and self.transfer == 3:
+            self.fade_finish_x(width, "fade_right")
+        if self.fade_dir == "fade_up_finish" and self.transfer == 3:
+            self.fade_finish_y(height, "fade_up")
+        if self.fade_dir == "fade_down_finish" and self.transfer == 3:
+            self.fade_finish_y(height, "fade_down")
+        if self.fade_dir == "fade_left":
+            status = self.fade_start_x(width, "fade_left")
+        if self.fade_dir == "fade_right":
+            status = self.fade_start_x(width, "fade_right")
+        if self.fade_dir == "fade_up":
+            status = self.fade_start_y(height, "fade_up")
+        if self.fade_dir == "fade_down":
+            status = self.fade_start_y(height, "fade_down")
+        if status:
+            self.transfer = 2
+        if self.fade_dir == "fade_done":
+            self.transfer = 0
 
         pygame.display.flip()
 
@@ -472,7 +514,82 @@ class Crawler():
     def crawler_fade_in(self, counter_x, counter_y, fade):
         self.fade_image = pygame.transform.scale(self.fade_image,(0 + counter_x,0 + counter_y))
         blit_image((1600,900), 7200-counter_x/2, 4050-counter_y/2, fade, 1,1,1)
+    
+    def fade_start_y(self, y, direction):
+        # up
+        if direction == "fade_up":
+            blit_image([width, y], 0, y-self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        # down
+        if direction == "fade_down":
+            blit_image([width, y], 0, -y+self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        finished = self.fade_counters_y(y)
+        if finished:
+            if direction == "fade_up":
+                self.fade_dir = "fade_up_finish"
+            elif direction == "fade_down":
+                self.fade_dir = "fade_down_finish"
+            return True
+        else: return False
 
+    def fade_finish_y(self, y, direction):
+        # up
+        if direction == "fade_up":
+            blit_image([width, y], 0, 0-self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        # down
+        if direction == "fade_down":
+            blit_image([width, y], 0, 0+self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        finished = self.fade_counters_y(y)
+        if finished:
+            self.fade_dir = "fade_done"
+
+    def fade_start_x(self, x, direction):
+        # left
+        if direction == "fade_left":
+            blit_image([x, height], x-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        # right
+        if direction == "fade_right":
+            blit_image([x, height], -x+self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        finished = self.fade_counters_x(x)
+        if finished:
+            if direction == "fade_left":
+                self.fade_dir = "fade_left_finish"
+            elif direction == "fade_right":
+                self.fade_dir = "fade_right_finish"
+            return True
+        else: return False
+
+    def fade_finish_x(self, x, direction):
+        # left
+        if direction == "fade_left":
+            blit_image([x, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        # right
+        if direction == "fade_right":
+            blit_image([x, height], 0+self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        finished = self.fade_counters_x(x)
+        if finished:
+            self.fade_dir = "fade_done"
+
+    def fade_counters_x(self, x):
+        if self.counter_x < x/4.5:
+            self.counter_x += x/18
+        elif self.counter_x < x/1.8:
+            self.counter_x += x/12
+        else:
+            self.counter_x += x/9
+        if self.counter_x >= x:
+            self.counter_x = 0
+            return True
+
+    def fade_counters_y(self, y):
+        if self.counter_y < y/4.5:
+            self.counter_y += y/18
+        elif self.counter_y < y/1.8:
+            self.counter_y += y/12
+        else:
+            self.counter_y += y/9
+        if self.counter_y >= y:
+            self.counter_y = 0
+            return True
 
 if __name__ == '__main__':
     pygame.init()

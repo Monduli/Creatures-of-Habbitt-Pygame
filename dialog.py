@@ -114,6 +114,11 @@ radish_neutral = [[
     [None, "[You leave her to her devices.]"]
 ]]
 
+grapefart_neutral = [[
+    ["Grapefart", "Hey, you! Me and my money were just having us a conversation! Hey, where are ya goin'??"],
+    [None, "[You leave him to his devices.]"]
+]]
+
 intro_1 = [[
     [None, "The city of [city]. A peaceful place, at the moment."],
     [None, "Here, animalkind can live its best life under the caring rule of [King and Queen]."],
@@ -122,7 +127,7 @@ intro_1 = [[
     [None, "The King and Queen were mysteriously killed while [out doing something]."],
     [None, "This shocking news rocked the kingdom to its core. How could they live without the guidance of their beloved rulers?"],
     [None, "But, fret not, citizens of [city], for there is one hope that remains."],
-    [None, "Deep in the recesses of the castle lives a youth with a heart as peaceful and benevolent as their recently departed ancestors."],
+    [None, "Deep in the recesses of the castle lives a youth with a heart suppoedly as peaceful and benevolent as their recently departed ancestors."],
     [None, "The child of [king and queen] awakens one day, unaware of any goings-on..."],
     [None, "[Character creation]"]
 ], "intro_2"]

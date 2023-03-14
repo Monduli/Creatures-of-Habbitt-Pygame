@@ -33,7 +33,7 @@ color_passive = pygame.Color('black')
 background = retrieve_background("cave")
 
 PUZZLE_COLUMNS = 10
-PUZZLE_ROWS = 9
+PUZZLE_ROWS = 7
 SHAPE_WIDTH = 100
 SHAPE_HEIGHT = 100
 MARGIN = 2
@@ -41,12 +41,12 @@ MARGIN = 2
 # Amount of time before enemy makes a decision
 TIME = 5000
 
-RED = loadify("images/tabs/red_gem_new.png")
-BLUE = loadify("images/tabs/blue_gem_new.png")
-PURPLE = loadify("images/tabs/purple_gem_new.png")
-GREEN = loadify("images/tabs/green_gem_new.png")
-ORANGE = loadify("images/tabs/orange_gem_new.png")
-YELLOW = loadify("images/tabs/yellow_gem_new.png")
+RED = loadify("images/tabs/red_gem_nbd.png")
+BLUE = loadify("images/tabs/blue_gem_nbd.png")
+PURPLE = loadify("images/tabs/purple_gem_nbd.png")
+GREEN = loadify("images/tabs/green_gem_nbd.png")
+ORANGE = loadify("images/tabs/orange_gem_nbd.png")
+YELLOW = loadify("images/tabs/yellow_gem_nbd.png")
 WINDOW_WIDTH = 1600
 WINDOW_HEIGHT = 900
 FONT_SIZE = 36
@@ -105,9 +105,7 @@ class Board(object):
         self.shapes = []
         self.type_shape = []
         for shape in shapes.split():
-            to_add = loadify('images/tabs/{}_gem_new.png'.format(shape))
-            to_add = pygame.transform.scale(to_add, (100, 100))
-            self.shapes.append(to_add)
+            self.shapes.append(loadify('images/tabs/{}_gem_nbd.png'.format(shape)))
             self.type_shape.append(shape)
         for shape in self.shapes:
             shape = pygame.transform.scale(shape,(50,50))
@@ -452,6 +450,7 @@ class MatchGame(object):
                 wait_timer = pygame.time.get_ticks()
                 self.state = "WAITING"
 
+            # TODO: Both are true but fade does not start!!
             if self.state == "WAITING" and now - wait_timer > 4000:
                 print("In")
                 self.start_fade = 1
@@ -976,29 +975,30 @@ class MatchGame(object):
         shape_color("BLACK")
             # party 1
         if len(party) > 0:
-            gl_text(self.font, color_0, 1, .4, .9, 1, party[0].get_name(), .99, .99)
-            gl_text(self.font, color_0, 1, .4, .8, .9, "HP: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), .99, .99)
+            #gl_text(self.font, color_0, 1, .4, .9, 1, party[0].get_name(), .99, .99)
+            gl_text(self.font, color_0, 1, .9, cgls(height-100, height), cgls(height-110, height), str(party[0].get_chp()), .99, .99)
             # party 2
         if len(party) > 1:
-            gl_text(self.font, color_1, 1, .4, .7, .8, party[1].get_name(), .99, .99)
-            gl_text(self.font, color_1, 1, .4, .6, .7, "HP: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), .99, .99)
+            #gl_text(self.font, color_1, 1, .4, .7, .8, party[1].get_name(), .99, .99)
+            gl_text(self.font, color_1, 1, .9, cgls(height-210, height), cgls(height-220, height), str(party[1].get_chp()), .99, .99)
             # party 3
         if len(party) > 2:
-            gl_text(self.font, color_2, 1, .4, .5, .6, party[2].get_name(), .99, .99)
-            gl_text(self.font, color_2, 1, .4, .4, .5, "HP: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), .99, .99)
+            #gl_text(self.font, color_2, 1, .4, .5, .6, party[2].get_name(), .99, .99)
+            gl_text(self.font, color_2, 1, .9, .4, .5, str(party[2].get_chp()), .99, .99)
             # party 4
         if len(party) > 3:
-            gl_text(self.font, color_3, 1, .4, .3, .4, party[3].get_name(), .99, .99)
-            gl_text(self.font, color_3, 1, .4, .2, .3, "HP: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), .99, .99)
+            #gl_text(self.font, color_3, 1, .4, .3, .4, party[3].get_name(), .99, .99)
+            gl_text(self.font, color_3, 1, .9, .2, .3, str(party[3].get_chp()), .99, .99)
             # enemy 1
         if len(enemy) > 0:
-            gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
-            gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
+            #gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
+            gl_text(self.font, "BLACK", 1, .64, -.8, -9, str(enemy[0].get_chp()), .995, 2)
         else:
-            gl_text(self.font, "BLACK", 1, .28, -.7, -.9, "No Enemy Remains", .995, 1.4)
+            #gl_text(self.font, "BLACK", 1, .28, -.7, -.9, "No Enemy Remains", .995, 1.4)
             gl_text(self.font, "BLACK", 1, .28, -.8, -9, "HP: 0/0", .995, 2)
         # return (DOESN'T WORK)
-        gl_text(self.font, "BLACK", .28, 1, -.9, -1, "RETURN", 1.3, 6)
+        #gl_text(self.font, "BLACK", .28, 1, -.9, -1, "RETURN", 1.3, 6)
+
 
         glBegin(GL_QUADS)
         #party_port_1 = rect_ogl("GREEN", .27, .4, .8, 1)
@@ -1030,30 +1030,29 @@ class MatchGame(object):
         ability_3_rect = pygame.Rect(width-600,height-425,300,75)
         ability_4_rect = pygame.Rect(width-300,height-425,300,75)
         
-        # blit images - NEED TO SHRINK PORTRAITS TO 100x100
         if len(party) > 0:    
             #if self.talking == 1:
                 #blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait(), 1, 1, 1)
             #else:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, party[0].get_portrait().convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-95, party[0].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 1:    
             #if self.talking == 2:
             #    blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait("nsteen"), 1, 1, 1)
             #else:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-210, party[1].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, party[2].get_portrait().convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-325, party[2].get_portrait().convert_alpha(), 1, 1, 1)
         if len(party) > 3:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, party[3].get_portrait().convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-440, party[3].get_portrait().convert_alpha(), 1, 1, 1)
 
         if len(enemy) > 0:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-386,height-857, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-555, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
         if len(enemy) > 1:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-482,height-857, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-670, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
         if len(enemy) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)   
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-98,height-785, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)   
 
-        self.update_box()     
+        #self.update_box()     
 
         if self.end_fade == 1:
             blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
