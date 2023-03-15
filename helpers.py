@@ -401,15 +401,17 @@ def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    drawText_gl(rect_color, font, left, bot, text, x_adjust, y_adjust)
+    drawText_gl_internal(rect_color, font, left, bot, text, x_adjust, y_adjust)
 
 def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    drawTextWrap(rect_color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level)
+    rect_width = reverse_cgls(right, width) - reverse_cgls(left, width)
+    rect_height = reverse_cgls(bot, height) - reverse_cgls(top, height)
+    drawTextWrap_internal(rect_color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
 
-def drawText_gl(rect_color, font, x, y, text, x_adjust, y_adjust):                                                
+def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust):                                                
     textSurface = font.render(text, True, (255, 255, 255, 255), rect_color)
     textData = pygame.image.tostring(textSurface, "RGBA", True)
     new_x = ((x+1)/2)*width/x_adjust
@@ -417,8 +419,65 @@ def drawText_gl(rect_color, font, x, y, text, x_adjust, y_adjust):
     glWindowPos2d(new_x, new_y)
     glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
-def drawTextWrap(rect_color, font, surface, text, color, x, y, x_adjust, y_adjust, level, bkg=None, aa=False, center=False):
-    rect = pygame.Rect(x,y,600,100)
+def drawTextWrap_internal(rect_color, font, surface, text, color, x, y, x_adjust, y_adjust, level, r_w, r_h, bkg=None, aa=False, center=False):
+    rect = pygame.Rect(x, y, r_w, r_h)
+    y = rect.top
+    lineSpacing = 0
+    image = None
+    new_x = ((x+1)/2)*width/x_adjust
+    new_y = ((y+1)/2)*height/y_adjust #- (self.level*100)
+
+    # get the height of the font
+    fontHeight = font.size("Tg")[1]
+
+    while text:
+        i = 1
+
+        # determine if the row of text will be outside our area
+        if y + fontHeight > rect.bottom:
+            break
+
+        # determine maximum width of line
+        while font.size(text[:i])[0] < rect.width-80 and i < len(text):
+            i += 1
+
+        # if we've wrapped the text, then adjust the wrap to the last word      
+        if i < len(text): 
+            i = text.rfind(" ", 0, i) + 1
+
+        # render the line and blit it to the surface
+        textSurface = font.render(text[:i], True, (255, 255, 255, 0), rect_color)
+        textData = pygame.image.tostring(textSurface, "RGBA", True)
+        text_rect = textSurface.get_rect()
+        
+        if center == True:
+            glWindowPos2d(new_x, new_y)
+            glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+        else:
+            glWindowPos2d(new_x,new_y)
+            glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
+        new_y -= fontHeight + lineSpacing
+
+        # remove the text we just blitted
+        text = text[i:]
+        level += 1
+
+    if input == True:
+        return image
+    if text == "":
+        level = 0
+    return text
+
+def gl_text_wrap_dialog(font, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
+    glBegin(GL_QUADS)
+    rect_ogl(rect_color, left, right, bot, top)
+    glEnd()
+    rect_width = reverse_cgls(right, width) - reverse_cgls(left, width)
+    rect_height = reverse_cgls(bot, height) - reverse_cgls(top, height)
+    drawTextWrap_dialog_internal(rect_color, font, text, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
+
+def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjust, level, rect_width, rect_height, bkg=None, aa=False, center=False):
+    rect = pygame.Rect(x,y,rect_width,rect_height)
     y = rect.top
     lineSpacing = 0
     image = None
@@ -482,6 +541,10 @@ def blit_bg(i, bg="cave.png", move=True):
 
 def cgls(value, length):
     return ((value/length) * 2) - 1
+
+def reverse_cgls(value, length):
+    return (value + 1) / 2 * length
+    
 
 def drawCircleGL(x, y, z, radius, numSides):
     numVertices = numSides + 2

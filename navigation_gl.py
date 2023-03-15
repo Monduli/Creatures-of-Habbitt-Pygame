@@ -23,6 +23,7 @@ class MainGame():
         self.fade_image = pygame.image.load("images/circlefade.png")
         self.i = 0
         self.font = pygame.font.Font("font/VCR.001.ttf", 32)
+        self.level = 0
 
     def start_screen(self):
 
@@ -51,16 +52,6 @@ class MainGame():
             self.screen.fill(black)
             color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
             color_exit = "BLACK"
-
-            if self.background_move == True:
-                self.screen.blit(self.background, (width+i,0))
-                self.screen.blit(self.background, (i, 0))
-                if (i == -width):
-                    self.screen.blit(self.background, (width+i, 0))
-                    i=0
-                i-=1
-            else:
-                self.screen.blit(self.background, (0, 0))
 
             for event in pygame.event.get():                  
                 if event.type == pygame.QUIT: sys.exit()
@@ -110,11 +101,11 @@ class MainGame():
         #drawText(self.screen, "Options", (255,255,255), options_rect, base_font, center=True)
         #drawText(self.screen, "Exit", (255,255,255), exit_rect, base_font, center=True)
 
-        drawText_gl("BLACK", self.font, cgls(width-1000, width), cgls(height-150, height), "Creatures of Habbitt v.01", 1.055, .982)
-        drawText_gl(c1, self.font, cgls(width-900, width), cgls(height-400, height), "Wake Up", .955, .98)
-        drawText_gl(c2, self.font, cgls(width-900, width), cgls(height-475, height), "Skip to Town", 1.02, .97)
-        drawText_gl(c3, self.font, cgls(width-900, width), cgls(height-550, height), "Options", .945, .97)
-        drawText_gl(c4, self.font, cgls(width-900, width), cgls(height-700, height), "Exit", .92, .95)
+        gl_text(self.font, "BLACK",  cgls(width-500, width), cgls(width-1100, width), cgls(height-150, height), cgls(height-100, height), "Creatures of Habbitt v.01", .88, .982)
+        gl_text(self.font, c1, cgls(width-700, width), cgls(width-900, width), cgls(height-400, height), cgls(height-350, height), "Wake Up", .955,.975)
+        gl_text(self.font, c2, cgls(width-650, width), cgls(width-950, width), cgls(height-475, height), cgls(height-425, height), "Skip to Town", .95,.97)
+        gl_text(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-550, height), cgls(height-500, height), "Options", .95,.97)
+        gl_text(self.font, c4, cgls(width-700, width), cgls(width-900, width), cgls(height-700, height), cgls(height-650, height), "Exit", .92,.95)
 
         pygame.display.flip()
 
@@ -130,9 +121,9 @@ class MainGame():
         self.background = retrieve_background("cave")
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-        self.user_text = dia.intro_1_quick
+        self.user_text = dia.intro_1
 
-        dialog_rect = pygame.Rect(width-1550,height-250,1500,200)
+        dialog_rect = pygame.Rect(width-1550,height-250, 1500, 200)
         name_rect = pygame.Rect(width-1550, height-320, 300, 50)
         color_passive = pygame.Color('black')
 
@@ -152,28 +143,27 @@ class MainGame():
             self.user_text = [[[None, "To Town"]]]
 
         while True:            
-            self.pick_dialog()
+            self.pick_dialog()            
             self.screen.fill(black)
-            
-            blit_bg(self.i)
+            self.i = blit_bg(self.i)
                 
             if slots != [0,0,0]:
                 print(slots)    
             if slots[0] != 0:
                 character = retrieve_character(slots[0], self.main_character)
-                self.screen.blit(character, (width-1500, 100))
+                blit_image(self.screen, width-1500, 100, character, 1,1,1)
             if slots[1] != 0:
                 character = retrieve_character(slots[1], self.main_character)
                 if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
-                    self.screen.blit(character, (width/2-300, 0))
+                    blit_image(self.screen, width/2-300, 0, character, 1,1,1)
                 else:
-                    self.screen.blit(character, (width/2-150, 0))
+                    blit_image(self.screen, width/2-150, 0, character, 1,1,1)
             if slots[2] != 0:
                 character = retrieve_character(slots[2], self.main_character)
                 if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
-                    self.screen.blit(character, (width - (width/2/2)-300, 0))
+                    blit_image(self.screen, width - (width/2/2)-300, 0, character, 1,1,1)
                 else:
-                    self.screen.blit(character, (width - (width/2/2), 0))
+                    blit_image(self.screen, width - (width/2/2), 0, character, 1,1,1)
             if slots[1] != 0 and slots[2] == 0:
                 slots[2] = slots[1]
                 slots[1] = 0
@@ -183,8 +173,7 @@ class MainGame():
                 if speaking_name in remove:
                     slots = remove_portrait(speaking_name, slots)
                 else:
-                    pygame.draw.rect(self.screen, color_passive, name_rect)
-                    drawText(self.screen, speaking_name, (255,255,255), name_rect, base_font, center=True)
+                    gl_text(self.font, "BLACK", cgls(width-1550, width), cgls(width-1250, width), cgls(height-320, height), cgls(height-270, height), speaking_name, 1.055, .982)
                     # Arg 1 is the name of the character to be portraited, Arg 2 is always main character
                     character = retrieve_character(speaking_name, self.main_character)
                     # slots[0] is left, slots[1] is middle, slots[2] is right
@@ -195,11 +184,11 @@ class MainGame():
                     elif slots[1] == 0 and slots[0] != speaking_name and slots[2] != speaking_name:
                         slots[1] = speaking_name
 
-            pygame.draw.rect(self.screen, color_passive, dialog_rect)
-            #text_surface = base_font.render(self.user_text, True, (255,255,255))
-            #self.screen.blit(text_surface, (input_rect.x+20, input_rect.y+20))
-            #input_rect.w = max(1500, text_surface.get_width()+10)
-            drawText(self.screen, self.user_text[0][self.advance][1], (255,255,255), dialog_rect, base_font)
+            # (width-1550,height-250,1500,200)
+            #glBegin(GL_QUADS)
+            #rect_ogl("BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height))
+            #glEnd()
+            gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
@@ -747,23 +736,18 @@ class MainGame():
         
         while True:
             self.screen.fill(black)
-            self.screen.blit(self.background, (width+i,0))
-            self.screen.blit(self.background, (i, 0))
+            self.i = blit_bg(self.i)
 
             if len(input_text) > 16:
                 input_text = input_text[:14]
-            if (i == -width):
-                self.screen.blit(self.background, (width+i, 0))
-                i=0
-            i-=1
 
-            image1 = pygame.image.load("images/" + poss_images[curr_image] + ".png")
-            self.screen.blit(image1, (width-900, height/2/2))
+            image1 = pygame.image.load("images/" + poss_images[curr_image] + ".png").convert_alpha()
+            blit_image((width, height), width-900, height/2/2, image1, 1,1,1)
 
             image2 = pygame.image.load("images/leftarrow.png")
-            blit_image(self.screen, image2, (width-1050, height/2))
+            blit_image((width, height), width-1050, height/2-(height/8), image2, 1,1,1)
             image3 = pygame.image.load("images/rightarrow.png")
-            self.screen.blit(image3, (width-650, height/2))
+            blit_image((width, height), width-650, height/2-(height/8), image3, 1,1,1)
 
             for event in pygame.event.get():
             # if user types QUIT then the self.screen will close
@@ -773,7 +757,7 @@ class MainGame():
         
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if left_rect.collidepoint(event.pos):
-                        if curr_image-1 > 0:
+                        if curr_image-1 >= 0:
                             curr_image -= 1
                         else:
                             curr_image = len(poss_images) - 1
@@ -804,7 +788,7 @@ class MainGame():
                         char = MainCharacter([10,10,10,10,10,10])
                         char.set_name(input_text[:-1])
                         char.set_portrait(poss_images[curr_image] + "_port_100.png")
-                        char.set_portrait_dungeon(poss_images[curr_image] + ".png")
+                        char.set_portrait_dungeon(poss_images[curr_image])
                         self.char_name = input_text[:-1]
                         return char
         
@@ -815,9 +799,13 @@ class MainGame():
                 
             # draw rectangle and argument passed which should
             # be on self.screen
-            pygame.draw.rect(self.screen, color, input_rect)
+            glBegin(GL_QUADS)
+            #pygame.draw.rect(self.screen, color, input_rect)
+            # width-750, height/2/2, 200, 50
+            rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
+            glEnd()
         
-            rect = drawText(self.screen, input_text, pygame.Color('white'), input_rect, base_font, center=True, input=True)
+            rect = gl_text(self.font, "BLACK", cgls(width-650, width), cgls(width-950, width), cgls(height/2/2-75, height), cgls(height/2/2-25, height), input_text, .96, .93)
             
             # set width of textfield so that text cannot get
             # outside of user's text input
@@ -835,7 +823,7 @@ class MainGame():
 
 
     def load_dungeon(self, dungeon):
-        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon))
+        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), "cave")
         self.screen = pygame.display.set_mode((width, height))
         return state
 
