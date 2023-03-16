@@ -147,7 +147,7 @@ class MainGame():
             self.screen.fill(black)
             self.i = blit_bg(self.i)
                 
-            if slots != [0,0,0]:
+            if slots != [0,0,0] and self.debug == 1:
                 print(slots)    
             if slots[0] != 0:
                 character = retrieve_character(slots[0], self.main_character)

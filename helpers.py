@@ -45,7 +45,7 @@ def retrieve_character(choice, mc):
     if choice == "N. Steen" or choice == "Mysterious Bear":
         return pygame.image.load(folder + "bear.png")
     if choice == char_name:
-        return pygame.image.load(mc.get_portrait())
+        return pygame.image.load(mc.get_portrait() + ".png")
     if choice == "Vizier":
         return pygame.image.load(folder + "vizier_port.png")
     if choice == "Guard":
