@@ -39,17 +39,17 @@ def retrieve_background(choice):
         return background
     return Exception()
 
-def retrieve_character(choice, mc):
-    char_name = mc.get_name()
+def retrieve_character(choice, characters):
+    main_character_name = characters[0].get_name()
     folder = "images/"
     if choice == "N. Steen" or choice == "Mysterious Bear":
-        return pygame.image.load(folder + "bear.png")
-    if choice == char_name:
-        return pygame.image.load(mc.get_portrait() + ".png")
+        return characters[1].get_dialog_picture()
+    if choice == main_character_name:
+        return characters[0].get_dialog_picture()
     if choice == "Vizier":
-        return pygame.image.load(folder + "vizier_port.png")
+        return pygame.image.load(folder + "vizier_port.png").convert_alpha()
     if choice == "Guard":
-        return pygame.image.load(folder + "guard.png")
+        return pygame.image.load(folder + "guard.png").convert_alpha()
     
 def remove_portrait(name, slots):
     if name == "VIZGONE":
@@ -301,7 +301,7 @@ def debug_timing(message, timer):
     return pygame.time.get_ticks()
 
 bitmap_tex = None
-def blit_image(display, x, y, img, r, g, b):
+def blit_image(display_wh, x, y, img, r, g, b):
     global bitmap_tex
 
     # get texture data
@@ -321,7 +321,7 @@ def blit_image(display, x, y, img, r, g, b):
     glMatrixMode(GL_PROJECTION)
     glPushMatrix()
     glLoadIdentity()
-    glOrtho(0, display[0], 0, display[1], -1, 1)
+    glOrtho(0, display_wh[0], 0, display_wh[1], -1, 1)
     glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
     glLoadIdentity()
@@ -403,6 +403,12 @@ def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
     glEnd()
     drawText_gl_internal(rect_color, font, left, bot, text, x_adjust, y_adjust)
 
+def gl_text_name(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
+    glBegin(GL_QUADS)
+    rect_ogl(rect_color, left, right, bot, top)
+    glEnd()
+    drawText_gl_internal(rect_color, font, left - ((left-right)/2), bot, text, x_adjust, y_adjust, True)
+
 def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
@@ -411,10 +417,13 @@ def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjus
     rect_height = reverse_cgls(bot, height) - reverse_cgls(top, height)
     drawTextWrap_internal(rect_color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
 
-def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust):                                                
+def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, center=False):                                                
     textSurface = font.render(text, True, (255, 255, 255, 255), rect_color)
     textData = pygame.image.tostring(textSurface, "RGBA", True)
-    new_x = ((x+1)/2)*width/x_adjust
+    if center == True:
+        new_x = ((x+1)/2)*width/x_adjust - (textSurface.get_width() / 2)
+    else:
+        new_x = ((x+1)/2)*width/x_adjust
     new_y = ((y+1)/2)*height/y_adjust
     glWindowPos2d(new_x, new_y)
     glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)

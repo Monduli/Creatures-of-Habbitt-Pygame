@@ -9,10 +9,10 @@ def get_dungeon_layout(dungeon_name):
         return cave
 
 cave = [
-            ["testroom.png", 1, 2, 3], 
-            ["testroom.png", 4, 5, 6],
-            ["testroom.png", 0, 2, 3], 
-            ["testroom.png", 4, 5, 6],
-            ["testroom.png", 0, 2, 3], 
-            ["testroom.png", 4, 5, 6]
+            ["testroom.png", 1, 2, 1, None], 
+            ["testroom2.png", 0, None, 0, None],
+            ["testroom3.png", None, None, None, 0], 
+            ["testroom.png", 4, 5, 6, None],
+            ["testroom.png", 0, 2, 3, None], 
+            ["testroom.png", 4, 5, 6, None]
             ]

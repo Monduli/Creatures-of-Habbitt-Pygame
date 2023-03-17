@@ -68,8 +68,9 @@ class Crawler():
         self.counter_x = 0
         self.counter_y = 0
         self.fade_out = 0
+        self.fade_image = pygame.image.load("images/black_pass.png").convert_alpha()
         self.move_to_match = 0
-        self.start_fade_transfer = 0
+        self.into_combat_transfer = 0
         self.end_fade_transfer = 0
 
         # Room of the dungeon we're in
@@ -104,7 +105,7 @@ class Crawler():
         pygame.quit()
         sys.exit()
 
-    def play(self, party, dungeon, audio_prefix):
+    def play(self, party, dungeon, audio_prefix, fade_in=False):
         self.party = party
         self.start(audio_prefix)
         #gluPerspective(45, (1600/900), 0.1, 50.0)
@@ -113,6 +114,9 @@ class Crawler():
 
         player_rect = self.player.get_rect()
         enemy_rect = self.enemy.get_rect()
+
+        if fade_in == True:
+            self.end_fade_transfer = 1
         
         stop = "not done"
         in_play = 0
@@ -130,51 +134,61 @@ class Crawler():
 
         dungeon_rooms = dl.get_dungeon_layout("cave")
 
-        self.black_pass = pygame.image.load("images/black_pass.png")
-        self.black_pass = pygame.transform.scale(self.black_pass,(1600,900))
+        self.fade_image = pygame.transform.scale(self.fade_image,(1600,900))
 
         while True:
-            left_door = pygame.Rect(447,388,50,90)
-            right_door = pygame.Rect(1000,388,50,90)
+            left_door = pygame.Rect(447, 388, 50, 90)
+            top_door = pygame.Rect(650, 750, 150, 50)
+            right_door = pygame.Rect(1050, 430, 50, 90)
+            south_door = pygame.Rect(650, 100, 150, 50)
             
-            top_door = pygame.Rect(900, 700, 50, 200)
             now = pygame.time.get_ticks()
             
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
             player_rect.x, player_rect.y = self.player.x, self.player.y
             enemy_rect.x, enemy_rect.y = self.enemy.x, self.enemy.y
-
             
             if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y) and in_play == 0:
                 in_play = 1
-                self.start_fade_transfer = 1  
-            if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0:
+                self.into_combat_transfer = 1  
+            if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
                 self.fade_dir = "fade_left"
                 direction = "left"
                 self.transfer = 1
-            if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0:
+            if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][2] != None:
                 self.fade_dir = "fade_up"
                 direction = "up"
                 self.transfer = 1
-            if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0:
+            if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][3] != None:
                 self.fade_dir = "fade_right"
                 direction = "right"
+                self.transfer = 1
+            if south_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][4] != None:
+                self.fade_dir = "fade_down"
+                direction = "down"
                 self.transfer = 1
 
             if self.transfer == 2:
                 if direction == "left":
                     current_room = dungeon_rooms[current_room][1]
                     self.player.x = 1000
+                    self.player.y = height/2
                 if direction == "up":
                     current_room = dungeon_rooms[current_room][2]
-                    self.player.y = 125
+                    self.player.y = 170
+                    self.player.x = width/2 - 50
                 if direction == "right":
                     current_room = dungeon_rooms[current_room][3]
                     self.player.x = 500
+                    self.player.y = height/2
+                if direction == "down":
+                    current_room = dungeon_rooms[current_room][4]
+                    self.player.y = 700
+                    self.player.x = width/2 - 50
                 self.transfer = 3
 
 
-            if self.start_fade_transfer == 1:
+            if self.into_combat_transfer == 1:
                 pass
                 #stop = self.fade(self.counter_x, self.counter_y, 1)
                 #self.move_to_match = self.scoot(self.counter_x)
@@ -197,8 +211,8 @@ class Crawler():
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
 
             pressed = pygame.key.get_pressed()
-            has_pressed = self.slow_down(pressed)
-            if has_pressed == True:
+            has_pressed = self.check_for_movement_keys_being_pressed(pressed)
+            if has_pressed == True and self.transfer == 0:
                 if now - animation_timer > 100:
                     self.player.next_image()
                     animation_timer = now
@@ -216,7 +230,7 @@ class Crawler():
             for event in pygame.event.get():
                 if event.type == KEYUP:
                     self.player.image_stop()
-                    if self.start_fade_transfer == 0:
+                    if self.into_combat_transfer == 0 and self.transfer == 0:
                         self.input(event.key)
                 elif event.type == QUIT:
                     #self.event.set()
@@ -254,10 +268,10 @@ class Crawler():
         pass
     
     def input(self, key = None, pressed = False):
-        if self.start_fade_transfer != 1 and self.end_fade_transfer != 1:
+        if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
-                if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 677:
+                if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 750:
                     if self.speed_y < 0:
                         self.speed_y += 2
                     else:
@@ -308,7 +322,7 @@ class Crawler():
                                                     pygame.DOUBLEBUF|pygame.OPENGL)
                         self.fullscreen = 0
 
-    def slow_down(self, keys):
+    def check_for_movement_keys_being_pressed(self, keys):
         if keys[pygame.K_UP] or keys[pygame.K_DOWN] or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_w] or keys[pygame.K_a] or keys[pygame.K_s] or keys[pygame.K_d]:
             return True
         return False
@@ -334,12 +348,20 @@ class Crawler():
         #partyport_2 = rect_ogl("BLACK", cgls(nums[0][1], width), cgls(nums[0][1]+90, width), top, bot)
         #partyport_3 = rect_ogl("BLACK", cgls(nums[0][2], width), cgls(nums[0][2]+90, width), top, bot)
         #partyport_4 = rect_ogl("BLACK", cgls(nums[0][3], width), cgls(nums[0][3]+90, width), top, bot)
-        party_text = rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
-
+        
+        # "party text"
+        rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
+        
+        # rectangle for "right door"
+        #rect_ogl("BLACK", cgls(1150, width), cgls(1100, width), cgls(430, height), cgls(530, height))
+        
+        # if the stats box is expanded:
         if self.expand != 4:
-            explain_box = rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
+            
+            # draw the stats box
+            rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
 
-        left, right, bottom, top = 500,400,380,480
+        #left, right, bottom, top = 500,400,380,480
         #rect_ogl("BLACK", cgls(width-left, width),cgls(width-right, width),cgls(height-bottom, height),cgls(height-top, height))
 
         glEnd()
@@ -378,8 +400,8 @@ class Crawler():
 
         gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
 
-        if self.start_fade_transfer == 1:
-            blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        if self.into_combat_transfer == 1:
+            blit_image([width, height], width-self.counter_x, 0, self.fade_image, 1, 1, 1)
             print(self.counter_x)
             if self.counter_x < 200:
                 self.counter_x += 50
@@ -388,19 +410,19 @@ class Crawler():
             else:
                 self.counter_x += 100
             if self.counter_x >= 1700:
-                self.start_fade_transfer = 0
+                self.into_combat_transfer = 0
                 self.move_to_match = 1
 
         if self.end_fade_transfer == 1:
             # Add in party members vs. enemies portraits on sliding black screen
-            blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([width, height], 0-self.counter_x, 0, self.fade_image, 1, 1, 1)
             print(self.counter_x)
             self.counter_x += 100
             if self.counter_x >= 1700:
                 self.end_fade_transfer = 0
 
-        if self.start_fade_transfer == 1:
-            blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+        if self.into_combat_transfer == 1:
+            blit_image([width, height], width-self.counter_x, 0, self.fade_image, 1, 1, 1)
             print(self.counter_x)
             if self.counter_x < 200:
                 self.counter_x += 50
@@ -409,7 +431,7 @@ class Crawler():
             else:
                 self.counter_x += 100
             if self.counter_x >= 1700:
-                self.start_fade_transfer = 0
+                self.into_combat_transfer = 0
                 self.move_to_match = 1
 
         status = False
@@ -498,10 +520,8 @@ class Crawler():
     
     def scoot(self, counter_x):
         transfer = 1
-        black_pass = pygame.image.load("images/black_pass.png")
-        black_pass = pygame.transform.scale(black_pass,(1600,900))
         while transfer == 1:
-            blit_image([width, height], width+counter_x, 0, black_pass, 1, 1, 1)
+            blit_image([width, height], width+counter_x, 0, self.fade_image, 1, 1, 1)
             print(counter_x)
             counter_x += 1
             pygame.display.flip()
@@ -518,10 +538,10 @@ class Crawler():
     def fade_start_y(self, y, direction):
         # up
         if direction == "fade_up":
-            blit_image([width, y], 0, y-self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([width, y], 0, y-self.counter_y, self.fade_image, 1, 1, 1)
         # down
         if direction == "fade_down":
-            blit_image([width, y], 0, -y+self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([width, y], 0, -y+self.counter_y, self.fade_image, 1, 1, 1)
         finished = self.fade_counters_y(y)
         if finished:
             if direction == "fade_up":
@@ -534,10 +554,10 @@ class Crawler():
     def fade_finish_y(self, y, direction):
         # up
         if direction == "fade_up":
-            blit_image([width, y], 0, 0-self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([width, y], 0, 0-self.counter_y, self.fade_image, 1, 1, 1)
         # down
         if direction == "fade_down":
-            blit_image([width, y], 0, 0+self.counter_y, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([width, y], 0, 0+self.counter_y, self.fade_image, 1, 1, 1)
         finished = self.fade_counters_y(y)
         if finished:
             self.fade_dir = "fade_done"
@@ -545,10 +565,10 @@ class Crawler():
     def fade_start_x(self, x, direction):
         # left
         if direction == "fade_left":
-            blit_image([x, height], x-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([x, height], x-self.counter_x, 0, self.fade_image, 1, 1, 1)
         # right
         if direction == "fade_right":
-            blit_image([x, height], -x+self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([x, height], -x+self.counter_x, 0, self.fade_image, 1, 1, 1)
         finished = self.fade_counters_x(x)
         if finished:
             if direction == "fade_left":
@@ -561,10 +581,10 @@ class Crawler():
     def fade_finish_x(self, x, direction):
         # left
         if direction == "fade_left":
-            blit_image([x, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([x, height], 0-self.counter_x, 0, self.fade_image, 1, 1, 1)
         # right
         if direction == "fade_right":
-            blit_image([x, height], 0+self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            blit_image([x, height], 0+self.counter_x, 0, self.fade_image, 1, 1, 1)
         finished = self.fade_counters_x(x)
         if finished:
             self.fade_dir = "fade_done"

@@ -136,6 +136,12 @@ intro_1_quick = [[
     [None, "[Character creation]"]
 ], "intro_3_quick"]
 
+choices_test = [[
+    [None, "SELECTION"],
+    [None, "Option 1"],
+    [None, "Option 2"]
+], "intro_3", "intro_3"]
+
 intro_2 = [[
     [None, "You get out of bed and stretch your arms. Today seems like a good day to do nothing as usual."],
     ["Player", "Ah... another day in [city]. Another day of hiding away..."],

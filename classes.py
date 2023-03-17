@@ -21,6 +21,7 @@ class Character:
         self.chutzpah = 0
         self.name = ""
         self.background = ""
+        self.dialog_picture = ""
         self.portrait = "images/"
         self.portrait_dungeon = "images/"
         self.role = ""
@@ -72,6 +73,9 @@ class Character:
     def get_name(self):
         return self.name
     
+    def get_dialog_picture(self):
+        return self.dialog_picture
+    
     def get_portrait(self):
         return self.portrait
     
@@ -120,12 +124,16 @@ class Character:
     def set_name(self, value):
         self.name = value
 
+    def set_dialog_picture(self, value):
+        pic = pygame.image.load("images/" + value).convert_alpha()
+        self.dialog_picture = pic
+
     def set_portrait(self, value):
-        self.portrait = pygame.image.load("images/" + value)
+        self.portrait = pygame.image.load("images/" + value).convert_alpha()
         self.portrait_name = "images/" + value
 
     def set_portrait_dungeon(self, value):
-        portrait = pygame.image.load("images/" + value + ".png")
+        portrait = pygame.image.load("images/" + value + ".png").convert_alpha()
         portrait = pygame.transform.scale(portrait,(60,120))
         self.portrait_dungeon = portrait
         self.portrait_dungeon_name = "images/" + value
@@ -232,12 +240,18 @@ class BearKnight(Character):
         super().__init__()
         self.spread(stats)
         self.set_portrait("bear_portrait_100.png")
+        self.set_dialog_picture("bear.png")
         self.set_portrait_dungeon("bear")
         self.role = "BEAR KNIGHT"
 
     def spread(self, stats):
         Character.distribute_stats(self, ["chutz", "phys", "heart", "quick", "heal", "magic"], stats)
         self.calculate_stats()
+
+    def set_dialog_picture(self, value):
+        image = pygame.image.load("images/" + value).convert_alpha()
+        image = pygame.transform.scale(image, (700, 1021))
+        self.dialog_picture = image
 
 class Bookish(Character):
     def __init__(self, stats) -> None:
