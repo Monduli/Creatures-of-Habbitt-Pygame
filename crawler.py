@@ -25,6 +25,9 @@ class Creature():
     def get_rect(self):
         return self.rect
     
+    def set_image(self, value):
+        self.image = get_portrait(value)
+    
     def next_image(self):
         if self.current_frame+1 < len(self.animation_frames):
             self.current_frame += 1
@@ -41,9 +44,8 @@ class PlayerMap(Creature):
         self.mc = mc
 
 class EnemyMap(Creature):
-    def __init__(self, enemy, display, x, y, image, animation_frames):
+    def __init__(self, display, x, y, image, animation_frames):
         super().__init__(display, x, y, image, animation_frames)
-        self.enemy = enemy
         
 
 class Crawler():
@@ -81,6 +83,8 @@ class Crawler():
         self.transfer = 0
         self.transfer_complete = 0
 
+        self.enemy_set = 0
+
     def start(self, prefix):
         goblin_frames = [get_portrait("Goblin_Stand")]
         goblin = Enemy("Goblin", 10, 10, 10, 10, 10, 10)
@@ -100,17 +104,43 @@ class Crawler():
         self.oo_combat.play(-1)
         self.in_combat.play(-1)
 
+    def start_player(self):
+        character = self.party[0]
+        animation_frames_player = []
+        for x in range (0, 2):
+            image = pygame.image.load(self.party[0].get_portrait_dungeon_name() + "_" + str(x) + ".png")
+            image = pygame.transform.scale(image,(90, 160))
+            animation_frames_player.append(image)
+        self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon(), animation_frames_player)
+
+    def start_enemy(self, port_name):
+        enemy_frames = [get_portrait(port_name), get_portrait(port_name)]
+        self.enemy = EnemyMap(self.screen, width/2, height/2, enemy_frames[0], enemy_frames)
+
+    def start_audio(self, prefix):
+        pygame.mixer.init()
+        self.in_combat = pygame.mixer.Sound("audio/bgm/" + prefix + "dungeon_combat.wav")
+        self.oo_combat = pygame.mixer.Sound("audio/bgm/" + prefix + "dungeon_ooc.wav")
+        self.in_combat.set_volume(0)
+        self.oo_combat.play(-1)
+        self.in_combat.play(-1)
+
     def quit(self):
         pygame.mixer.quit()
         pygame.quit()
         sys.exit()
 
-    def play(self, party, dungeon, audio_prefix, fade_in=False):
+    def play(self, party, dungeon, prefix, fade_in=False):
+        d = dl.get_dungeon_layout(prefix)
+        dungeon_rooms = d[0]
+        dungeon_enemies = d[1]
+
         self.party = party
-        self.start(audio_prefix)
-        #gluPerspective(45, (1600/900), 0.1, 50.0)
-        #glTranslatef(0.0, 0.0, -5)
-        # Set all party member HPs to max before beginning
+        port_name = dungeon_rooms[0][1]
+        self.start_player()
+        if port_name != None:
+            self.start_enemy(port_name)
+        self.start_audio(prefix)
 
         player_rect = self.player.get_rect()
         enemy_rect = self.enemy.get_rect()
@@ -131,9 +161,7 @@ class Crawler():
         animation_timer = pygame.time.get_ticks()
 
         current_room = 0
-
-        dungeon_rooms = dl.get_dungeon_layout("cave")
-
+        
         self.fade_image = pygame.transform.scale(self.fade_image,(1600,900))
 
         while True:
@@ -143,6 +171,21 @@ class Crawler():
             south_door = pygame.Rect(650, 100, 150, 50)
             
             now = pygame.time.get_ticks()
+
+            if self.enemy_set == 0:
+                print(dungeon_enemies[current_room][0])
+                if dungeon_enemies[current_room][0][0] != None:
+                    #px = random.randint(485, 1055)
+                    #py = random.randint(143, 750)
+                    px = random.randint(600, 800)
+                    py = random.randint(300, 600)
+                    self.enemy.x = px
+                    self.enemy.y = py
+                    self.enemy_set = 1
+                else:
+                    self.enemy.x = 3000
+                    self.enemy.y = 3000
+                    self.enemy_set = 1
             
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
             player_rect.x, player_rect.y = self.player.x, self.player.y
@@ -185,6 +228,9 @@ class Crawler():
                     current_room = dungeon_rooms[current_room][4]
                     self.player.y = 700
                     self.player.x = width/2 - 50
+                if dungeon_enemies[current_room][1] != None:
+                    self.enemy.set_image(dungeon_enemies[current_room][1])
+                self.enemy_set = 0
                 self.transfer = 3
 
 
@@ -206,8 +252,9 @@ class Crawler():
                 self.counter_x = 0
                 self.end_fade_transfer = 1
                 self.move_to_match = 0
+                in_play = 0
 
-            self.draw_gl_scene(dungeon_rooms, current_room, party)
+            self.draw_gl_scene(dungeon_rooms, current_room, party, dungeon_enemies)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
 
             pressed = pygame.key.get_pressed()
@@ -327,12 +374,14 @@ class Crawler():
             return True
         return False
 
-    def draw_gl_scene(self, dungeon_rooms, current_room, party):
+    def draw_gl_scene(self, dungeon_rooms, current_room, party, dungeon_enemies):
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
         self.blit_bg_camera(dungeon_rooms[current_room][0], False)
-        if self.player.y < self.enemy.y:
+        if dungeon_enemies[current_room][1] == None:
+            self.player.draw()
+        elif self.player.y < self.enemy.y:
             self.enemy.draw()
             self.player.draw()
         else:
