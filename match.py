@@ -144,14 +144,16 @@ class Board(object):
         return j * self.w + i
     
     def busy(self):
-        if self.wait > 0:
+        if self.wait > 0 and not (self.refill or self.matches):
+            if self.wait == 1:
+                print("Wait diminished")
             self.wait -= 1
             return True
         return self.refill or self.matches
     
     def tick(self, dt, display):
         if self.refill or self.matches:
-            self.wait = 100
+            self.wait = 1000
         if self.refill:
             for c in self.refill:
                 c.tick(dt)
@@ -222,9 +224,7 @@ class Board(object):
         global in_curr_match
         current_matches = match_list
         if len(current_matches) > 0:
-            print(current_matches)
             for x in current_matches:
-                print(self.board[x[0]].shape, self.board[x[1]].shape, self.board[x[2]].shape)
                 if x[0] not in in_curr_match:
                     curr_match.append(self.board[x[0]].shape)
                 in_curr_match.append(x[0])
@@ -323,6 +323,8 @@ class MatchGame(object):
         self.talking_length = 0
         self.talking_timer = 0
         self.talking = 0
+
+        self.debug = 0
  
 
     def start(self):
@@ -349,7 +351,8 @@ class MatchGame(object):
 
         self.party = party
         # The list of enemies in this particular dungeon.
-        print(enemies)
+        if self.debug == 1:
+            print(enemies)
         self.enemy = enemies
 
         # The turn order for the party.
@@ -425,9 +428,10 @@ class MatchGame(object):
 
         character_swap_timing = 0
         time_to_swap = 0
-        character_swap_timer = 0
+        character_swap_timer = None
 
         in_curr_match_timer = 0
+        check = None
 
         while matches:
             if len(self.board.find_matches()) > 0:
@@ -435,7 +439,15 @@ class MatchGame(object):
             else:
                 matches = False
 
+        curr_character = party_current
+
         while True:
+            if curr_character != party_current:
+                print("Character swapped")
+                curr_character = party_current
+            if check != self.p_text:
+                print(self.party_text)
+                check = self.p_text
             party_turns = turn_order(self.party)
             next_turn = 0
             if self.enemy_active not in self.enemy and len(self.enemy) > 0:
@@ -595,7 +607,7 @@ class MatchGame(object):
                     cell_to_drag.x = mouse_x + offset_x
                     cell_to_drag.y = mouse_y + offset_y
             
-            if curr_match != []:
+            if curr_match != [] and self.debug == 1:
                 print(curr_match)
             # If any matches are made by the player  
             # TODO: Make it not change party members in the middle of a combo 
@@ -605,7 +617,7 @@ class MatchGame(object):
                     for item in curr_match:
                         if self.debug == 1:
                             print("Debug: curr_match: " + curr_match[0])
-                        if len(self.party_text) > 0:
+                        if len(self.party_text) > 1:
                             self.party_text.remove(self.party_text[0])
                         in_curr_match_timer = pygame.time.get_ticks()
                         result = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
@@ -617,25 +629,26 @@ class MatchGame(object):
                     global in_curr_match
                     in_curr_match = []
                         
-                if self.board.busy() == [] and character_swap_timing == 1:
+                if not self.board.busy() and character_swap_timing == 1:
                     character_swap_timer = pygame.time.get_ticks()
                     time_to_swap = 1
-                
+                    character_swap_timing = 0
+
                 # if matches have been made previously and the board isn't processing them
-                if (pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1) or self.removed == 1:
-                    if self.debug == 1:
-                        print("Changing party member")
-                    if self.removed != 1:
+                if character_swap_timer != None and self.board.wait == 0:
+                    if (pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1) or self.removed != 0:
+                        if self.debug == 1:
+                            print("Changing party member")
                         if party_current+1 < len(party_turns):
                             party_current += 1
                         else:
                             party_current = 0
-                    self.player_active = party_turns[party_current][0]
-                    self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
-                    curr_match = []
-                    character_swap_timer = 0
-                    time_to_swap = 0
-                    self.removed = 0
+                        self.player_active = party_turns[party_current][0]
+                        self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
+                        curr_match = []
+                        character_swap_timer = None
+                        time_to_swap = 0
+                        self.removed = 0
 
                 if now - timer > 5000:
                     flash = self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
@@ -690,9 +703,9 @@ class MatchGame(object):
                     self.debug_timer = pygame.time.get_ticks()
 
                 if pygame.time.get_ticks() - text_timer > 2000:
-                    if len(self.party_text) < 2:
-                        if self.party_text[0][0:5] != "It is":
-                            self.party_text.append("It is " + party_turns[party_current][0].get_name() + "'s turn.")
+                    if len(self.party_text) == 1:
+                        if self.party_text[0][0:5] != "It is" and len(self.party_text) > 1:
+                            self.party_text = ["It is " + party_turns[party_current][0].get_name() + "'s turn."]
 
             if self.timing == 1:
                 print("TICK START: " + str(self.debug_timer - pygame.time.get_ticks()))
