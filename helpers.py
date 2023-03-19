@@ -236,8 +236,12 @@ def get_portrait(character):
         portrait = pygame.image.load("images/dogdude.png")
         portrait = pygame.transform.scale(portrait,(60,120))
         return portrait
-    if character in ["Bazongle"]:
+    if character in ["Bazongle_Stand"]:
         portrait = pygame.image.load("images/bazongle.png")
+        portrait = pygame.transform.scale(portrait,(96,96))
+        return portrait
+    if character in ["Bazongle"]:
+        portrait = pygame.image.load("images/bazongle_port.png")
         portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
     

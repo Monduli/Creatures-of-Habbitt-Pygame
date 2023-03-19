@@ -334,7 +334,7 @@ class MatchGame(object):
         pygame.quit()
         sys.exit()
 
-    def play(self, party, dungeon, display=screen, need_fade=0):
+    def play(self, party, enemies, display=screen, need_fade=0):
         self.start()
         self.end_fade = need_fade
         if display != screen:
@@ -349,8 +349,8 @@ class MatchGame(object):
 
         self.party = party
         # The list of enemies in this particular dungeon.
-        print(dungeon)
-        self.enemy = dungeon
+        print(enemies)
+        self.enemy = enemies
 
         # The turn order for the party.
         party_turns = turn_order(party)
@@ -385,12 +385,16 @@ class MatchGame(object):
         self.player_active = party_turns[party_current][0]
 
         # Set text to whose turn it is
-        self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
-        self.enemy_text.append("It is " + self.enemy_active.get_name() + "'s turn.")
+        if self.player_active != None:
+            self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
+        if self.enemy_active != None:
+            self.enemy_text.append("It is " + self.enemy_active.get_name() + "'s turn.")
 
         # These hold the current text to update the status text boxes with.
-        self.p_text = self.party_text[0]
-        self.e_text = self.enemy_text[0]
+        if len(self.party_text) > 0:
+            self.p_text = self.party_text[0]
+        if len(self.enemy_text) > 0:
+            self.e_text = self.enemy_text[0]
         cell_to_drag = None
         cell_dragging = False
 
@@ -456,7 +460,7 @@ class MatchGame(object):
                 self.party_text = ["Your party was victorious!"]
                 self.p_text = self.party_text[0]
                 xp = 0
-                for foe in dungeon[0]:
+                for foe in enemies:
                     print(foe.get_xp())
                     xp += foe.get_xp()
                 xp_string = "Your party receives XP experience points!"
@@ -652,11 +656,9 @@ class MatchGame(object):
                     print("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
                     self.debug_timer = pygame.time.get_ticks()
                 if now - text_timer > 1000:
-                    if len(self.party_text) > 1:
-                        self.party_text.remove(self.p_text)
-                        if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
-                            self.party_text.remove(self.party_text[0])
-                        text_timer = pygame.time.get_ticks()
+                    if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
+                        self.party_text.remove(self.party_text[0])
+                    text_timer = pygame.time.get_ticks()
                 if now - text_timer < 2000:
                     if now - text_timer > 1000 and hold == 0:
                         if len(self.enemy_text) > 1:
@@ -672,14 +674,16 @@ class MatchGame(object):
 
                 if self.debug == 1:
                     print("Debug: Checking for 'It is'")
-                if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
-                    self.party_text.remove(self.party_text[0])
-                    text_timer = pygame.time.get_ticks()
-                    
-                if self.enemy_text[0][0:5] == "It is" and len(self.enemy_text) > 1:
-                    self.enemy_text.remove(self.enemy_text[0])
-                    self.e_text = self.enemy_text[0]
-                    text_timer = pygame.time.get_ticks()
+                if len(self.party_text) > 0:
+                    if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
+                        self.party_text.remove(self.party_text[0])
+                        text_timer = pygame.time.get_ticks()
+
+                if len(self.enemy_text) > 0:    
+                    if self.enemy_text[0][0:5] == "It is" and len(self.enemy_text) > 1:
+                        self.enemy_text.remove(self.enemy_text[0])
+                        self.e_text = self.enemy_text[0]
+                        text_timer = pygame.time.get_ticks()
 
                 if self.debug == 1:
                     print("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))

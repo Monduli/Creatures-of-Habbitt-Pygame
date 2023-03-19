@@ -30,6 +30,6 @@ cave_enemies = [
     "Goblin_Stand"
     ],[
     [Enemy("Bazongle", 20000, 5, 5, 5, 5, 100),],
-    "Bazongle"
+    "Bazongle_Stand"
     ]
 ]

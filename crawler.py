@@ -37,6 +37,9 @@ class Creature():
     def image_stop(self):
         self.current_frame = 0
 
+    def set_rect(self):
+        self.rect = pygame.Rect(self.x, self.y, 96, 96)
+
 
 class PlayerMap(Creature):
     def __init__(self, mc, display, x, y, image, animation_frames):
@@ -118,8 +121,10 @@ class Crawler():
         self.enemy = EnemyMap(self.screen, width*2, height*2, goblin_frames[0], goblin_frames)
 
     def amend_enemy(self, port_name):
+        px = random.randint(600, 800)
+        py = random.randint(300, 600)
         enemy_frames = [get_portrait(port_name), get_portrait(port_name)]
-        self.enemy = EnemyMap(self.screen, width/2, height/2, enemy_frames[0], enemy_frames)
+        self.enemy = EnemyMap(self.screen, px, py, enemy_frames[0], enemy_frames)
 
     def start_audio(self, prefix):
         pygame.mixer.init()
@@ -138,6 +143,8 @@ class Crawler():
         d = dl.get_dungeon_layout(prefix)
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
+
+        accel_x, accel_y = 0, 0
 
         self.party = party
         enemy_port_name = dungeon_rooms[0][1]
@@ -162,6 +169,8 @@ class Crawler():
         self.debug = 0
         self.debug_timer = pygame.time.get_ticks()
         animation_timer = pygame.time.get_ticks()
+        move_timer = 0
+        charge_timer = 0
 
         current_room = 0
         
@@ -169,9 +178,6 @@ class Crawler():
 
         while True:
             enemy_port_name = dungeon_enemies[current_room][1]
-            if enemy_port_name != None:
-                self.amend_enemy(enemy_port_name)
-                enemy_rect = self.enemy.get_rect()
             left_door = pygame.Rect(447, 388, 50, 90)
             top_door = pygame.Rect(650, 750, 150, 50)
             right_door = pygame.Rect(1050, 430, 50, 90)
@@ -180,8 +186,9 @@ class Crawler():
             now = pygame.time.get_ticks()
 
             if self.enemy_set == 0:
-                print(dungeon_enemies[current_room][0])
                 if dungeon_enemies[current_room][0][0] != None:
+                    self.amend_enemy(enemy_port_name)
+                    enemy_rect = self.enemy.get_rect()
                     #px = random.randint(485, 1055)
                     #py = random.randint(143, 750)
                     px = random.randint(600, 800)
@@ -189,10 +196,64 @@ class Crawler():
                     self.enemy.x = px
                     self.enemy.y = py
                     self.enemy_set = 1
+                    charge_timer = pygame.time.get_ticks()
                 else:
                     self.enemy.x = 3000
                     self.enemy.y = 3000
                     self.enemy_set = 1
+
+            # chase mechanic (test currently)
+            if enemy_port_name == "Bazongle_Stand":
+                if self.player.x > self.enemy.x:
+                    accel_x = 5
+                elif self.player.x < self.enemy.x:
+                    accel_x = -5
+                else:
+                    accel_x = 0
+                if self.player.y > self.enemy.y:
+                    accel_y = 5
+                elif self.player.y < self.enemy.y:
+                    accel_y = -5
+                else:
+                    accel_y = 0
+                self.enemy.x += accel_x
+                self.enemy.y += accel_y
+            
+            if enemy_port_name == "Goblin_Stand" and now - move_timer > 100:
+                if now - charge_timer < 10000:
+                    choice = random.randint(0, 11)
+                    if choice == 0 or choice == 5:
+                        accel_x += 5
+                    elif choice == 1 or choice == 6:
+                        accel_x += -5
+                    elif choice == 2 or choice == 7:
+                        accel_x = 0
+                    elif choice == 3 or choice == 8:
+                        accel_y += 5
+                    elif choice == 4 or choice == 9:
+                        accel_y += -5
+                    elif choice == 10 or choice == 11:
+                        accel_y = 0
+                    if 485 < self.enemy.x + accel_x < 1055:
+                        self.enemy.x += accel_x
+                    if 143 < self.enemy.y + accel_y < 750:
+                        self.enemy.y += accel_y
+                    move_timer = pygame.time.get_ticks()
+                else:
+                    if self.player.x > self.enemy.x:
+                        accel_x = 3
+                    elif self.player.x < self.enemy.x:
+                        accel_x = -3
+                    else:
+                        accel_x = 0
+                    if self.player.y > self.enemy.y:
+                        accel_y = 3
+                    elif self.player.y < self.enemy.y:
+                        accel_y = -3
+                    else:
+                        accel_y = 0
+                    self.enemy.x += accel_x
+                    self.enemy.y += accel_y
             
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
             player_rect.x, player_rect.y = self.player.x, self.player.y
