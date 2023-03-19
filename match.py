@@ -349,8 +349,8 @@ class MatchGame(object):
 
         self.party = party
         # The list of enemies in this particular dungeon.
-        self.enemy = dungeon[0]
-        exp = dungeon[1]
+        print(dungeon)
+        self.enemy = dungeon
 
         # The turn order for the party.
         party_turns = turn_order(party)
@@ -601,7 +601,8 @@ class MatchGame(object):
                     for item in curr_match:
                         if self.debug == 1:
                             print("Debug: curr_match: " + curr_match[0])
-                        self.party_text.remove(self.party_text[0])
+                        if len(self.party_text) > 0:
+                            self.party_text.remove(self.party_text[0])
                         in_curr_match_timer = pygame.time.get_ticks()
                         result = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
                         curr_match.remove(curr_match[0])
@@ -1152,5 +1153,5 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
     party = fill_party()
-    state = MatchGame(screen).play(party, get_dungeon("cave"))
+    state = MatchGame(screen).play(party, get_dungeon("cave")[0])
     print("Your final result was: " + state)

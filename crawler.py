@@ -250,7 +250,7 @@ class Crawler():
                 print("Moving to match")
                 self.in_combat.set_volume(self.oo_combat.get_volume())
                 self.oo_combat.set_volume(0)
-                state = match.MatchGame(self.screen).play(party, dungeon, self.screen, 1)
+                state = match.MatchGame(self.screen).play(party, dungeon_enemies[current_room][0], self.screen, 1)
                 self.oo_combat.set_volume(self.in_combat.get_volume())
                 self.in_combat.set_volume(0)
                 if state == "WIN":
