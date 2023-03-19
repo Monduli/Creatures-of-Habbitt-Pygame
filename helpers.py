@@ -127,9 +127,7 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False,
 def get_dungeon(dungeon):
     if dungeon == "cave":
         return [[
-            Enemy("Gobble", 10, 5, 5, 5, 5, 100),
-            Enemy("Goobble", 10, 5, 5, 5, 5, 100),
-            Enemy("Gabble", 10, 5, 5, 5, 5, 100)
+            Enemy("Bazongle", 20000, 5, 5, 5, 5, 100)
         ], 300]
 
 
@@ -237,6 +235,10 @@ def get_portrait(character):
     if character in ["dogdude"]:
         portrait = pygame.image.load("images/dogdude.png")
         portrait = pygame.transform.scale(portrait,(60,120))
+        return portrait
+    if character in ["Bazongle"]:
+        portrait = pygame.image.load("images/bazongle.png")
+        portrait = pygame.transform.scale(portrait,(96,96))
         return portrait
     
 def get_portrait_2(character):
@@ -413,8 +415,8 @@ def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjus
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    rect_width = reverse_cgls(right, width) - reverse_cgls(left, width)
-    rect_height = reverse_cgls(bot, height) - reverse_cgls(top, height)
+    rect_width = abs(reverse_cgls(right, width) - reverse_cgls(left, width))
+    rect_height = abs(reverse_cgls(bot, height) - reverse_cgls(top, height))
     drawTextWrap_internal(rect_color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
 
 def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, center=False):                                                

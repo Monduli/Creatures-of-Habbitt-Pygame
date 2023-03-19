@@ -46,12 +46,12 @@ BLUE = loadify("images/tabs/blue_gem_new.png")
 PURPLE = loadify("images/tabs/purple_gem_new.png")
 GREEN = loadify("images/tabs/green_gem_new.png")
 ORANGE = loadify("images/tabs/orange_gem_new.png")
-YELLOW = loadify("images/tabs/yellow_gem_new.png")
+PINK = loadify("images/tabs/pink_gem_new.png")
 WINDOW_WIDTH = 1600
 WINDOW_HEIGHT = 900
 FONT_SIZE = 36
 TEXT_OFFSET = MARGIN + 5
-SHAPES_LIST = [RED, BLUE, PURPLE, GREEN, ORANGE, YELLOW]
+SHAPES_LIST = [RED, BLUE, PURPLE, GREEN, ORANGE, PINK]
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -101,7 +101,7 @@ class Board(object):
         self.explosion = [loadify('images/explosion{}.png'.format(i)) for i in range(1, 2)]
         for explode in self.explosion:
             explode = pygame.transform.scale(explode, (50,50))
-        shapes = 'red blue purple green orange yellow'
+        shapes = 'red blue purple green orange pink'
         self.shapes = []
         self.type_shape = []
         for shape in shapes.split():
@@ -109,8 +109,6 @@ class Board(object):
             to_add = pygame.transform.scale(to_add, (100, 100))
             self.shapes.append(to_add)
             self.type_shape.append(shape)
-        for shape in self.shapes:
-            shape = pygame.transform.scale(shape,(50,50))
         #self.background = background
         self.blank = loadify("images/blank.png")
         self.w = width
@@ -124,6 +122,8 @@ class Board(object):
         self.wait = 0
         self.boom_played = 0
         self.boom_sound = pygame.mixer.Sound("audio/sfx/boom.wav")
+        global in_curr_match
+        in_curr_match = []
         
 
     def randomize(self):
@@ -132,7 +132,7 @@ class Board(object):
         """
         for i in range(self.size):
             c = random.randint(0, 5)
-            self.board[i] = Cell(self.shapes[c], self.type_shape[c], i)
+            self.board[i] = Cell(self.shapes[c], self.type_shape[self.shapes.index(self.shapes[c])], i)
         #row = self.board
         #print("["+row[0].shape+"]["+row[1].shape+"]["+row[2].shape+"]["+row[3].shape+"]["+row[4].shape+"]["+row[5].shape+"]["+row[6].shape+"]["+row[7].shape+"]["+row[8].shape+"]["+row[9].shape+"]")
         #print("["+row[10].shape+"]["+row[11].shape+"]["+row[12].shape+"]["+row[13].shape+"]["+row[14].shape+"]["+row[15].shape+"]["+row[16].shape+"]["+row[17].shape+"]["+row[18].shape+"]["+row[19].shape+"]")
@@ -213,11 +213,21 @@ class Board(object):
                     match = list(group)
                     if len(match) >= MINIMUM_MATCH:
                         yield match
-                        global matches
-                        if matches != True:
-                            global curr_match
-                            curr_match.append(self.board[match[0]].shape)
-        return list(matches())
+        match_list = list(matches())
+        self.send_matches_to_game(match_list)
+        return match_list
+    
+    def send_matches_to_game(self, match_list):
+        global curr_match
+        global in_curr_match
+        current_matches = match_list
+        if len(current_matches) > 0:
+            print(current_matches)
+            for x in current_matches:
+                print(self.board[x[0]].shape, self.board[x[1]].shape, self.board[x[2]].shape)
+                if x[0] not in in_curr_match:
+                    curr_match.append(self.board[x[0]].shape)
+                in_curr_match.append(x[0])
     
     def update_matches(self, image, display):
         for match in self.matches:
@@ -226,6 +236,7 @@ class Board(object):
                 # TODO: Make circle that expands outward (with transparency) with every match
                 #circle = pygame.transform.scale(circle, (50, 50))
                 self.board[position].image = image
+                self.board[position].shape = None
                 if self.boom_played == 0:
                     self.boom_sound.play()
                     self.boom_played = 1
@@ -243,6 +254,7 @@ class Board(object):
                 if self.board[pos].image != self.blank:
                     c = self.board[target]
                     c.image = self.board[pos].image
+                    c.shape = self.type_shape[self.shapes.index(c.image)]
                     c.offset = (target - pos) // self.w
                     c.y = c.y + c.offset
                     if c.offset == 0:
@@ -254,7 +266,7 @@ class Board(object):
                 c = self.board[pos]
                 ran = random.randint(0, 5)
                 c.image = self.shapes[ran]
-                c.shape = self.type_shape[ran]
+                c.shape = self.type_shape[self.shapes.index(c.image)]
                 c.set_i(pos)
                 c.offset = offset
                 yield c
@@ -411,6 +423,8 @@ class MatchGame(object):
         time_to_swap = 0
         character_swap_timer = 0
 
+        in_curr_match_timer = 0
+
         while matches:
             if len(self.board.find_matches()) > 0:
                 self.board.randomize()
@@ -453,7 +467,6 @@ class MatchGame(object):
                 self.state = "WAITING"
 
             if self.state == "WAITING" and now - wait_timer > 4000:
-                print("In")
                 self.start_fade = 1
                 self.counter_x = 0
                 self.state = "WAITING 2"
@@ -463,14 +476,14 @@ class MatchGame(object):
             if self.return_to_crawl == 1:
                 return "WIN"
             #return_rect = self.draw(self.party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
-            if self.timing == 1:
+            if self.debug == 1:
                 print("DRAW: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
             self.flash_red = False
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
             self.swap_time += dt
 
-            if self.timing == 1:
+            if self.debug == 1:
                 print("EVENTS: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
 
@@ -551,7 +564,6 @@ class MatchGame(object):
                                                 cell.y = store_y
                                                 cell_to_drag = None
                                                 reset = 1
-                                                self.debug = 1
                                             else:
                                                 self.swap(new_i, cell_i)
                             if reset != 1:
@@ -578,7 +590,9 @@ class MatchGame(object):
                     #        current_i = new_i
                     cell_to_drag.x = mouse_x + offset_x
                     cell_to_drag.y = mouse_y + offset_y
-
+            
+            if curr_match != []:
+                print(curr_match)
             # If any matches are made by the player  
             # TODO: Make it not change party members in the middle of a combo 
             if self.state == "PLAY":   
@@ -586,20 +600,26 @@ class MatchGame(object):
                     character_swap_timing = 1
                     for item in curr_match:
                         if self.debug == 1:
-                            print(curr_match[0])
+                            print("Debug: curr_match: " + curr_match[0])
+                        self.party_text.remove(self.party_text[0])
+                        in_curr_match_timer = pygame.time.get_ticks()
                         result = self.process_action(curr_match[0], party, self.enemy, self.player_active, self.enemy_active, party_turns, self.enemy_turns)
                         curr_match.remove(curr_match[0])
                         if result == "WIN":
                             self.state = "WIN"
+                
+                if len(curr_match) == 0 and now - in_curr_match_timer > 1000:
+                    global in_curr_match
+                    in_curr_match = []
                         
-            if self.state == "PLAY": 
                 if self.board.busy() == [] and character_swap_timing == 1:
                     character_swap_timer = pygame.time.get_ticks()
                     time_to_swap = 1
                 
                 # if matches have been made previously and the board isn't processing them
                 if (pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1) or self.removed == 1:
-                    print("Changing party member")
+                    if self.debug == 1:
+                        print("Changing party member")
                     if self.removed != 1:
                         if party_current+1 < len(party_turns):
                             party_current += 1
@@ -621,8 +641,11 @@ class MatchGame(object):
         
                 # update the box text with what's going on
                 if self.debug == 1:
-                    print("Debug: Updating textboxes") 
-                self.p_text = self.party_text[0]
+                    print("Debug: Updating textboxes")
+                if len(self.party_text) > 0: 
+                    self.p_text = self.party_text[0]
+                else:
+                    self.p_text = ""
             
                 if self.debug == 1:
                     print("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
@@ -705,12 +728,16 @@ class MatchGame(object):
                 self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
                 self.fullscreen = 0
-        elif key == K_d:
-            x = 1600
-            y = 900
-            r = 1600
-            for value in range(0, 100):
-                drawCircleGL(x - value, y - value, 0, r - value, 20)
+        elif key == K_t:
+            to_print = []
+            for x in range(len(self.board.board)+1):
+                if len(to_print) < 10:
+                    to_print.append(self.board.board[x].shape)
+                elif len(to_print) >= 10 or x+1 >= 89:
+                    print(to_print)
+                    to_print = []
+                    if x+1 < 90:
+                        to_print.append(self.board.board[x].shape)
 
     def swap(self, i, j):
         self.swap_time = 0.0
@@ -753,13 +780,13 @@ class MatchGame(object):
             # heal active party member
             return self.green_heal(player_active, party)
         elif action == "orange":
-            return self.orange_support(player_active, party)
+            return self.orange_buff(player_active, party)
             # should grant support points
         elif action == "blue":
             return self.blue_debuff(player_active, enemy)
             # should buff the user
-        elif action == "yellow":
-            return self.yellow_buff(player_active, party)
+        elif action == "pink":
+            return self.pink_support(player_active, party)
             # should debuff the enemy
         return update_text
           
@@ -780,7 +807,7 @@ class MatchGame(object):
             if len(enemy) == 0:
                 return "WIN"
             
-    def orange_support(self, player_active, party):
+    def pink_support(self, player_active, party):
         sup_num = 10 * player_active.get_chutzpah()
         choices = []
         name = player_active.get_name()
@@ -801,7 +828,7 @@ class MatchGame(object):
         update_text = name + " debuffed " + target.get_name() + " with -" + str(debuff_num) + " " + debuff_type + "!"
         self.party_text.append(update_text)
     
-    def yellow_buff(self, player_active, party):
+    def orange_buff(self, player_active, party):
         buff_num = 10
         buff_type = "Attack"
         target = random.choice(party)
@@ -836,13 +863,16 @@ class MatchGame(object):
             heal_target = None
             for player in party:
                 if player.get_chp() < player.get_hp():
-                    player.set_chp(player.get_chp() + heal)
+                    if player.get_chp() + heal > player.get_hp():
+                        player.set_chp(player.get_hp())
+                    else:
+                        player.set_chp(player.get_chp() + heal)
                     heal_target = player
                     break
             if heal_target != None:
                 update_text = player_active.get_name() + " healed " + heal_target.get_name() + " for " + str(heal) + " points."
             else:
-                update_text = player_active.get_name() + " tried to heal, but was at full health already."
+                update_text = player_active.get_name() + " tried to heal, but the party was at full health already."
         elif player_active.get_hp() < player_active.get_chp() + heal:
             player_active.set_chp(player_active.get_hp())
             update_text = player_active.get_name() + " healed for " + str(heal) + " points."
@@ -860,24 +890,22 @@ class MatchGame(object):
         target = player_active
         if e_attack > p_defense:
             dmg = e_attack - p_defense
-            target.set_chp(target.get_chp() - (dmg))
-            enemy_text = attacker.get_name() + " attacked " + target.get_name() + " for " + str(dmg) + " damage!"
-            self.enemy_text.append(enemy_text)
-            if target.get_chp() == 0:
-                update_text = target.get_name() + " has fallen!"
-                self.party_text.append(update_text)
-                self.party.remove(target)
-                self.removed = target
-            for member in party:
-                if member.get_chp() <= 0:
-                    continue
-                else:
-                    return enemy_text
-            return "DEAD"
         else:
-            enemy_text = attacker.get_name() + "'s attack against " + target.get_name() + " was fruitless!"
-            self.enemy_text.append(enemy_text)
-            return 0
+            dmg = 1
+        target.set_chp(target.get_chp() - (dmg))
+        enemy_text = attacker.get_name() + " attacked " + target.get_name() + " for " + str(dmg) + " damage!"
+        self.enemy_text.append(enemy_text)
+        if target.get_chp() == 0:
+            update_text = target.get_name() + " has fallen!"
+            self.party_text.append(update_text)
+            self.party.remove(target)
+            self.removed = target
+        for member in party:
+            if member.get_chp() <= 0:
+                continue
+            else:
+                return enemy_text
+        return "DEAD"
         
     def pyg_wait(self, seconds):
         last = pygame.time.get_ticks()
@@ -993,7 +1021,10 @@ class MatchGame(object):
             # enemy 1
         if len(enemy) > 0:
             gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
-            gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
+            if enemy[0].get_hp() > 999:
+                gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()), .995, 2)  
+            else:
+                gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
         else:
             gl_text(self.font, "BLACK", 1, .28, -.7, -.9, "No Enemy Remains", .995, 1.4)
             gl_text(self.font, "BLACK", 1, .28, -.8, -9, "HP: 0/0", .995, 2)

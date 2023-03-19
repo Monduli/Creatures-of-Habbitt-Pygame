@@ -29,7 +29,7 @@ cave_enemies = [
     #enemy portrait for dungeon
     "Goblin_Stand"
     ],[
-    [Enemy("Ultra-Gob", 500, 5, 5, 5, 5, 100),],
-    "Goblin_Stand"
+    [Enemy("Bazongle", 20000, 5, 5, 5, 5, 100),],
+    "Bazongle"
     ]
 ]

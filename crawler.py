@@ -113,7 +113,11 @@ class Crawler():
             animation_frames_player.append(image)
         self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon(), animation_frames_player)
 
-    def start_enemy(self, port_name):
+    def start_enemy(self):
+        goblin_frames = [get_portrait("Goblin_Stand")]
+        self.enemy = EnemyMap(self.screen, width*2, height*2, goblin_frames[0], goblin_frames)
+
+    def amend_enemy(self, port_name):
         enemy_frames = [get_portrait(port_name), get_portrait(port_name)]
         self.enemy = EnemyMap(self.screen, width/2, height/2, enemy_frames[0], enemy_frames)
 
@@ -136,11 +140,10 @@ class Crawler():
         dungeon_enemies = d[1]
 
         self.party = party
-        port_name = dungeon_rooms[0][1]
+        enemy_port_name = dungeon_rooms[0][1]
         self.start_player()
-        if port_name != None:
-            self.start_enemy(port_name)
         self.start_audio(prefix)
+        self.start_enemy()
 
         player_rect = self.player.get_rect()
         enemy_rect = self.enemy.get_rect()
@@ -165,6 +168,10 @@ class Crawler():
         self.fade_image = pygame.transform.scale(self.fade_image,(1600,900))
 
         while True:
+            enemy_port_name = dungeon_enemies[current_room][1]
+            if enemy_port_name != None:
+                self.amend_enemy(enemy_port_name)
+                enemy_rect = self.enemy.get_rect()
             left_door = pygame.Rect(447, 388, 50, 90)
             top_door = pygame.Rect(650, 750, 150, 50)
             right_door = pygame.Rect(1050, 430, 50, 90)
