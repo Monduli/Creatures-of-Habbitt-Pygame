@@ -13,29 +13,25 @@ height = 900
 
 def retrieve_background(choice):
     background = None
-    folder = "images/"
+    folder = "images/backgrounds/"
     if choice == "cave":
         background = pygame.image.load(folder + "cave.png")
-        background = pygame.transform.scale(background,(1600,900))
     elif choice == "forest":
         background = pygame.image.load(folder + "forest.png")
-        background = pygame.transform.scale(background,(1600,900))
     elif choice == "village":
         background = pygame.image.load(folder + "village.jpg")
-        background = pygame.transform.scale(background,(1600,900))
     elif choice == "map":
         background = pygame.image.load(folder + "map1.png")
-        background = pygame.transform.scale(background,(1600,900))
     elif choice == "villageinn":
         background = pygame.image.load(folder + "villagemenuinn.png")
-        background = pygame.transform.scale(background,(1600,900))
     elif choice == "villageinnnight":
         background = pygame.image.load(folder + "villagemenuinnnight.png")
-        background = pygame.transform.scale(background,(1600,900))
     elif choice == "tavern":
         background = pygame.image.load(folder + "tavern.png")
-        background = pygame.transform.scale(background,(1600,900))
+    elif choice == "outside_castle_wall":
+        background = pygame.image.load(folder + "outside_castle_wall.png")
     if background != None:
+        background = pygame.transform.scale(background,(1600,900))
         return background
     return Exception()
 
@@ -167,7 +163,6 @@ def add_party_member(name, char=None):
     if name == "maincharacter":
         return char
 
-
 def fill_party():
     mc = create_default_main_character()
     nsteen = BearKnight([15, 10, 10, 5, 5, 0])
@@ -179,6 +174,26 @@ def fill_party():
     cinna = Cleric([15, 10, 10, 5, 5, 0])
     cinna.set_name("Cinna")
     cinna.set_portrait("cinna_portrait_100.png")
+    party = [mc, nsteen, radish, cinna]
+    for char in party:
+        char.print_stats()
+    return party
+
+def boost_party():
+    mc = create_default_main_character()
+    mc.boost(9998, mc.stat_spread)
+    nsteen = BearKnight([15, 10, 10, 5, 5, 0])
+    nsteen.set_name("N. Steen")
+    nsteen.set_portrait_dungeon("bear")
+    nsteen.boost(9998, nsteen.stat_spread)
+    radish = Bookish([15, 10, 10, 5, 5, 0])
+    radish.set_name("Radish")
+    radish.set_portrait("rabbit_portrait_100.png")
+    radish.boost(9998, radish.stat_spread)
+    cinna = Cleric([15, 10, 10, 5, 5, 0])
+    cinna.set_name("Cinna")
+    cinna.set_portrait("cinna_portrait_100.png")
+    cinna.boost(9998, cinna.stat_spread)
     party = [mc, nsteen, radish, cinna]
     for char in party:
         char.print_stats()
@@ -541,7 +556,7 @@ def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjus
     return text
 
 def blit_bg(i, bg="cave.png", move=True):
-    background = pygame.image.load("images/" + bg).convert_alpha()
+    background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
     background = pygame.transform.scale(background,(1600,900))
     if move == True:
         blit_image([width, height], width+i, 0, background, 1, 1, 1)

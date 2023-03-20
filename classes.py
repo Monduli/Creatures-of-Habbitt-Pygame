@@ -9,6 +9,7 @@ import random
 
 class Character:
     def __init__(self) -> None:
+        self.level = 1
         self.hp = 0
         self.current_hp = 0
         self.physical_guard = 0
@@ -38,6 +39,9 @@ class Character:
         self.bonds = [0, 0, 0, 0, 0, 0, 0]
         self.buff = 0
         self.willpower = 0
+
+    def get_level(self):
+        return self.level
     
     def get_hp(self):
         return self.hp
@@ -196,6 +200,7 @@ class Character:
                    " CHUTZ: " + str(self.chutzpah))
     
     def level_up(self, spread):
+        self.level += 1
         temp = [random.randint(2, 3), random.randint(1, 2), random.randint(1, 2), random.randint(0, 1), random.randint(0, 1), random.randint(0, 1)]
         for i in range(6):
             if spread[i] == "phys":
@@ -210,6 +215,7 @@ class Character:
                 self.set_healing(self.get_healing()+temp[i])
             elif spread[i] == "chutz":
                 self.set_chutzpah(self.get_chutzpah()+temp[i])
+        self.calculate_stats()
 
     def add_support_points(self, target, points, mcname):
         if target == mcname:
@@ -231,11 +237,16 @@ class Character:
         if target == "8":
             self.bonds[8] += points
 
+    def boost(self, target, spread):
+        for x in range(0, target):
+            self.level_up(spread)
+
 class MainCharacter(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
-        self.role = "DISPLACED RULER"
+        self.role = "LEADER"
+        self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
 
     def spread(self, stats):
         self.distribute_stats(["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
@@ -246,6 +257,7 @@ class Martial(Character):
         super().__init__()
         self.spread(stats)
         self.role = "MARTIAL ADEPT"
+        self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
 
     def spread(self, stats):
         Character.distribute_stats(self, ["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
@@ -259,6 +271,7 @@ class BearKnight(Character):
         self.set_dialog_picture("bear.png")
         self.set_portrait_dungeon("bear")
         self.role = "BEAR KNIGHT"
+        self.stat_spread = ["chutz", "phys", "heart", "quick", "heal", "magic"]
 
     def spread(self, stats):
         Character.distribute_stats(self, ["chutz", "phys", "heart", "quick", "heal", "magic"], stats)
@@ -275,6 +288,7 @@ class Bookish(Character):
         self.spread(stats)
         self.role = "BOOKKEEPER"
         self.set_portrait("rabbit_portrait_100.png")
+        self.stat_spread = ["magic", "quick", "heal", "heart", "chutz", "phys"]
 
     def spread(self, stats):
         Character.distribute_stats(self, ["magic", "quick", "heal", "heart", "chutz", "phys"], stats)
@@ -286,6 +300,7 @@ class Merchant(Character):
         self.spread(stats)
         self.role = "MERCHANT"
         self.set_portrait("grapefart_portrait_100.png")
+        self.stat_spread = ["quick", "heal", "chutz", "phys", "heart", "magic"]
 
     def spread(self, stats):
         Character.distribute_stats(self, ["quick", "heal", "chutz", "phys", "heart", "magic"], stats)
@@ -297,6 +312,7 @@ class Cleric(Character):
         self.spread(stats)
         self.role = "APOTHECARY"
         self.set_portrait("cinna_portrait_100.png")
+        self.stat_spread = ["heal", "phys", "magic", "heart", "quick", "chutz"]
 
     def spread(self, stats):
         Character.distribute_stats(self, ["heal", "phys", "magic", "heart", "quick", "chutz"], stats)

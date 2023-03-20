@@ -358,7 +358,7 @@ class MatchGame(object):
         # The list of enemies in this particular dungeon.
         if self.debug == 1:
             print(enemies)
-        self.enemy = enemies
+        self.enemy = enemies.copy()
 
         # The turn order for the party.
         party_turns = turn_order(party)

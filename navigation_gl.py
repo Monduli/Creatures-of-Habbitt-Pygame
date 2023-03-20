@@ -124,7 +124,7 @@ class MainGame():
         self.background = retrieve_background("cave")
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-        self.user_text = dia.intro_1_quick
+        self.user_text = dia.intro_1
 
         dialog_rect = pygame.Rect(width-1550,height-250, 1500, 200)
         name_rect = pygame.Rect(width-1550, height-320, 300, 50)
@@ -156,56 +156,14 @@ class MainGame():
                 self.user_text = dia.process_state("cave_dungeon", state)
                 self.move_to_crawl = 0
             elif self.fade_over != 0:
-                if slots != [0,0,0] and self.debug == 1:
-                    print(slots)    
-                if slots[0] != 0:
-                    character = retrieve_character(slots[0], self.characters)
-                    blit_image((width, height), width-1500, 100, character, 1,1,1)
-                if slots[1] != 0:
-                    character = retrieve_character(slots[1], self.characters)
-                    if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
-                        blit_image((width, height), width/2-300, -50, character, 1,1,1)
-                    else:
-                        blit_image((width, height), width/2-150, 100, character, 1,1,1)
-                if slots[2] != 0:
-                    character = retrieve_character(slots[2], self.characters)
-                    if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
-                        blit_image((width, height), width - (width/2/2)-350, -50, character, 1,1,1)
-                    elif slots[2] == "Vizier":
-                        blit_image((width, height), width - (width/2/2)-100, 100, character, 1,1,1)
-                    else:
-                        blit_image((width, height), width - (width/2/2), 100, character, 1,1,1)
-                if slots[1] != 0 and slots[2] == 0:
-                    slots[2] = slots[1]
-                    slots[1] = 0
+                self.who_is_on_the_screen(slots)
 
                 gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), "Loading dungeon...", .7, 2.15, self.level)
                 self.fade_out()
                 pygame.display.flip()
                 clock.tick(60)
             else:
-                if slots != [0,0,0] and self.debug == 1:
-                    print(slots)    
-                if slots[0] != 0:
-                    character = retrieve_character(slots[0], self.characters)
-                    blit_image((width, height), width-1500, 100, character, 1,1,1)
-                if slots[1] != 0:
-                    character = retrieve_character(slots[1], self.characters)
-                    if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
-                        blit_image((width, height), width/2-300, -50, character, 1,1,1)
-                    else:
-                        blit_image((width, height), width/2-150, 100, character, 1,1,1)
-                if slots[2] != 0:
-                    character = retrieve_character(slots[2], self.characters)
-                    if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
-                        blit_image((width, height), width - (width/2/2)-350, -50, character, 1,1,1)
-                    elif slots[2] == "Vizier":
-                        blit_image((width, height), width - (width/2/2)-100, 100, character, 1,1,1)
-                    else:
-                        blit_image((width, height), width - (width/2/2), 100, character, 1,1,1)
-                if slots[1] != 0 and slots[2] == 0:
-                    slots[2] = slots[1]
-                    slots[1] = 0
+                self.who_is_on_the_screen(slots)
 
                 speaking_name = self.user_text[0][self.advance][0]
                 if speaking_name != None:
@@ -243,6 +201,34 @@ class MainGame():
 
                 pygame.display.flip()
                 clock.tick(60)
+
+    def who_is_on_the_screen(self, slots):
+        if slots != [0,0,0] and self.debug == 1:
+            print(slots)    
+        if slots[0] != 0:
+            character = retrieve_character(slots[0], self.characters)
+            blit_image((width, height), width-1500, 100, character, 1,1,1)
+        if slots[1] != 0:
+            character = retrieve_character(slots[1], self.characters)
+            if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
+                blit_image((width, height), width/2-300, -50, character, 1,1,1)
+            elif slots[2] == "Guard":
+                blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
+            else:
+                blit_image((width, height), width/2-150, 100, character, 1,1,1)
+        if slots[2] != 0:
+            character = retrieve_character(slots[2], self.characters)
+            if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
+                blit_image((width, height), width - (width/2/2)-350, -50, character, 1,1,1)
+            elif slots[2] == "Guard":
+                blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
+            elif slots[2] == "Vizier":
+                blit_image((width, height), width - (width/2/2)-100, 100, character, 1,1,1)
+            else:
+                blit_image((width, height), width - (width/2/2), 100, character, 1,1,1)
+        if slots[1] != 0 and slots[2] == 0:
+            slots[2] = slots[1]
+            slots[1] = 0
 
     def fade_out(self):
         blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
@@ -904,6 +890,8 @@ class MainGame():
             return retrieve_background("villageinn"), False
         elif dialog == "Ah, yes. Here we are! Welcome to Habbitt.":
             return retrieve_background("villageinnnight"), True
+        elif dialog == "After a short time of severe jostling, you are deposited out the back door of the castle.":
+            return retrieve_background("outside_castle_wall"), False
         else:
             return bg, move
         
