@@ -146,6 +146,8 @@ class Crawler():
 
         accel_x, accel_y = 0, 0
 
+        chase = 0
+
         self.party = party
         enemy_port_name = dungeon_rooms[0][1]
         self.start_player()
@@ -202,22 +204,23 @@ class Crawler():
                     self.enemy.y = 3000
                     self.enemy_set = 1
 
-            # chase mechanic (test currently)
-            if enemy_port_name == "Bazongle_Stand":
-                if self.player.x > self.enemy.x:
-                    accel_x = 5
-                elif self.player.x < self.enemy.x:
-                    accel_x = -5
-                else:
-                    accel_x = 0
-                if self.player.y > self.enemy.y:
-                    accel_y = 5
-                elif self.player.y < self.enemy.y:
-                    accel_y = -5
-                else:
-                    accel_y = 0
-                self.enemy.x += accel_x
-                self.enemy.y += accel_y
+            if chase == 1:
+                # chase mechanic (test currently)
+                if enemy_port_name == "Bazongle_Stand":
+                    if self.player.x > self.enemy.x:
+                        accel_x = 5
+                    elif self.player.x < self.enemy.x:
+                        accel_x = -5
+                    else:
+                        accel_x = 0
+                    if self.player.y > self.enemy.y:
+                        accel_y = 5
+                    elif self.player.y < self.enemy.y:
+                        accel_y = -5
+                    else:
+                        accel_y = 0
+                    self.enemy.x += accel_x
+                    self.enemy.y += accel_y
             
             if enemy_port_name == "Goblin_Stand" and now - move_timer > 100:
                 if now - charge_timer < 10000:
@@ -334,13 +337,25 @@ class Crawler():
                 self.input(None, pressed)
             else:
                 if self.speed_x > 0:
-                    self.speed_x -= 2
+                    if self.speed_x == 1:
+                        self.speed_x -= 1
+                    else:
+                        self.speed_x -= 2
                 elif self.speed_x < 0:
-                    self.speed_x += 2
+                    if self.speed_x == 1:
+                        self.speed_x += 1
+                    else:
+                        self.speed_x += 2
                 if self.speed_y > 0:
-                    self.speed_y -= 2
+                    if self.speed_y == 1:
+                        self.speed_y -= 1
+                    else:
+                        self.speed_y -= 2
                 elif self.speed_y < 0:
-                    self.speed_y += 2
+                    if self.speed_y == 1:
+                        self.speed_y += 1
+                    else:
+                        self.speed_y += 2
 
             for event in pygame.event.get():
                 if event.type == KEYUP:
@@ -387,6 +402,8 @@ class Crawler():
             if pressed != False:
                 keys = pressed  #checking pressed keys
                 if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 750:
+                    if self.speed_x != 0 and self.speed_y < 0:
+                        self.speed_y = 0
                     if self.speed_y < 0:
                         self.speed_y += 2
                     else:
@@ -394,6 +411,10 @@ class Crawler():
                             self.speed_y += 1
                     self.player.y += self.speed_y
                 if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.player.x > 485:
+                    if self.speed_y != 0 and self.speed_x > 0:
+                        self.speed_x = 0
+                    if self.speed_x == 1:
+                        self.speed_x -= 1
                     if self.speed_x > 0:
                         self.speed_x -= 2
                     else:
@@ -401,6 +422,10 @@ class Crawler():
                             self.speed_x -= 1
                     self.player.x += self.speed_x
                 if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.player.x < 1055:
+                    if self.speed_y != 0 and self.speed_x < 0:
+                        self.speed_x = 0
+                    if self.speed_x == -1:
+                        self.speed_x += 1
                     if self.speed_x < 0:
                         self.speed_x += 2
                     else:
@@ -408,6 +433,8 @@ class Crawler():
                             self.speed_x += 1
                     self.player.x += self.speed_x
                 if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.player.y > 143:
+                    if self.speed_x != 0 and self.speed_y > 0:
+                        self.speed_y = 0
                     if self.speed_y > 0:
                         self.speed_y -= 2
                     else:
