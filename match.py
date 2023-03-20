@@ -325,6 +325,11 @@ class MatchGame(object):
         self.talking = 0
 
         self.debug = 0
+
+        self.buff_image = pygame.image.load("images/tabs/orange_gem_new.png").convert_alpha()
+        self.buff_image = pygame.transform.scale(self.buff_image, (96, 96))
+        self.debuff_image = pygame.image.load("images/tabs/blue_gem_new.png").convert_alpha()
+        self.debuff_image = pygame.transform.scale(self.debuff_image, (96, 96))
  
 
     def start(self):
@@ -425,6 +430,7 @@ class MatchGame(object):
         # Determines if there are matches on the board, for randomization.
         global matches
         matches = True
+        global curr_match
 
         character_swap_timing = 0
         time_to_swap = 0
@@ -438,6 +444,7 @@ class MatchGame(object):
                 self.board.randomize()
             else:
                 matches = False
+                curr_match = []
 
         curr_character = party_current
 
@@ -636,15 +643,15 @@ class MatchGame(object):
 
                 # if matches have been made previously and the board isn't processing them
                 if character_swap_timer != None and self.board.wait == 0:
-                    if (pygame.time.get_ticks() - character_swap_timer > 3000 and time_to_swap == 1) or self.removed != 0:
+                    if (pygame.time.get_ticks() - character_swap_timer > 1 and time_to_swap == 1) or self.removed != 0:
                         if self.debug == 1:
                             print("Changing party member")
                         if party_current+1 < len(party_turns):
                             party_current += 1
                         else:
                             party_current = 0
-                        self.player_active = party_turns[party_current][0]
-                        self.party_text.append("It is " + self.player_active.get_name() + "'s turn.")
+                        self.player_active = self.party_turns[party_current][0]
+                        self.party_text = ["It is " + self.player_active.get_name() + "'s turn."]
                         curr_match = []
                         character_swap_timer = None
                         time_to_swap = 0
@@ -757,6 +764,179 @@ class MatchGame(object):
                     if x+1 < 90:
                         to_print.append(self.board.board[x].shape)
 
+    def draw_gl_scene(self, party_current, xp=None, update_text=None):
+        #glLoadIdentity()
+        #glTranslatef(0.0,0.0,-10.0)
+
+        party = self.party
+        enemy_current = self.enemy_current
+        enemy = self.enemy
+
+        color_black = "BLACK"
+        color_0, color_1, color_2, color_3 = color_black, color_black, color_black, color_black
+
+        # draw highlight rectangles
+        if self.party_turns[party_current][0] == self.party[0]:
+            color_0 = "BLUE"
+        else: color_0 = color_black
+        if len(self.party) > 1:
+            if self.party_turns[party_current][0] == self.party[1]:
+                color_1 = "BLUE"
+            else: color_1 = color_black
+        if len(self.party) > 2:
+            if self.party_turns[party_current][0] == self.party[2]:
+                color_2 = "BLUE"
+            else: color_2 = color_black
+        if len(self.party) > 3:
+            if self.party_turns[party_current][0] == self.party[3]:
+                color_3 = "BLUE"
+            else: color_3 = color_black
+
+        if self.flash_red != False:
+            if self.flash_red == 0:
+                color_0 = "RED"
+            if self.flash_red == 1:
+                color_1 = "RED"
+            if self.flash_red == 2:
+                color_2 = "RED"
+            if self.flash_red == 3:
+                color_3 = "RED"
+
+        """screen.blit(background, (width+self.i,0))
+        screen.blit(background, (self.i, 0))
+        if (self.i == -width):
+            screen.blit(background, (width+self.i, 0))
+            self.i=0
+        self.i-=1
+        self.board.draw(self.display)
+        color_return = BLACK"""
+
+        self.i = blit_bg(self.i)
+        self.board.draw(self.display)
+
+        shape_color("BLACK")
+            # party 1
+        if len(party) > 0:
+            gl_text(self.font, color_0, 1, .4, .9, 1, party[0].get_name(), .99, .99)
+            gl_text(self.font, color_0, 1, .4, .8, .9, "HP: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), .99, .99)
+            # party 2
+        if len(party) > 1:
+            gl_text(self.font, color_1, 1, .4, .7, .8, party[1].get_name(), .99, .99)
+            gl_text(self.font, color_1, 1, .4, .6, .7, "HP: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), .99, .99)
+            # party 3
+        if len(party) > 2:
+            gl_text(self.font, color_2, 1, .4, .5, .6, party[2].get_name(), .99, .99)
+            gl_text(self.font, color_2, 1, .4, .4, .5, "HP: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), .99, .99)
+            # party 4
+        if len(party) > 3:
+            gl_text(self.font, color_3, 1, .4, .3, .4, party[3].get_name(), .99, .99)
+            gl_text(self.font, color_3, 1, .4, .2, .3, "HP: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), .99, .99)
+            # enemy 1
+        if len(enemy) > 0:
+            gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
+            if enemy[0].get_hp() > 999:
+                gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()), .995, 2)  
+            else:
+                gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
+        else:
+            gl_text(self.font, "BLACK", 1, .28, -.7, -.9, "No Enemy Remains", .995, 1.4)
+            gl_text(self.font, "BLACK", 1, .28, -.8, -9, "HP: 0/0", .995, 2)
+        # return (DOESN'T WORK)
+        gl_text(self.font, "BLACK", .28, 1, -.9, -1, "RETURN", 1.3, 6)
+
+        glBegin(GL_QUADS)
+        #party_port_1 = rect_ogl("GREEN", .27, .4, .8, 1)
+        #party_port_2 = rect_ogl("RED", .27, .4, .6, .8)
+        #party_port_3 = rect_ogl("BLUE", .27, .4, .4, .6)
+        #party_port_4 = rect_ogl("GREEN", .27, .4, .2, .4)
+
+        # enemies
+        #enemy_port_1 = rect_ogl("GREEN", .52, .64, -.9, -.7)
+        #enemy_port_2 = rect_ogl("RED", .4, .52, -.9, -.7)
+        #enemy_port_3 = rect_ogl("BLUE", .28, .4, -.9, -.7)
+
+        # return button
+        #return_button = rect_ogl("BLACK", .28, 1, -.9, -1)
+
+        #text_enemy = rect_ogl("BLACK", .28, 1, -.7, -.45)
+        #text_party = rect_ogl("BLACK", .28, 1, -.45, -.2)
+
+        #ability_1 = rect_ogl("RED", .28, .64, 0, .2)
+        #ability_2 = rect_ogl("BLUE", .64, 1, 0, .2)
+        #ability_3 = rect_ogl("GREEN", .28, .64, -.2, 0)
+        #ability_4 = rect_ogl("PINK", .64, 1, -.2, 0)
+
+        glEnd()
+
+        # ability rectangles for clicking
+        ability_1_rect = pygame.Rect(width-600,height-500,300,75)
+        ability_2_rect = pygame.Rect(width-300,height-500,300,75)
+        ability_3_rect = pygame.Rect(width-600,height-425,300,75)
+        ability_4_rect = pygame.Rect(width-300,height-425,300,75)
+        
+        # blit images - NEED TO SHRINK PORTRAITS TO 100x100
+        if len(party) > 0:    
+            #if self.talking == 1:
+                #blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait(), 1, 1, 1)
+            #else:
+            if party[0].get_buff() > 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-95, self.buff_image, 1, 1, 1)
+            if party[0].get_buff() < 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-95, self.debuff_image, 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, party[0].get_portrait().convert_alpha(), 1, 1, 1)
+        if len(party) > 1:    
+            #if self.talking == 2:
+            #    blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait("nsteen"), 1, 1, 1)
+            #else:
+            if party[1].get_buff() > 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-185, self.buff_image, 1, 1, 1)
+            if party[1].get_buff() < 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-185, self.debuff_image, 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
+        if len(party) > 2:
+            if party[2].get_buff() > 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-275, self.buff_image, 1, 1, 1)
+            if party[2].get_buff() < 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-275, self.debuff_image, 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, party[2].get_portrait().convert_alpha(), 1, 1, 1)
+        if len(party) > 3:
+            if party[3].get_buff() > 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-365, self.buff_image, 1, 1, 1)
+            if party[3].get_buff() < 0:
+                blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-100,height-365, self.debuff_image, 1, 1, 1)
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, party[3].get_portrait().convert_alpha(), 1, 1, 1)
+
+        if len(enemy) > 0:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-386,height-857, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
+        if len(enemy) > 1:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-482,height-857, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
+        if len(enemy) > 2:
+            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)   
+
+        self.update_box()     
+
+        if self.end_fade == 1:
+            blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.end_fade = 0
+
+        if self.start_fade == 1:
+            blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
+            if self.counter_x < 200:
+                self.counter_x += 50
+            elif self.counter_x < 500:
+                self.counter_x += 75
+            else:
+                self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.start_fade = 0
+                self.return_to_crawl = 1
+
+        pygame.display.flip()
+
+        return 
+
     def swap(self, i, j):
         self.swap_time = 0.0
         self.board.swap(i, j)
@@ -847,9 +1027,10 @@ class MatchGame(object):
         self.party_text.append(update_text)
     
     def orange_buff(self, player_active, party):
-        buff_num = 10
+        buff_num = player_active.get_willpower()
         buff_type = "Attack"
         target = random.choice(party)
+        target.set_buff(target.get_buff() + buff_num)
         update_text = player_active.get_name() + " buffed " + target.get_name() + " with +" + str(buff_num) + " " + buff_type + "!"
         self.party_text.append(update_text)
 
@@ -969,162 +1150,6 @@ class MatchGame(object):
                 self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
                 print("Enemy thread finished running.")
 
-    def draw_gl_scene(self, party_current, xp=None, update_text=None):
-        #glLoadIdentity()
-        #glTranslatef(0.0,0.0,-10.0)
-
-        party = self.party
-        enemy_current = self.enemy_current
-        enemy = self.enemy
-
-        color_black = "BLACK"
-        color_0, color_1, color_2, color_3 = color_black, color_black, color_black, color_black
-
-        # draw highlight rectangles
-        if self.party_turns[party_current][0] == self.party[0]:
-            color_0 = "BLUE"
-        else: color_0 = color_black
-        if len(self.party) > 1:
-            if self.party_turns[party_current][0] == self.party[1]:
-                color_1 = "BLUE"
-            else: color_1 = color_black
-        if len(self.party) > 2:
-            if self.party_turns[party_current][0] == self.party[2]:
-                color_2 = "BLUE"
-            else: color_2 = color_black
-        if len(self.party) > 3:
-            if self.party_turns[party_current][0] == self.party[3]:
-                color_3 = "BLUE"
-            else: color_3 = color_black
-
-        if self.flash_red != False:
-            if self.flash_red == 0:
-                color_0 = "RED"
-            if self.flash_red == 1:
-                color_1 = "RED"
-            if self.flash_red == 2:
-                color_2 = "RED"
-            if self.flash_red == 3:
-                color_3 = "RED"
-
-        """screen.blit(background, (width+self.i,0))
-        screen.blit(background, (self.i, 0))
-        if (self.i == -width):
-            screen.blit(background, (width+self.i, 0))
-            self.i=0
-        self.i-=1
-        self.board.draw(self.display)
-        color_return = BLACK"""
-
-        self.i = blit_bg(self.i)
-        self.board.draw(self.display)
-
-        shape_color("BLACK")
-            # party 1
-        if len(party) > 0:
-            gl_text(self.font, color_0, 1, .4, .9, 1, party[0].get_name(), .99, .99)
-            gl_text(self.font, color_0, 1, .4, .8, .9, "HP: " + str(party[0].get_chp()) + "/" + str(party[0].get_hp()), .99, .99)
-            # party 2
-        if len(party) > 1:
-            gl_text(self.font, color_1, 1, .4, .7, .8, party[1].get_name(), .99, .99)
-            gl_text(self.font, color_1, 1, .4, .6, .7, "HP: " + str(party[1].get_chp()) + "/" + str(party[1].get_hp()), .99, .99)
-            # party 3
-        if len(party) > 2:
-            gl_text(self.font, color_2, 1, .4, .5, .6, party[2].get_name(), .99, .99)
-            gl_text(self.font, color_2, 1, .4, .4, .5, "HP: " + str(party[2].get_chp()) + "/" + str(party[2].get_hp()), .99, .99)
-            # party 4
-        if len(party) > 3:
-            gl_text(self.font, color_3, 1, .4, .3, .4, party[3].get_name(), .99, .99)
-            gl_text(self.font, color_3, 1, .4, .2, .3, "HP: " + str(party[3].get_chp()) + "/" + str(party[3].get_hp()), .99, .99)
-            # enemy 1
-        if len(enemy) > 0:
-            gl_text(self.font, "BLACK", 1, .64, -.7, -.9, enemy[0].get_name(), .995, 1.4)
-            if enemy[0].get_hp() > 999:
-                gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()), .995, 2)  
-            else:
-                gl_text(self.font, "BLACK", 1, .64, -.8, -9, "HP: " + str(enemy[0].get_chp()) + "/" + str(enemy[0].get_hp()), .995, 2)
-        else:
-            gl_text(self.font, "BLACK", 1, .28, -.7, -.9, "No Enemy Remains", .995, 1.4)
-            gl_text(self.font, "BLACK", 1, .28, -.8, -9, "HP: 0/0", .995, 2)
-        # return (DOESN'T WORK)
-        gl_text(self.font, "BLACK", .28, 1, -.9, -1, "RETURN", 1.3, 6)
-
-        glBegin(GL_QUADS)
-        #party_port_1 = rect_ogl("GREEN", .27, .4, .8, 1)
-        #party_port_2 = rect_ogl("RED", .27, .4, .6, .8)
-        #party_port_3 = rect_ogl("BLUE", .27, .4, .4, .6)
-        #party_port_4 = rect_ogl("GREEN", .27, .4, .2, .4)
-
-        # enemies
-        #enemy_port_1 = rect_ogl("GREEN", .52, .64, -.9, -.7)
-        #enemy_port_2 = rect_ogl("RED", .4, .52, -.9, -.7)
-        #enemy_port_3 = rect_ogl("BLUE", .28, .4, -.9, -.7)
-
-        # return button
-        #return_button = rect_ogl("BLACK", .28, 1, -.9, -1)
-
-        #text_enemy = rect_ogl("BLACK", .28, 1, -.7, -.45)
-        #text_party = rect_ogl("BLACK", .28, 1, -.45, -.2)
-
-        #ability_1 = rect_ogl("RED", .28, .64, 0, .2)
-        #ability_2 = rect_ogl("BLUE", .64, 1, 0, .2)
-        #ability_3 = rect_ogl("GREEN", .28, .64, -.2, 0)
-        #ability_4 = rect_ogl("PINK", .64, 1, -.2, 0)
-
-        glEnd()
-
-        # ability rectangles for clicking
-        ability_1_rect = pygame.Rect(width-600,height-500,300,75)
-        ability_2_rect = pygame.Rect(width-300,height-500,300,75)
-        ability_3_rect = pygame.Rect(width-600,height-425,300,75)
-        ability_4_rect = pygame.Rect(width-300,height-425,300,75)
-        
-        # blit images - NEED TO SHRINK PORTRAITS TO 100x100
-        if len(party) > 0:    
-            #if self.talking == 1:
-                #blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait(), 1, 1, 1)
-            #else:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, party[0].get_portrait().convert_alpha(), 1, 1, 1)
-        if len(party) > 1:    
-            #if self.talking == 2:
-            #    blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-580,height-90, self.current_talking_portrait("nsteen"), 1, 1, 1)
-            #else:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-180, party[1].get_portrait().convert_alpha(), 1, 1, 1)
-        if len(party) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-270, party[2].get_portrait().convert_alpha(), 1, 1, 1)
-        if len(party) > 3:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-570,height-360, party[3].get_portrait().convert_alpha(), 1, 1, 1)
-
-        if len(enemy) > 0:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-386,height-857, get_portrait(enemy[0].get_name()).convert_alpha(), 1, 1, 1)
-        if len(enemy) > 1:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-482,height-857, get_portrait(enemy[1].get_name()).convert_alpha(), 1, 1, 1)
-        if len(enemy) > 2:
-            blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], width-578,height-857, get_portrait(enemy[2].get_name()).convert_alpha(), 1, 1, 1)   
-
-        self.update_box()     
-
-        if self.end_fade == 1:
-            blit_image([width, height], 0-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-            self.counter_x += 100
-            if self.counter_x >= 1700:
-                self.end_fade = 0
-
-        if self.start_fade == 1:
-            blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-            if self.counter_x < 200:
-                self.counter_x += 50
-            elif self.counter_x < 500:
-                self.counter_x += 75
-            else:
-                self.counter_x += 100
-            if self.counter_x >= 1700:
-                self.start_fade = 0
-                self.return_to_crawl = 1
-
-        pygame.display.flip()
-
-        return 
     
     def process_fade(self):
         go = 1

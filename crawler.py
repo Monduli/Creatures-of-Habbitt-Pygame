@@ -128,9 +128,11 @@ class Crawler():
 
     def start_audio(self, prefix):
         pygame.mixer.init()
+        prefix="pots"
         self.in_combat = pygame.mixer.Sound("audio/bgm/" + prefix + "dungeon_combat.wav")
         self.oo_combat = pygame.mixer.Sound("audio/bgm/" + prefix + "dungeon_ooc.wav")
         self.in_combat.set_volume(0)
+        self.oo_combat.set_volume(.2)
         self.oo_combat.play(-1)
         self.in_combat.play(-1)
 

@@ -36,6 +36,8 @@ class Character:
         # [7] - None
         # [8] - None
         self.bonds = [0, 0, 0, 0, 0, 0, 0]
+        self.buff = 0
+        self.willpower = 0
     
     def get_hp(self):
         return self.hp
@@ -66,6 +68,9 @@ class Character:
 
     def get_chutzpah(self):
         return self.chutzpah
+    
+    def get_willpower(self):
+        return self.willpower
 
     def get_background(self):
         return self.background
@@ -87,6 +92,9 @@ class Character:
     
     def get_role(self):
         return self.role
+    
+    def get_buff(self):
+        return self.buff
 
     def set_hp(self, value):
         self.hp = value
@@ -118,11 +126,17 @@ class Character:
     def set_chutzpah(self, value):
         self.chutzpah = value
 
+    def set_willpower(self, value):
+        self.willpower = value
+
     def set_background(self, value):
         self.background = value
 
     def set_name(self, value):
         self.name = value
+
+    def set_buff(self, value):
+        self.buff = value
 
     def set_dialog_picture(self, value):
         pic = pygame.image.load("images/" + value).convert_alpha()
@@ -170,6 +184,8 @@ class Character:
         #health
         self.set_hp(10*self.get_heartiness())
         self.set_chp(10*self.get_heartiness())
+       # self.set_willpower(self.get_chutzpah() - self.get_heartiness())
+        self.set_willpower(10)
 
     def print_stats(self):
         print("PHYSATT: " + str(self.physical_attack) +
