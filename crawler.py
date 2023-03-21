@@ -607,7 +607,7 @@ class Crawler():
         return
     
     def blit_bg_camera(self, bg="cave.png", move=True):
-        background = pygame.image.load("images/" + bg).convert_alpha()
+        background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
         background = pygame.transform.scale(background,(1600,900))
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 

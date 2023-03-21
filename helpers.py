@@ -15,23 +15,26 @@ def retrieve_background(choice):
     background = None
     folder = "images/backgrounds/"
     if choice == "cave":
-        background = pygame.image.load(folder + "cave.png")
+        background = "cave.png"
     elif choice == "forest":
-        background = pygame.image.load(folder + "forest.png")
+        background = "forest.png"
     elif choice == "village":
-        background = pygame.image.load(folder + "village.jpg")
+        background = "village.jpg"
     elif choice == "map":
-        background = pygame.image.load(folder + "map1.png")
+        background = "map1.png"
     elif choice == "villageinn":
-        background = pygame.image.load(folder + "villagemenuinn.png")
+        background = "villagemenuinn.png"
     elif choice == "villageinnnight":
-        background = pygame.image.load(folder + "villagemenuinnnight.png")
+        background = "villagemenuinnnight.png"
     elif choice == "tavern":
-        background = pygame.image.load(folder + "tavern.png")
+        background = "tavern.png"
     elif choice == "outside_castle_wall":
-        background = pygame.image.load(folder + "outside_castle_wall.png")
+        background = "outside_castle_wall.png"
+    elif choice == "hill":
+        background = "hill.png"
+    elif choice == "royalbedroom":
+        background = "royalbedroom.png"
     if background != None:
-        background = pygame.transform.scale(background,(1600,900))
         return background
     return Exception()
 
@@ -511,7 +514,10 @@ def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjus
     y = rect.top
     lineSpacing = 0
     image = None
-    new_x = ((x+1)/2)*width/x_adjust
+    if center == True:
+        new_x = ((x+1)/2)*width/x_adjust - (textSurface.get_width() / 2)
+    else:
+        new_x = ((x+1)/2)*width/x_adjust
     new_y = ((y+1)/2)*height/y_adjust #- (self.level*100)
 
     # get the height of the font
@@ -556,8 +562,11 @@ def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjus
     return text
 
 def blit_bg(i, bg="cave.png", move=True):
-    background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
-    background = pygame.transform.scale(background,(1600,900))
+    if isinstance(bg, str):
+        background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
+        background = pygame.transform.scale(background,(1600,900))
+    else:
+        background = bg
     if move == True:
         blit_image([width, height], width+i, 0, background, 1, 1, 1)
         blit_image([width, height], i, 0, background, 1, 1, 1)
