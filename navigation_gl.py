@@ -191,7 +191,7 @@ class MainGame():
                 #rect_ogl("BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height))
                 #glEnd()
                 #gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
-                gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1100, width), cgls(width-500, width), cgls(height-650, height), cgls(height-850, height), self.user_text[0][self.advance][1], .95, 2.15, self.level)
+                gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1600, width), cgls(width-0, width), cgls(height-650, height), cgls(height-900, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()

@@ -514,10 +514,10 @@ def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjus
     y = rect.top
     lineSpacing = 0
     image = None
-    if center == True:
-        new_x = ((x+1)/2)*width/x_adjust - (textSurface.get_width() / 2)
-    else:
-        new_x = ((x+1)/2)*width/x_adjust
+    #if center == True:
+    #    new_x = ((x+1)/2)*width/x_adjust - (textSurface.get_width() / 2)
+    #else:
+    new_x = ((x+1)/2)*width/x_adjust
     new_y = ((y+1)/2)*height/y_adjust #- (self.level*100)
 
     # get the height of the font
