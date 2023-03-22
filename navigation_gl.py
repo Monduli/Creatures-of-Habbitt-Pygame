@@ -5,6 +5,7 @@ from helpers import *
 import match
 from classes import *
 import crawler
+import pickle
 
 class MainGame():
     def __init__(self):
@@ -27,6 +28,7 @@ class MainGame():
         self.nsteen = BearKnight([15, 10, 10, 5, 5, 0])
         self.move_to_crawl = 0
         self.fade_over = 0
+        self.save_object = None
 
     def start_screen(self):
         #### SETUP ####
@@ -42,16 +44,17 @@ class MainGame():
         self.background = retrieve_background("cave")
         
         title_rect = pygame.Rect(width-1100,height-800,500,50)
-        start_rect = pygame.Rect(width-900,height-550,200,50)
-        town_start_rect = pygame.Rect(width-900,height-475,200,50)
-        options_rect = pygame.Rect(width-900,height-400,200,50)
-        exit_rect = pygame.Rect(width-850,height-250,100,50)
+        start_rect = pygame.Rect(width-900,height-450,200,50)
+        town_start_rect = pygame.Rect(width-900,height-375,200,50)
+        load_rect = pygame.Rect(width-900,height-300,200,50)
+        options_rect = pygame.Rect(width-900,height-225,200,50)
+        exit_rect = pygame.Rect(width-850,height-150,100,50)
 
         i = 0
 
         while True:
             self.screen.fill(black)
-            color_start, color_town_start, color_options, color_exit = color_passive, color_passive, color_passive, color_passive
+            color_start, color_town_start, color_options, color_exit, color_load = color_passive, color_passive, color_passive, color_passive, color_passive
             color_exit = "BLACK"
 
             for event in pygame.event.get():                  
@@ -61,6 +64,8 @@ class MainGame():
                         return "dialog"
                     if town_start_rect.collidepoint(event.pos):
                         return "dialog skip"
+                    if load_rect.collidepoint(event.pos):
+                        return "load"
                     if exit_rect.collidepoint(event.pos):
                         return "exit"
 
@@ -68,49 +73,30 @@ class MainGame():
                 color_start = "RED"
             if town_start_rect.collidepoint(pygame.mouse.get_pos()):
                 color_town_start = "RED"
+            if load_rect.collidepoint(pygame.mouse.get_pos()):
+                color_load = "RED"
             if options_rect.collidepoint(pygame.mouse.get_pos()):
                 color_options = "RED"
             if exit_rect.collidepoint(pygame.mouse.get_pos()):
                 color_exit = "RED"
 
-            self.gl_draw_start_screen(color_passive, color_start, color_town_start, color_options, color_exit)
+            self.gl_draw_start_screen(color_passive, color_start, color_town_start, color_load, color_options, color_exit)
             clock.tick(60)
 
-    def gl_draw_start_screen(self, cp, c1, c2, c3, c4):
+    def gl_draw_start_screen(self, cp, c1, c2, c3, c4, c5):
         self.i = blit_bg(self.i)
 
-        glBegin(GL_QUADS)
-        # Draw buttons
-        #pygame.draw.rect(self.screen, color_passive, title_rect)
-        # width-1100,height-800,500,50
-        rect_ogl(cp, cgls(width-500, width), cgls(width-1100, width), cgls(height-100, height), cgls(height-150, height))
-        #pygame.draw.rect(self.screen, color_start, start_rect)
-        #pygame.draw.rect(self.screen, color_town_start, town_start_rect)
-        #pygame.draw.rect(self.screen, color_options, options_rect)
-        #pygame.draw.rect(self.screen, color_exit, exit_rect)
-        rect_ogl(c1, cgls(width-700, width), cgls(width-900, width), cgls(height-350, height), cgls(height-400, height))
-        rect_ogl(c2, cgls(width-650, width), cgls(width-950, width), cgls(height-425, height), cgls(height-475, height))
-        rect_ogl(c3, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-550, height))
-        rect_ogl(c4, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-700, height))
-
-        glEnd()
-        
-        # Draw the text onto the buttons
-        #drawText(self.screen, "Creatures of Habbitt v.01", (255,255,255), title_rect, base_font, center=True)
-        #drawText(self.screen, "Wake Up", (255,255,255), start_rect, base_font, center=True)
-        #drawText(self.screen, "Skip to Town", (255,255,255), town_start_rect, base_font, center=True)
-        #drawText(self.screen, "Options", (255,255,255), options_rect, base_font, center=True)
-        #drawText(self.screen, "Exit", (255,255,255), exit_rect, base_font, center=True)
-
-        gl_text(self.font, "BLACK",  cgls(width-500, width), cgls(width-1100, width), cgls(height-150, height), cgls(height-100, height), "Creatures of Habbitt v.01", .88, .982)
-        gl_text(self.font, c1, cgls(width-700, width), cgls(width-900, width), cgls(height-400, height), cgls(height-350, height), "New Game", .955,.975)
-        gl_text(self.font, c2, cgls(width-650, width), cgls(width-950, width), cgls(height-475, height), cgls(height-425, height), "Quick Start", .95,.97)
-        gl_text(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-550, height), cgls(height-500, height), "Options", .95,.97)
-        gl_text(self.font, c4, cgls(width-700, width), cgls(width-900, width), cgls(height-700, height), cgls(height-650, height), "Exit", .92,.95)
+        #gl_text(self.font, "BLACK",  cgls(width-500, width), cgls(width-1100, width), cgls(height-150, height), cgls(height-100, height), "Creatures of Habbitt v.01", .88, .982)
+        blit_image((width, height), width-1200, height-450, pygame.image.load("images/logo.png").convert_alpha(), 1,1,1)
+        gl_text_name(self.font, c1, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "New Game", 1, .965)
+        gl_text_name(self.font, c2, cgls(width-675, width), cgls(width-925, width), cgls(height-575, height), cgls(height-525, height), "Skip Intro", 1,.96)
+        gl_text_name(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "Load", 1,.95)
+        gl_text_name(self.font, c4, cgls(width-700, width), cgls(width-900, width), cgls(height-725, height), cgls(height-675, height), "Options", 1,.925)
+        gl_text_name(self.font, c5, cgls(width-700, width), cgls(width-900, width), cgls(height-800, height), cgls(height-750, height), "Exit", 1,.89)
 
         pygame.display.flip()
 
-    def in_dialog(self, skip=False):
+    def in_dialog(self, skip=False, progress=1):
 
         #### SETUP ####
         size = width, height = 1600, 900
@@ -124,6 +110,7 @@ class MainGame():
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
         self.user_text = dia.intro_1
+        self.advance = 0
 
         dialog_rect = pygame.Rect(width-1550,height-250, 1500, 200)
         name_rect = pygame.Rect(width-1550, height-320, 300, 50)
@@ -132,17 +119,19 @@ class MainGame():
         remove = ["VIZGONE", "GUARDGONE", "MYSTBEARGONE"]
 
         i = 0
-        global progress
         global party
         party = []
         slots = [0, 0, 0]
 
         curr_text = self.user_text[0][self.advance][1]
         if curr_text in ["inn"]:
-            choice = self.inn_menu(self.screen, progress, retrieve_background("tavern"))
+            choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
 
         if skip != False:
-            self.user_text = dia.intro_1_quick
+            if skip == "To Town":
+                self.user_text = [[[None, "To Town"]]]
+            else:
+                self.user_text = dia.intro_1_quick
 
         while True:            
             self.pick_dialog()            
@@ -156,7 +145,6 @@ class MainGame():
                 self.move_to_crawl = 0
             elif self.fade_over != 0:
                 self.who_is_on_the_screen(slots)
-
                 gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), "Loading dungeon...", .7, 2.15, self.level)
                 self.fade_out()
                 pygame.display.flip()
@@ -190,8 +178,8 @@ class MainGame():
                 #glBegin(GL_QUADS)
                 #rect_ogl("BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height))
                 #glEnd()
-                #gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
-                gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1600, width), cgls(width-0, width), cgls(height-650, height), cgls(height-900, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
+                gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), -.999999, self.user_text[0][self.advance][1], .7, 2.15, self.level)
+                #gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1600, width), cgls(width-0, width), cgls(height-650, height), cgls(height-900, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
@@ -213,7 +201,7 @@ class MainGame():
             print(slots)    
         if slots[0] != 0:
             character = retrieve_character(slots[0], self.characters)
-            blit_image((width, height), width-1500, 0, character, 1,1,1)
+            blit_image((width, height), width-1500, 100, character, 1,1,1)
         if slots[1] != 0:
             character = retrieve_character(slots[1], self.characters)
             if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
@@ -309,8 +297,8 @@ class MainGame():
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
             self.village_choices()
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
-            choice = self.inn_menu(self.screen, progress, self.background)
-            self.user_text = dia.determine_dialog(choice, progress, self.char_name)
+            choice = self.inn_menu(self.screen, self.progress, self.background)
+            self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
         elif self.user_text[0][self.advance][1] == "SELECTION":
             left_option = self.user_text[0][self.advance+1][1]
@@ -319,7 +307,7 @@ class MainGame():
             right_target = self.user_text[2]
             choice = self.dialog_options(self.screen, left_option, right_option, left_target, right_target)
             proceed = self.sort_options(choice)
-            self.user_text = dia.determine_dialog(choice, progress, self.char_name)
+            self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
         elif self.user_text[0][self.advance][1] == "Please type into the box.":
             array = self.input_box(self.user_text[1], self.background)
@@ -334,7 +322,7 @@ class MainGame():
 
     def village_choices(self):
         if self.progress == 1:
-            options = ["Inn", "???", "inn", None, "???", "Add Party", None, "party_debug", "Venture Out", "leave"]
+            options = ["Inn", "???", "inn", None, "Save", "Add Party", "save", "party_debug", "Venture Out", "leave"]
             choice = self.town_options(self.screen, options, self.background)
             if choice == "party_debug":
                 self.party = fill_party()
@@ -347,7 +335,7 @@ class MainGame():
                 self.user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
                 self.advance = 0
         elif self.progress == 2:
-            options = ["Inn", "Smithy", "inn", "blacksmith", "Fill Party", "???", "party_debug", None, "Venture Out", "leave",]
+            options = ["Inn", "Smithy", "inn", "blacksmith", "Fill Party", "Save", "party_debug", "save", "Venture Out", "leave",]
             choice = self.town_options(self.screen, options, self.background)
             if choice == "party_debug":
                 self.party = fill_party()
@@ -357,8 +345,18 @@ class MainGame():
                 self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
                 self.advance = 0
             elif choice == "inn":
-                choice = self.inn_menu(self.screen, progress, retrieve_background("tavern"))
-                self.user_text = dia.determine_dialog(choice, progress, self.char_name)
+                choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
+                self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
+                self.advance = 0
+            elif choice == "save":
+                if not os.path.isfile("save.txt"):
+                    file = open('save.txt', 'x')
+                    file.close()
+                file = open('save.txt', 'wb')
+                self.data = [self.progress, self.party]
+                pickle.dump(self.data, file)
+                file.close()
+                self.user_text = [[[None, "Your data has been saved."], [None, "[Returning to town.]"]]]
                 self.advance = 0
             elif choice == "leave":
                 if len(self.party) > 0:
@@ -475,25 +473,25 @@ class MainGame():
                     if character1_rect.collidepoint(event.pos):
                         return "nsteen"
                     if character2_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if character3_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if character4_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if character5_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if character6_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if character7_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if character8_rect.collidepoint(event.pos):
-                        if progress >= 3:
+                        if self.progress >= 3:
                             return "radish"
                     if leave_rect.collidepoint(event.pos):
                         return "town"
@@ -691,32 +689,32 @@ class MainGame():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if dungeon_1_rect.collidepoint(event.pos):
                         return self.load_dungeon("cave")
-                    if dungeon_2_rect.collidepoint(event.pos) and progress > 1:
+                    if dungeon_2_rect.collidepoint(event.pos) and self.progress > 1:
                         return self.load_dungeon("Temple")
-                    if dungeon_3_rect.collidepoint(event.pos) and progress > 2:
+                    if dungeon_3_rect.collidepoint(event.pos) and self.progress > 2:
                         return self.load_dungeon("Grasslands")
-                    if dungeon_4_rect.collidepoint(event.pos) and progress > 3:
+                    if dungeon_4_rect.collidepoint(event.pos) and self.progress > 3:
                         return self.load_dungeon("Forest")
                     if leave_rect.collidepoint(event.pos):
                         return "LEFT"
 
             if dungeon_1_rect.collidepoint(pygame.mouse.get_pos()):
                 color_c1 = "RED"
-            if dungeon_2_rect.collidepoint(pygame.mouse.get_pos()) and progress > 1:
+            if dungeon_2_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 1:
                 color_c2 = "RED"
-            if dungeon_3_rect.collidepoint(pygame.mouse.get_pos()) and progress > 2:
+            if dungeon_3_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 2:
                 color_c3 = "RED"
-            if dungeon_4_rect.collidepoint(pygame.mouse.get_pos()) and progress > 3:
+            if dungeon_4_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 3:
                 color_c4 = "RED"
-            if dungeon_5_rect.collidepoint(pygame.mouse.get_pos()) and progress > 4:
+            if dungeon_5_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 4:
                 color_c5 = "RED"
-            if dungeon_6_rect.collidepoint(pygame.mouse.get_pos()) and progress > 5:
+            if dungeon_6_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 5:
                 color_c6 = "RED"
-            if dungeon_7_rect.collidepoint(pygame.mouse.get_pos()) and progress > 6:
+            if dungeon_7_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 6:
                 color_c7 = "RED"
-            if dungeon_8_rect.collidepoint(pygame.mouse.get_pos()) and progress > 7:
+            if dungeon_8_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 7:
                 color_c8 = "RED"
-            if next_rect.collidepoint(pygame.mouse.get_pos()) and progress > 7:
+            if next_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 7:
                 color_next = "RED"
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
                 color_leave = "RED"
@@ -918,19 +916,30 @@ class MainGame():
         return False
 
     def controller(self):
-        global name_global
-        global progress
-        progress = 1
         while True:
             option = self.start_screen()
-            self.main_menu_fade()
             #self.fade(self.fade_image, self.counter_x, self.counter_y)
-            if option == "dialog":
+            if option == "new_game":
+                self.progress = 1
+                self.main_menu_fade()
                 self.in_dialog()
             elif option == "dialog skip":
                 name_global = "Dan"
                 self.progress = 2
-                self.in_dialog("To Town")
+                self.main_menu_fade()
+                self.in_dialog("To Town", 0)
+            elif option == "load":
+                #check if load file exists
+                if os.path.isfile("save.txt"):
+                    #load file
+                    file = open('save.txt', 'rb')
+                    self.data = pickle.load(file)
+                    file.close()
+                    #place player in location associated with progress (usually town)
+                    self.main_menu_fade()
+                    self.in_dialog("To Town", self.progress)
+                else:
+                    print("Save file does not exist.")
             elif option == "exit":
                 sys.exit()
 

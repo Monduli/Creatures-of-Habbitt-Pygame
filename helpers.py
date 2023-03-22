@@ -575,7 +575,9 @@ def blit_bg(i, bg="cave.png", move=True):
             i=0
         i-=1
         return i
-    else: blit_image([width, height], 0, 0, background, 1, 1, 1)
+    else: 
+        blit_image([width, height], 0, 0, background, 1, 1, 1)
+        return i
 
 
 def cgls(value, length):
