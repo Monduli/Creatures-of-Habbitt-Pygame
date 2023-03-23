@@ -51,6 +51,10 @@ def determine_dialog(target, progress, name="Default"):
             return temp
         case "intro_3_quick":
             return intro_3_quick
+        case "intro_skip":
+            return intro_skip_to_town
+        case "to_town":
+            return to_town
 
 def process_state(dungeon, state):
     if dungeon == "cave_dungeon":
@@ -288,3 +292,11 @@ recruit_keeper = [[
     [None, "He pulls a tiny gong out of his posessions pocket and hits it with a tiny mallet."],
     [None, "END DIALOG"]
     ]]
+
+intro_skip_to_town = [[
+    [None, "[Character creation]"]
+], "to_town"]
+
+to_town = [[
+    [None, "To Town"]
+]]

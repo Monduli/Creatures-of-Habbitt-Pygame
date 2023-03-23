@@ -126,7 +126,7 @@ def drawText(surface, text, color, rect, font, aa=False, bkg=None, center=False,
 def get_dungeon(dungeon):
     if dungeon == "cave":
         return [[
-            Enemy("Bazongle", 20000, 5, 5, 5, 5, 100)
+            Enemy("Gobble", 10, 5, 5, 5, 5, 1000)
         ], 300]
 
 
@@ -418,6 +418,8 @@ def shape_color(color):
             glColor3f(222.0, 49.0, 99.0)
         elif color == "WHITE":
             glColor3f(255.0, 255.0, 255.0)
+        elif color == "GRAY":
+            glColor3f(47.0, 79.0, 79.0)
         else:
             Exception("Wrong format")
 

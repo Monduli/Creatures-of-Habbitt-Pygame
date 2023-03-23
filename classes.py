@@ -26,6 +26,7 @@ class Character:
         self.portrait = "images/"
         self.portrait_dungeon = "images/"
         self.role = ""
+        self.xp = 0
         # bonds list:
         # [0] - Main Character
         # [1] - Bear N. Steen
@@ -39,6 +40,7 @@ class Character:
         self.bonds = [0, 0, 0, 0, 0, 0, 0]
         self.buff = 0
         self.willpower = 0
+        self.stat_spread = None
 
     def get_level(self):
         return self.level
@@ -241,12 +243,33 @@ class Character:
         for x in range(0, target):
             self.level_up(spread)
 
+    def add_xp(self, amount):
+        self.xp += amount
+
+    def fill_xp_array(self):
+        self.xp_tiers = [0] * 9998
+        y = 0
+        for x in self.xp_tiers:
+            x = 100 + 100*y
+            y+=1
+    
+    def has_xp_to_level_up(self):
+        if self.level < 9999:
+            if self.xp >= self.xp_tiers[self.level-1]:
+                self.level_up(self.stat_spread)
+                return True
+            else:
+                return False
+        else:
+            return False
+
 class MainCharacter(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
         self.role = "LEADER"
         self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
+        self.fill_xp_array()
 
     def spread(self, stats):
         self.distribute_stats(["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
@@ -258,6 +281,7 @@ class Martial(Character):
         self.spread(stats)
         self.role = "MARTIAL ADEPT"
         self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
+        self.fill_xp_array()
 
     def spread(self, stats):
         Character.distribute_stats(self, ["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
@@ -272,6 +296,7 @@ class BearKnight(Character):
         self.set_portrait_dungeon("bear")
         self.role = "BEAR KNIGHT"
         self.stat_spread = ["chutz", "phys", "heart", "quick", "heal", "magic"]
+        self.fill_xp_array()
 
     def spread(self, stats):
         Character.distribute_stats(self, ["chutz", "phys", "heart", "quick", "heal", "magic"], stats)
@@ -289,6 +314,7 @@ class Bookish(Character):
         self.role = "BOOKKEEPER"
         self.set_portrait("rabbit_portrait_100.png")
         self.stat_spread = ["magic", "quick", "heal", "heart", "chutz", "phys"]
+        self.fill_xp_array()
 
     def spread(self, stats):
         Character.distribute_stats(self, ["magic", "quick", "heal", "heart", "chutz", "phys"], stats)
@@ -301,6 +327,7 @@ class Merchant(Character):
         self.role = "MERCHANT"
         self.set_portrait("grapefart_portrait_100.png")
         self.stat_spread = ["quick", "heal", "chutz", "phys", "heart", "magic"]
+        self.fill_xp_array()
 
     def spread(self, stats):
         Character.distribute_stats(self, ["quick", "heal", "chutz", "phys", "heart", "magic"], stats)
@@ -313,6 +340,7 @@ class Cleric(Character):
         self.role = "APOTHECARY"
         self.set_portrait("cinna_portrait_100.png")
         self.stat_spread = ["heal", "phys", "magic", "heart", "quick", "chutz"]
+        self.fill_xp_array()
 
     def spread(self, stats):
         Character.distribute_stats(self, ["heal", "phys", "magic", "heart", "quick", "chutz"], stats)

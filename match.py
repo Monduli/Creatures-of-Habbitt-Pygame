@@ -486,6 +486,26 @@ class MatchGame(object):
                 replaced_xp = xp_string.replace("XP", str(xp))
                 self.enemy_text = [replaced_xp]
                 self.e_text = self.enemy_text[0]
+                leveled_up = []
+                lup_string = ""
+                for character in self.party:
+                    character.add_xp(xp)
+                    if character.has_xp_to_level_up():
+                        character.level_up(character.stat_spread)
+                        leveled_up.append(character.get_name())
+                if len(leveled_up) == len(self.party):
+                    self.p_text = "Everyone leveled up!"
+                elif len(leveled_up) > 0:
+                    for x in range(len(leveled_up)):
+                        if x == len(leveled_up) - 1:
+                            lup_string += "and " + character + " leveled up!"
+                        elif len(leveled_up) > 2:
+                            lup_string += character + ", "
+                        elif len(leveled_up) == 2:
+                            lup_string += character + " "
+                        else:
+                            lup_string == character + " leveled up!"
+                    self.p_text = lup_string
                 wait_timer = pygame.time.get_ticks()
                 self.state = "WAITING"
 

@@ -41,7 +41,7 @@ class MainGame():
 
         color_passive = "BLACK"
         
-        self.background = retrieve_background("cave")
+        self.background = retrieve_background("villageinnnight")
         
         title_rect = pygame.Rect(width-1100,height-800,500,50)
         start_rect = pygame.Rect(width-900,height-450,200,50)
@@ -64,7 +64,7 @@ class MainGame():
                         return "dialog"
                     if town_start_rect.collidepoint(event.pos):
                         return "dialog skip"
-                    if load_rect.collidepoint(event.pos):
+                    if load_rect.collidepoint(event.pos) and os.path.isfile("save.txt"):
                         return "load"
                     if exit_rect.collidepoint(event.pos):
                         return "exit"
@@ -80,19 +80,22 @@ class MainGame():
             if exit_rect.collidepoint(pygame.mouse.get_pos()):
                 color_exit = "RED"
 
+            if not os.path.isfile("save.txt"):
+                color_load = "GRAY"
+
             self.gl_draw_start_screen(color_passive, color_start, color_town_start, color_load, color_options, color_exit)
             clock.tick(60)
 
     def gl_draw_start_screen(self, cp, c1, c2, c3, c4, c5):
-        self.i = blit_bg(self.i)
+        self.i = blit_bg(self.i, self.background, self.background_move)
 
         #gl_text(self.font, "BLACK",  cgls(width-500, width), cgls(width-1100, width), cgls(height-150, height), cgls(height-100, height), "Creatures of Habbitt v.01", .88, .982)
         blit_image((width, height), width-1200, height-450, pygame.image.load("images/logo.png").convert_alpha(), 1,1,1)
         gl_text_name(self.font, c1, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "New Game", 1, .965)
-        gl_text_name(self.font, c2, cgls(width-675, width), cgls(width-925, width), cgls(height-575, height), cgls(height-525, height), "Skip Intro", 1,.96)
-        gl_text_name(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "Load", 1,.95)
-        gl_text_name(self.font, c4, cgls(width-700, width), cgls(width-900, width), cgls(height-725, height), cgls(height-675, height), "Options", 1,.925)
-        gl_text_name(self.font, c5, cgls(width-700, width), cgls(width-900, width), cgls(height-800, height), cgls(height-750, height), "Exit", 1,.89)
+        gl_text_name(self.font, c2, cgls(width-675, width), cgls(width-925, width), cgls(height-575, height), cgls(height-525, height), "Skip Intro", 1, .96)
+        gl_text_name(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "Load", 1, .95)
+        gl_text_name(self.font, c4, cgls(width-700, width), cgls(width-900, width), cgls(height-725, height), cgls(height-675, height), "Options", 1, .925)
+        gl_text_name(self.font, c5, cgls(width-700, width), cgls(width-900, width), cgls(height-800, height), cgls(height-750, height), "Exit", 1, .89)
 
         pygame.display.flip()
 
@@ -129,7 +132,7 @@ class MainGame():
 
         if skip != False:
             if skip == "To Town":
-                self.user_text = [[[None, "To Town"]]]
+                self.user_text = dia.intro_skip_to_town
             else:
                 self.user_text = dia.intro_1_quick
 
@@ -321,6 +324,7 @@ class MainGame():
             pass
 
     def village_choices(self):
+        self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
         if self.progress == 1:
             options = ["Inn", "???", "inn", None, "Save", "Add Party", "save", "party_debug", "Venture Out", "leave"]
             choice = self.town_options(self.screen, options, self.background)
@@ -328,11 +332,14 @@ class MainGame():
                 self.party = fill_party()
                 self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                 self.advance = 0
-            if choice == "inn":
+            elif choice == "inn":
                 self.user_text = [[[None, "There is currently no one to run the inn."], [None, "[Returning to town.]"]]]
                 self.advance = 0
-            if choice == "leave":
+            elif choice == "leave":
                 self.user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
+                self.advance = 0
+            elif choice == "save":
+                self.user_text = self.save_game()
                 self.advance = 0
         elif self.progress == 2:
             options = ["Inn", "Smithy", "inn", "blacksmith", "Fill Party", "Save", "party_debug", "save", "Venture Out", "leave",]
@@ -349,14 +356,7 @@ class MainGame():
                 self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
                 self.advance = 0
             elif choice == "save":
-                if not os.path.isfile("save.txt"):
-                    file = open('save.txt', 'x')
-                    file.close()
-                file = open('save.txt', 'wb')
-                self.data = [self.progress, self.party]
-                pickle.dump(self.data, file)
-                file.close()
-                self.user_text = [[[None, "Your data has been saved."], [None, "[Returning to town.]"]]]
+                self.user_text = self.save_game()
                 self.advance = 0
             elif choice == "leave":
                 if len(self.party) > 0:
@@ -369,6 +369,16 @@ class MainGame():
                     elif state == "RAN" or "LEFT":
                         self.user_text = [[[None, "[Returning to town.]"]]]
                     self.advance = 0
+
+    def save_game(self):
+        if not os.path.isfile("save.txt"):
+            file = open('save.txt', 'x')
+            file.close()
+        file = open('save.txt', 'wb')
+        self.data = [self.progress, self.party]
+        pickle.dump(self.data, file)
+        file.close()
+        return [[[None, "Your data has been saved."], [None, "[Returning to town.]"]]]
 
     def town_options(self, screen, options, background):
 
@@ -389,9 +399,11 @@ class MainGame():
         bot_right_rect = pygame.Rect(width-750,height-250,700,50)
         leave_rect = pygame.Rect(width-750,height-150,700,50)
 
+        self.background = retrieve_background("villageinnnight")
+
         while True:
             self.screen.fill(black)
-            self.i = blit_bg(self.i)
+            self.i = blit_bg(self.i, self.background, self.background_move)
             color_top_left = color_passive
             color_top_right = color_passive
             color_bot_left = color_passive
@@ -455,7 +467,7 @@ class MainGame():
 
         while True:
             self.screen.fill(black)
-            self.i = blit_bg(self.i)
+            self.i = blit_bg(self.i, self.background, self.background_move)
             color_c1 = color_passive
             color_c2 = color_passive
             color_c3 = color_passive
@@ -549,91 +561,6 @@ class MainGame():
             pygame.display.flip()
             clock.tick(60)
 
-    def input_box(self, target, background):
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
-        black = 0, 0, 0
-
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-        color_passive = pygame.Color('black')
-
-        i = 0
-
-        self.user_text = ''
-        
-        # create rectangle
-        input_rect = pygame.Rect(width-750, height/2, 200, 50)
-        input_rect.center = (width/2, height/2)
-
-        color_active = pygame.Color('red')
-
-        color = color_passive
-        
-        active = False
-        
-        while True:
-            self.screen.fill(black)
-            self.screen.blit(self.background, (width+i,0))
-            self.screen.blit(self.background, (i, 0))
-
-            if (i == -width):
-                self.screen.blit(self.background, (width+i, 0))
-                i=0
-            i-=1
-            for event in pygame.event.get():
-        
-            # if user types QUIT then the self.screen will close
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-        
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if input_rect.collidepoint(event.pos):
-                        active = True
-                    else:
-                        active = False
-        
-                if event.type == pygame.KEYDOWN:
-        
-                    # Check for backspace
-                    if event.key == pygame.K_BACKSPACE:
-        
-                        # get text input from 0 to -1 i.e. end.
-                        self.user_text = self.user_text[:-1]
-        
-                    # Unicode standard is used for string
-                    # formation
-                    else:
-                        self.user_text += event.unicode
-                    
-                    if event.key == pygame.K_RETURN:
-                        return [dia.determine_dialog(target, 0, self.user_text[:-1]), self.user_text[:-1]]
-        
-            if active:
-                color = color_active
-            else:
-                color = color_passive
-                
-            # draw rectangle and argument passed which should
-            # be on self.screen
-            pygame.draw.rect(self.screen, color, input_rect)
-        
-            rect = drawText(self.screen, self.user_text, pygame.Color('white'), input_rect, base_font, center=True, input=True)
-            
-            # set width of textfield so that text cannot get
-            # outside of user's text input
-            if rect != None:
-                input_rect.w = max(100, rect.get_width()+10)
-                input_rect.center = (width/2, height/2)
-            
-            # display.flip() will update only a portion of the
-            # self.screen to updated, not full area
-            pygame.display.flip()
-            
-            # clock.tick(60) means that for every second at most
-            # 60 frames should be passed.
-            clock.tick(60)
 
     def location_menu(self):
         size = width, height = 1600, 900
@@ -645,7 +572,7 @@ class MainGame():
 
         color_passive = "BLACK"
         page = 1
-        self.background = retrieve_background("map")
+        self.background, self.background_move = self.determine_background("map", self.background, self.background_move)
 
         dungeon_1_rect = pygame.Rect(width-1550,height-550,700,50)
         dungeon_2_rect = pygame.Rect(width-750,height-550,700,50)
@@ -660,7 +587,7 @@ class MainGame():
 
         while True:
             self.screen.fill(black)
-            self.screen.blit(self.background, (0,0))
+            self.i = blit_bg(self.i, self.background, self.background_move)
             colors = ["BLACK" for x in range(0,8)]
             color_c1, color_c2, color_c3, color_c4, color_c5, color_c6, color_c7, color_c8, color_next, color_leave = colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7], color_passive, color_passive
 
@@ -899,6 +826,10 @@ class MainGame():
             return retrieve_background("outside_castle_wall"), False
         elif dialog == "The two of you climb up a hill and he turns back to look at you.":
             return retrieve_background("hill"), False
+        elif dialog == "Habbitt":
+            return retrieve_background("villageinnnight"), False
+        elif dialog == "map":
+            return retrieve_background("map"), False
         else:
             return bg, move
         
@@ -921,12 +852,12 @@ class MainGame():
             #self.fade(self.fade_image, self.counter_x, self.counter_y)
             if option == "new_game":
                 self.progress = 1
-                self.main_menu_fade()
+                self.main_menu_fade(None)
                 self.in_dialog()
             elif option == "dialog skip":
                 name_global = "Dan"
                 self.progress = 2
-                self.main_menu_fade()
+                self.main_menu_fade("Habbitt")
                 self.in_dialog("To Town", 0)
             elif option == "load":
                 #check if load file exists
@@ -936,25 +867,28 @@ class MainGame():
                     self.data = pickle.load(file)
                     file.close()
                     #place player in location associated with progress (usually town)
-                    self.main_menu_fade()
+                    self.main_menu_fade("Habbitt")
                     self.in_dialog("To Town", self.progress)
                 else:
                     print("Save file does not exist.")
             elif option == "exit":
                 sys.exit()
 
-    def main_menu_fade(self):
+    def main_menu_fade(self, skip):
         self.counter_x = 0
         while True:
             print(self.counter_x)
-            self.i = blit_bg(self.i, self.background)
+            self.i = blit_bg(self.i, self.background, self.background_move)
             print("Here")
             blit_image([width, height], 1600-self.counter_x, 0, self.fade_image, 1, 1, 1)
             blit_image([width, height], -1600+self.counter_x, 0, self.fade_image, 1, 1, 1)
             print("Fades BLIT")
             self.counter_x+= 100
             if self.counter_x == 1600:
-                self.background = retrieve_background("royalbedroom")
+                if skip == "Habbitt":
+                    self.background = retrieve_background("villageinnnight")
+                else:
+                    self.background = retrieve_background("royalbedroom")
             if self.counter_x == 3200:
                 return
             pygame.display.flip()

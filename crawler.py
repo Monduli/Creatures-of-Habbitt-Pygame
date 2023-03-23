@@ -49,6 +49,7 @@ class PlayerMap(Creature):
 class EnemyMap(Creature):
     def __init__(self, display, x, y, image, animation_frames):
         super().__init__(display, x, y, image, animation_frames)
+        self.can_chase = 1
         
 
 class Crawler():
@@ -148,7 +149,7 @@ class Crawler():
 
         accel_x, accel_y = 0, 0
 
-        chase = 0
+        chase = 1
 
         self.party = party
         enemy_port_name = dungeon_rooms[0][1]
@@ -175,6 +176,7 @@ class Crawler():
         animation_timer = pygame.time.get_ticks()
         move_timer = 0
         charge_timer = 0
+        chase_move_timer = 0
 
         current_room = 0
         
@@ -209,56 +211,59 @@ class Crawler():
             if chase == 1:
                 # chase mechanic (test currently)
                 if enemy_port_name == "Bazongle_Stand":
-                    if self.player.x > self.enemy.x:
-                        accel_x = 5
-                    elif self.player.x < self.enemy.x:
-                        accel_x = -5
-                    else:
-                        accel_x = 0
-                    if self.player.y > self.enemy.y:
-                        accel_y = 5
-                    elif self.player.y < self.enemy.y:
-                        accel_y = -5
-                    else:
-                        accel_y = 0
-                    self.enemy.x += accel_x
-                    self.enemy.y += accel_y
+                    if now - charge_timer > 5000:
+                        if self.player.x > self.enemy.x:
+                            accel_x = 5
+                        elif self.player.x < self.enemy.x:
+                            accel_x = -5
+                        else:
+                            accel_x = 0
+                        if self.player.y > self.enemy.y:
+                            accel_y = 5
+                        elif self.player.y < self.enemy.y:
+                            accel_y = -5
+                        else:
+                            accel_y = 0
+                        self.enemy.x += accel_x
+                        self.enemy.y += accel_y
+
             
             if enemy_port_name == "Goblin_Stand" and now - move_timer > 100:
-                if now - charge_timer < 10000:
-                    choice = random.randint(0, 11)
-                    if choice == 0 or choice == 5:
-                        accel_x += 5
-                    elif choice == 1 or choice == 6:
-                        accel_x += -5
-                    elif choice == 2 or choice == 7:
-                        accel_x = 0
-                    elif choice == 3 or choice == 8:
-                        accel_y += 5
-                    elif choice == 4 or choice == 9:
-                        accel_y += -5
-                    elif choice == 10 or choice == 11:
-                        accel_y = 0
-                    if 485 < self.enemy.x + accel_x < 1055:
+                if self.enemy.can_chase:
+                    if now - charge_timer < 10000:
+                        choice = random.randint(0, 11)
+                        if choice == 0 or choice == 5:
+                            accel_x += 5
+                        elif choice == 1 or choice == 6:
+                            accel_x += -5
+                        elif choice == 2 or choice == 7:
+                            accel_x = 0
+                        elif choice == 3 or choice == 8:
+                            accel_y += 5
+                        elif choice == 4 or choice == 9:
+                            accel_y += -5
+                        elif choice == 10 or choice == 11:
+                            accel_y = 0
+                        if 485 < self.enemy.x + accel_x < 1055:
+                            self.enemy.x += accel_x
+                        if 143 < self.enemy.y + accel_y < 750:
+                            self.enemy.y += accel_y
+                        move_timer = pygame.time.get_ticks()
+                    else:
+                        if self.player.x > self.enemy.x:
+                            accel_x = 3
+                        elif self.player.x < self.enemy.x:
+                            accel_x = -3
+                        else:
+                            accel_x = 0
+                        if self.player.y > self.enemy.y:
+                            accel_y = 3
+                        elif self.player.y < self.enemy.y:
+                            accel_y = -3
+                        else:
+                            accel_y = 0
                         self.enemy.x += accel_x
-                    if 143 < self.enemy.y + accel_y < 750:
                         self.enemy.y += accel_y
-                    move_timer = pygame.time.get_ticks()
-                else:
-                    if self.player.x > self.enemy.x:
-                        accel_x = 3
-                    elif self.player.x < self.enemy.x:
-                        accel_x = -3
-                    else:
-                        accel_x = 0
-                    if self.player.y > self.enemy.y:
-                        accel_y = 3
-                    elif self.player.y < self.enemy.y:
-                        accel_y = -3
-                    else:
-                        accel_y = 0
-                    self.enemy.x += accel_x
-                    self.enemy.y += accel_y
             
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
             player_rect.x, player_rect.y = self.player.x, self.player.y
@@ -304,6 +309,7 @@ class Crawler():
                 if dungeon_enemies[current_room][1] != None:
                     self.enemy.set_image(dungeon_enemies[current_room][1])
                 self.enemy_set = 0
+                self.enemy.can_chase = 1
                 self.transfer = 3
 
 
@@ -322,6 +328,7 @@ class Crawler():
                 if state == "WIN":
                     self.enemy.x = 3200
                     self.enemy.y = 3200
+                    self.enemy.can_chase = 0
                 self.counter_x = 0
                 self.end_fade_transfer = 1
                 self.move_to_match = 0

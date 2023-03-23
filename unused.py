@@ -292,3 +292,90 @@ def update_box_old(self, text, box):
     self.gl_text("WHITE", text, WHITE, box, self.font, center=True)
 
 """
+
+
+def input_box(self, target, background):
+    size = width, height = 1600, 900
+    clock = pygame.time.Clock()
+    black = 0, 0, 0
+
+    base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+    color_passive = pygame.Color('black')
+
+    i = 0
+
+    self.user_text = ''
+    
+    # create rectangle
+    input_rect = pygame.Rect(width-750, height/2, 200, 50)
+    input_rect.center = (width/2, height/2)
+
+    color_active = pygame.Color('red')
+
+    color = color_passive
+    
+    active = False
+    
+    while True:
+        self.screen.fill(black)
+        self.screen.blit(self.background, (width+i,0))
+        self.screen.blit(self.background, (i, 0))
+
+        if (i == -width):
+            self.screen.blit(self.background, (width+i, 0))
+            i=0
+        i-=1
+        for event in pygame.event.get():
+    
+        # if user types QUIT then the self.screen will close
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if input_rect.collidepoint(event.pos):
+                    active = True
+                else:
+                    active = False
+    
+            if event.type == pygame.KEYDOWN:
+    
+                # Check for backspace
+                if event.key == pygame.K_BACKSPACE:
+    
+                    # get text input from 0 to -1 i.e. end.
+                    self.user_text = self.user_text[:-1]
+    
+                # Unicode standard is used for string
+                # formation
+                else:
+                    self.user_text += event.unicode
+                
+                if event.key == pygame.K_RETURN:
+                    return [dia.determine_dialog(target, 0, self.user_text[:-1]), self.user_text[:-1]]
+    
+        if active:
+            color = color_active
+        else:
+            color = color_passive
+            
+        # draw rectangle and argument passed which should
+        # be on self.screen
+        pygame.draw.rect(self.screen, color, input_rect)
+    
+        rect = drawText(self.screen, self.user_text, pygame.Color('white'), input_rect, base_font, center=True, input=True)
+        
+        # set width of textfield so that text cannot get
+        # outside of user's text input
+        if rect != None:
+            input_rect.w = max(100, rect.get_width()+10)
+            input_rect.center = (width/2, height/2)
+        
+        # display.flip() will update only a portion of the
+        # self.screen to updated, not full area
+        pygame.display.flip()
+        
+        # clock.tick(60) means that for every second at most
+        # 60 frames should be passed.
+        clock.tick(60)
