@@ -61,7 +61,7 @@ class MainGame():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if start_rect.collidepoint(event.pos):
-                        return "dialog"
+                        return "new_game"
                     if town_start_rect.collidepoint(event.pos):
                         return "dialog skip"
                     if load_rect.collidepoint(event.pos) and os.path.isfile("save.txt"):
@@ -112,14 +112,16 @@ class MainGame():
             self.background = retrieve_background("cave")
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-        self.user_text = dia.intro_1
+        self.user_text = [[[None, "[Character creation]"]
+        ], "intro_3_quick"]
+
         self.advance = 0
 
         dialog_rect = pygame.Rect(width-1550,height-250, 1500, 200)
         name_rect = pygame.Rect(width-1550, height-320, 300, 50)
         color_passive = pygame.Color('black')
 
-        remove = ["VIZGONE", "GUARDGONE", "MYSTBEARGONE"]
+        remove = ["VIZGONE", "GUARDGONE", "MYSTBEARGONE", "HENRIETTAGONE"]
 
         i = 0
         global party
@@ -131,10 +133,11 @@ class MainGame():
             choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
 
         if skip != False:
+            self.dialog = dia.Dialog("Player")
             if skip == "To Town":
-                self.user_text = dia.intro_skip_to_town
+                self.user_text = self.dialog.intro_skip_to_town
             else:
-                self.user_text = dia.intro_1_quick
+                self.user_text = self.dialog.intro_1_quick
 
         while True:            
             self.pick_dialog()            
@@ -142,11 +145,12 @@ class MainGame():
             self.i = blit_bg(self.i, self.background, self.background_move)
             
             if self.move_to_crawl == 1:
-                self.fade_over == 0
+                self.fade_over = 0
                 state = self.load_dungeon(self.user_text[1])
-                self.user_text = dia.process_state("cave_dungeon", state)
+                self.user_text = self.dialog.process_state("cave_dungeon", state)
                 self.move_to_crawl = 0
-            elif self.fade_over != 0:
+                self.advance = 0
+            elif self.fade_over == 1:
                 self.who_is_on_the_screen(slots)
                 gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), "Loading dungeon...", .7, 2.15, self.level)
                 self.fade_out()
@@ -163,9 +167,9 @@ class MainGame():
                         #gl_text_name(self.font, "BLACK", cgls(width-1250, width), cgls(width-1550, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
                         if speaking_name == slots[0]:
                             gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-1100, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        elif speaking_name == slots[1]:
+                        elif speaking_name == slots[1] or self.special_cases_slots_2(slots, speaking_name):
                             gl_text_name(self.font, "BLACK", cgls(width-650, width), cgls(width-950, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        elif speaking_name == slots[2]:
+                        elif speaking_name == slots[2] or self.special_cases_slots_3(slots, speaking_name):
                             gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-500, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
                         # Arg 1 is the name of the character to be portraited, Arg 2 is always main character
                         character = retrieve_character(speaking_name, self.characters)
@@ -194,8 +198,6 @@ class MainGame():
                             else:
                                 self.pick_dialog()
 
-                
-
                 pygame.display.flip()
                 clock.tick(60)
 
@@ -209,13 +211,17 @@ class MainGame():
             character = retrieve_character(slots[1], self.characters)
             if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
                 blit_image((width, height), width/2-300, -75, character, 1,1,1)
+            elif (slots[1] == "Hippo" or slots[1] == "Henrietta") and slots[2] == "N. Steen":
+                blit_image((width, height), width/2-400, 100, character, 1,1,1)
+            elif (slots[1] == "Hippo" or slots[1] == "Henrietta"):
+                blit_image((width, height), width/2-300, 100, character, 1,1,1)
             elif slots[2] == "Guard":
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
             else:
                 blit_image((width, height), width/2-150, 100, character, 1,1,1)
         if slots[2] != 0:
             character = retrieve_character(slots[2], self.characters)
-            if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear":
+            if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear" or slots[2] == "Henrietta":
                 blit_image((width, height), width - (width/2/2)-350, -75, character, 1,1,1)
             elif slots[2] == "Guard":
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
@@ -227,6 +233,18 @@ class MainGame():
             slots[2] = slots[1]
             slots[1] = 0
 
+    def special_cases_slots_2(self, slots, speaking_name):
+        if speaking_name == "Henrietta" and slots[1] == "Hippo":
+            return True
+        else:
+            return False
+        
+    def special_cases_slots_3(self, slots, speaking_name):
+        if speaking_name == "N. Steen" and slots[1] == "Mysterious Bear":
+            return True
+        else:
+            return False
+
     def fade_out(self):
         blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
         print(self.counter_x)
@@ -237,7 +255,7 @@ class MainGame():
         else:
             self.counter_x += 100
         if self.counter_x >= 1700:
-            self.fade_over = 2
+            self.fade_over = 0
             self.move_to_crawl = 1
 
     def dialog_options(self, screen, text_left, text_right, target_left, target_right):
@@ -289,7 +307,8 @@ class MainGame():
             self.nsteen.set_name("N. Steen")
             self.nsteen.set_portrait_dungeon("bear")
             self.party.append(self.nsteen)
-            self.user_text = dia.determine_dialog(self.user_text[1], self.progress, self.char_name)
+            self.dialog = dia.Dialog(self.main_character.get_name())
+            self.user_text = self.dialog.determine_dialog(self.user_text[1], self.progress, self.char_name)
             self.advance = 0
             self.characters = [self.main_character, self.nsteen]
             return
@@ -301,7 +320,7 @@ class MainGame():
             self.village_choices()
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
             choice = self.inn_menu(self.screen, self.progress, self.background)
-            self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
+            self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
         elif self.user_text[0][self.advance][1] == "SELECTION":
             left_option = self.user_text[0][self.advance+1][1]
@@ -310,7 +329,7 @@ class MainGame():
             right_target = self.user_text[2]
             choice = self.dialog_options(self.screen, left_option, right_option, left_target, right_target)
             proceed = self.sort_options(choice)
-            self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
+            self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
         elif self.user_text[0][self.advance][1] == "Please type into the box.":
             array = self.input_box(self.user_text[1], self.background)
@@ -353,7 +372,7 @@ class MainGame():
                 self.advance = 0
             elif choice == "inn":
                 choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
-                self.user_text = dia.determine_dialog(choice, self.progress, self.char_name)
+                self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
                 self.advance = 0
             elif choice == "save":
                 self.user_text = self.save_game()
@@ -362,8 +381,8 @@ class MainGame():
                 if len(self.party) > 0:
                 # Should go to location menu
                     state = self.location_menu()
-                    if state == "WIN":
-                        self.user_text = [[[None, "Your party was victorious!"],[None, "[Returning to town.]"]]]
+                    if state == "FINISHED":
+                        self.user_text = [[[None, "Your party finished exploring the dungeon."],[None, "[Returning to town.]"]]]
                     elif state == "DEAD":
                         self.user_text = [[[None, "Your party was wiped out..."],[None, "[Returning to town.]"]]]
                     elif state == "RAN" or "LEFT":
@@ -781,6 +800,8 @@ class MainGame():
 
     def load_dungeon(self, dungeon):
         state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), "cave", True)
+        self.counter_x = 1600
+        self.main_menu_fade("Habbitt", False)
         return state
 
     def sort_options(self, choice):
@@ -852,7 +873,7 @@ class MainGame():
             #self.fade(self.fade_image, self.counter_x, self.counter_y)
             if option == "new_game":
                 self.progress = 1
-                self.main_menu_fade(None)
+                self.main_menu_fade("Start")
                 self.in_dialog()
             elif option == "dialog skip":
                 name_global = "Dan"
@@ -874,21 +895,21 @@ class MainGame():
             elif option == "exit":
                 sys.exit()
 
-    def main_menu_fade(self, skip):
-        self.counter_x = 0
+    def main_menu_fade(self, skip, new_fade=True):
+        if new_fade == True:
+            self.counter_x = 0
         while True:
-            print(self.counter_x)
             self.i = blit_bg(self.i, self.background, self.background_move)
-            print("Here")
             blit_image([width, height], 1600-self.counter_x, 0, self.fade_image, 1, 1, 1)
             blit_image([width, height], -1600+self.counter_x, 0, self.fade_image, 1, 1, 1)
-            print("Fades BLIT")
             self.counter_x+= 100
             if self.counter_x == 1600:
                 if skip == "Habbitt":
                     self.background = retrieve_background("villageinnnight")
-                else:
+                elif skip == "Start":
                     self.background = retrieve_background("royalbedroom")
+                else:
+                    self.background = retrieve_background("villageinnnight")
             if self.counter_x == 3200:
                 return
             pygame.display.flip()

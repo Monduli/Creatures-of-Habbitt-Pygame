@@ -12,11 +12,9 @@ def get_dungeon_layout(dungeon_name):
 
 cave = [
             ["testroom.png", 1, 2, 1, None], 
-            ["testroom2.png", 0, None, 0, None],
+            ["testroom2.png", 0, 3, 0, None],
             ["testroom3.png", None, None, None, 0], 
-            ["testroom.png", 4, 5, 6, None],
-            ["testroom.png", 0, 2, 3, None], 
-            ["testroom.png", 4, 5, 6, None]
+            ["testroom4.png", None, "END", None, 2]
             ]
 
 cave_enemies = [
@@ -31,5 +29,10 @@ cave_enemies = [
     ],[
     [Enemy("Bazongle", 20000, 5, 5, 5, 5, 100),],
     "Bazongle_Stand"
+    ],[
+    [None], None
     ]
 ]
+
+if __name__ == "__main__":
+    print("This is a database file. Do not run this directly.")

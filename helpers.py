@@ -49,6 +49,8 @@ def retrieve_character(choice, characters):
         return pygame.image.load(folder + "vizier_port.png").convert_alpha()
     if choice == "Guard":
         return pygame.image.load(folder + "guard.png").convert_alpha()
+    if choice == "Hippo" or "Henrietta":
+        return pygame.image.load(folder + "hippo.png").convert_alpha()
     
 def remove_portrait(name, slots):
     if name == "VIZGONE":
@@ -61,7 +63,11 @@ def remove_portrait(name, slots):
                 slots[x] = 0
     elif name == "MYSTBEARGONE":
         for x in range(0,3):
-            if slots[x] == "Mysterious Bear":
+            if slots[x] == "Mysterious Bear" or slots[x] == "N. Steen":
+                slots[x] = 0
+    elif name == "HENRIETTAGONE":
+        for x in range(0,3):
+            if slots[x] == "Henrietta" or slots[x] == "Hippo":
                 slots[x] = 0
     return slots
 

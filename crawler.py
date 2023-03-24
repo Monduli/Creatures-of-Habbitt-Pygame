@@ -268,10 +268,13 @@ class Crawler():
             #print("x: " + str(self.player.x) + "| y: " + str(self.player.y))
             player_rect.x, player_rect.y = self.player.x, self.player.y
             enemy_rect.x, enemy_rect.y = self.enemy.x, self.enemy.y
+
+            # collisions with objects / doorways
             
             if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y) and in_play == 0:
                 in_play = 1
                 self.into_combat_transfer = 1  
+
             if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
                 self.fade_dir = "fade_left"
                 direction = "left"
@@ -291,18 +294,38 @@ class Crawler():
 
             if self.transfer == 2:
                 if direction == "left":
+                    if dungeon_rooms[current_room][1] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
                     current_room = dungeon_rooms[current_room][1]
                     self.player.x = 1000
                     self.player.y = height/2
                 if direction == "up":
+                    if dungeon_rooms[current_room][2] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
                     current_room = dungeon_rooms[current_room][2]
                     self.player.y = 170
                     self.player.x = width/2 - 50
                 if direction == "right":
+                    if dungeon_rooms[current_room][3] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
                     current_room = dungeon_rooms[current_room][3]
                     self.player.x = 500
                     self.player.y = height/2
                 if direction == "down":
+                    if dungeon_rooms[current_room][4] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
                     current_room = dungeon_rooms[current_room][4]
                     self.player.y = 700
                     self.player.x = width/2 - 50
