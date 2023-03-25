@@ -34,23 +34,37 @@ def retrieve_background(choice):
         background = "hill.png"
     elif choice == "royalbedroom":
         background = "royalbedroom.png"
+    elif choice == "stat_menu":
+        background = "menu_bg.png"
     if background != None:
         return background
     return Exception()
 
-def retrieve_character(choice, characters):
+def retrieve_character(choice, characters, portrait=False):
     main_character_name = characters[0].get_name()
     folder = "images/"
-    if choice == "N. Steen" or choice == "Mysterious Bear":
-        return characters[1].get_dialog_picture()
-    if choice == main_character_name:
-        return characters[0].get_dialog_picture()
-    if choice == "Vizier":
-        return pygame.image.load(folder + "vizier_port.png").convert_alpha()
-    if choice == "Guard":
-        return pygame.image.load(folder + "guard.png").convert_alpha()
-    if choice == "Hippo" or "Henrietta":
-        return pygame.image.load(folder + "hippo.png").convert_alpha()
+    if not portrait:
+        if choice == "N. Steen" or choice == "Mysterious Bear":
+            return characters[1].get_dialog_picture()
+        if choice == main_character_name:
+            return characters[0].get_dialog_picture()
+        if choice == "Vizier":
+            return pygame.image.load(folder + "vizier_port.png").convert_alpha()
+        if choice == "Guard":
+            return pygame.image.load(folder + "guard.png").convert_alpha()
+        if choice == "Hippo" or "Henrietta":
+            return pygame.image.load(folder + "hippo.png").convert_alpha()
+    else:
+        if choice == "N. Steen" or choice == "Mysterious Bear":
+            return characters[1].get_portrait_dialog()
+        if choice == main_character_name:
+            return characters[0].get_portrait_dialog()
+        if choice == "Vizier":
+            return pygame.image.load(folder + "fox_port.png").convert_alpha()
+        if choice == "Guard":
+            return pygame.image.load(folder + "pig_port.png").convert_alpha()
+        if choice == "Hippo" or "Henrietta":
+            return pygame.image.load(folder + "hippo_port.png").convert_alpha()
     
 def remove_portrait(name, slots):
     if name == "VIZGONE":
@@ -213,6 +227,7 @@ def create_default_main_character():
     char.set_name("Dog")
     char.set_portrait("dogdude_port_100.png")
     char.set_portrait_dungeon("dogdude")
+    char.set_portrait_dialog("dogdude_portrait")
     return char
 
 def drawStyleRect(surface, x, y):

@@ -25,6 +25,7 @@ class Character:
         self.dialog_picture = ""
         self.portrait = "images/"
         self.portrait_dungeon = "images/"
+        self.portrait_dialog = "images/"
         self.role = ""
         self.xp = 0
         # bonds list:
@@ -90,6 +91,9 @@ class Character:
     def get_portrait(self):
         return self.portrait
     
+    def get_portrait_dialog(self):
+        return self.portrait_dialog
+    
     def get_portrait_dungeon(self):
         return self.portrait_dungeon
     
@@ -151,6 +155,9 @@ class Character:
     def set_portrait(self, value):
         self.portrait = pygame.image.load("images/" + value).convert_alpha()
         self.portrait_name = "images/" + value
+        
+    def set_portrait_dialog(self, value):
+        self.portrait_dialog = pygame.image.load("images/" + value + ".png").convert_alpha()
 
     def set_portrait_dungeon(self, value):
         portrait = pygame.image.load("images/" + value + ".png").convert_alpha()
@@ -294,6 +301,7 @@ class BearKnight(Character):
         self.set_portrait("bear_portrait_100.png")
         self.set_dialog_picture("bear.png")
         self.set_portrait_dungeon("bear")
+        self.set_portrait_dialog("bear_portrait")
         self.role = "BEAR KNIGHT"
         self.stat_spread = ["chutz", "phys", "heart", "quick", "heal", "magic"]
         self.fill_xp_array()

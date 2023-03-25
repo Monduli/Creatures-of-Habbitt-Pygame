@@ -175,7 +175,7 @@ class Dialog():
         self.intro_3_quick = [[
             [None, "You nod and walk forward into the dark cave."],
             [None, "[Dungeon CAVE]"]
-        ], "cave", "recruit_keeper"]
+        ], "cave", "recruit_keeper", 2]
 
         self.intro_cave_loss = [[
             [p, "Ouch..."],
@@ -183,7 +183,7 @@ class Dialog():
             ["N. Steen", "Turns out we were persuaded to leave instead of them."],
             ["N. Steen", "Oh well. Muster your courage, we will try again. Here we go!"],
             [None, "[Dungeon CAVE]"]
-        ], "cave", "recruit_keeper"]
+        ], "cave", "recruit_keeper", 2]
 
         self.recruit_keeper = [[
             [None, "You appear to be in the deepest part of the cave."],
@@ -193,7 +193,7 @@ class Dialog():
             [p, "It's a good thing we were here to save them when we... huh?"],
             [None, "Upon closer inspection, the cage is unlocked and the door is slightly ajar."],
             ["N. Steen", "What's the matter? ... Huh. The cage is not locked. This person is not a captive."],
-            [None, "Your bear companion squints at the figure, pulls out a drawing on a scroll, then returns the drawing to his possessions pocket."],
+            [None, "Your bear companion squints at the figure, pulls out a drawing on a scroll, then returns the illustration to his possessions pocket."],
             ["N. Steen", "This appears to be who we are searching for, and it appears that they are fast asleep."],
             [p, "Should we wake them up?"],
             ["N. Steen", "No, we should leave them here after coming all this way. After all, they appear to require rest."],
@@ -310,7 +310,7 @@ class Dialog():
                 return self.to_town
 
     def process_state(self, dungeon, state):
-        if dungeon == "cave_dungeon":
+        if dungeon == "cave":
             if state == "FINISHED":
                 return self.recruit_keeper
             elif state == "DEAD":

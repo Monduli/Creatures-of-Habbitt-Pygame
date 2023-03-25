@@ -126,7 +126,7 @@ class MainGame():
         i = 0
         global party
         party = []
-        slots = [0, 0, 0]
+        self.slots = [0, 0, 0]
 
         curr_text = self.user_text[0][self.advance][1]
         if curr_text in ["inn"]:
@@ -147,46 +147,58 @@ class MainGame():
             if self.move_to_crawl == 1:
                 self.fade_over = 0
                 state = self.load_dungeon(self.user_text[1])
-                self.user_text = self.dialog.process_state("cave_dungeon", state)
+                if state == "FINISHED":
+                    self.progress = self.user_text[3]
+                self.user_text = self.dialog.process_state(self.user_text[1], state)
                 self.move_to_crawl = 0
                 self.advance = 0
             elif self.fade_over == 1:
-                self.who_is_on_the_screen(slots)
+                self.who_is_on_the_screen()
                 gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), "Loading dungeon...", .7, 2.15, self.level)
                 self.fade_out()
                 pygame.display.flip()
                 clock.tick(60)
             else:
-                self.who_is_on_the_screen(slots)
+                self.who_is_on_the_screen()
 
                 speaking_name = self.user_text[0][self.advance][0]
                 if speaking_name != None:
                     if speaking_name in remove:
-                        slots = remove_portrait(speaking_name, slots)
+                        self.slots = remove_portrait(speaking_name, self.slots)
                     else:
                         #gl_text_name(self.font, "BLACK", cgls(width-1250, width), cgls(width-1550, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        if speaking_name == slots[0]:
-                            gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-1100, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        elif speaking_name == slots[1] or self.special_cases_slots_2(slots, speaking_name):
-                            gl_text_name(self.font, "BLACK", cgls(width-650, width), cgls(width-950, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        elif speaking_name == slots[2] or self.special_cases_slots_3(slots, speaking_name):
-                            gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-500, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
+                        #if speaking_name == self.slots[0]:
+                        #    gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-1100, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
+                        #elif speaking_name == self.slots[1] or self.special_cases_slots_2(speaking_name):
+                        #    gl_text_name(self.font, "BLACK", cgls(width-650, width), cgls(width-950, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
+                        #elif speaking_name == self.slots[2] or self.special_cases_slots_3(speaking_name):
+                        #    gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-500, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
+                        
                         # Arg 1 is the name of the character to be portraited, Arg 2 is always main character
                         character = retrieve_character(speaking_name, self.characters)
-                        # slots[0] is left, slots[1] is middle, slots[2] is right
-                        if slots[0] == 0 and slots[1] != speaking_name and slots[2] != speaking_name:
-                            slots[0] = speaking_name
-                        elif slots[2] == 0 and slots[0] != speaking_name and slots[1] != speaking_name:
-                            slots[2] = speaking_name
-                        elif slots[1] == 0 and slots[0] != speaking_name and slots[2] != speaking_name:
-                            slots[1] = speaking_name
+                        # self.slots[0] is left, self.slots[1] is middle, self.slots[2] is right
+                        if self.slots[0] == 0 and self.slots[1] != speaking_name and self.slots[2] != speaking_name:
+                            self.slots[0] = speaking_name
+                        elif self.slots[2] == 0 and self.slots[0] != speaking_name and self.slots[1] != speaking_name:
+                            self.slots[2] = speaking_name
+                        elif self.slots[1] == 0 and self.slots[0] != speaking_name and self.slots[2] != speaking_name:
+                            self.slots[1] = speaking_name
 
                 # (width-1550,height-250,1500,200)
                 #glBegin(GL_QUADS)
                 #rect_ogl("BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height))
                 #glEnd()
-                gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), -.999999, self.user_text[0][self.advance][1], .7, 2.15, self.level)
-                #gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1600, width), cgls(width-0, width), cgls(height-650, height), cgls(height-900, height), self.user_text[0][self.advance][1], .7, 2.15, self.level)
+                if speaking_name == None:
+                    gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), -.999999, self.user_text[0][self.advance][1], .7, 2.15, self.level)
+                else:
+                    gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1250, width), cgls(width-50, width), cgls(height-650, height), -.999999, self.user_text[0][self.advance][1], .9, 2.15, self.level)
+                    char_port = retrieve_character(speaking_name, self.characters, True)
+                    char_port = pygame.transform.scale(char_port, (200, 266))
+                    glBegin(GL_QUADS)
+                    rect_ogl("BLACK", cgls(width-1550, width), cgls(width-1250, width), cgls(height-650, height), -.999999)
+                    glEnd()
+                    blit_image((width, height), width-1505, height-835, char_port, 1, 1, 1)
+                    gl_text_name(self.font, "BLACK", cgls(width-1300, width), cgls(width-1500, width), cgls(height-875, height), cgls(height-850, height), speaking_name, 1, 1) #.8, .95
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: sys.exit()
@@ -201,46 +213,46 @@ class MainGame():
                 pygame.display.flip()
                 clock.tick(60)
 
-    def who_is_on_the_screen(self, slots):
-        if slots != [0,0,0] and self.debug == 1:
-            print(slots)    
-        if slots[0] != 0:
-            character = retrieve_character(slots[0], self.characters)
+    def who_is_on_the_screen(self):
+        if self.slots != [0,0,0] and self.debug == 1:
+            print(self.slots)    
+        if self.slots[0] != 0:
+            character = retrieve_character(self.slots[0], self.characters)
             blit_image((width, height), width-1500, 100, character, 1,1,1)
-        if slots[1] != 0:
-            character = retrieve_character(slots[1], self.characters)
-            if slots[1] == "N. Steen" or slots[1] == "Mysterious Bear":
+        if self.slots[1] != 0:
+            character = retrieve_character(self.slots[1], self.characters)
+            if self.slots[1] == "N. Steen" or self.slots[1] == "Mysterious Bear":
                 blit_image((width, height), width/2-300, -75, character, 1,1,1)
-            elif (slots[1] == "Hippo" or slots[1] == "Henrietta") and slots[2] == "N. Steen":
+            elif (self.slots[1] == "Hippo" or self.slots[1] == "Henrietta") and self.slots[2] == "N. Steen":
                 blit_image((width, height), width/2-400, 100, character, 1,1,1)
-            elif (slots[1] == "Hippo" or slots[1] == "Henrietta"):
+            elif (self.slots[1] == "Hippo" or self.slots[1] == "Henrietta"):
                 blit_image((width, height), width/2-300, 100, character, 1,1,1)
-            elif slots[2] == "Guard":
+            elif self.slots[2] == "Guard":
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
             else:
                 blit_image((width, height), width/2-150, 100, character, 1,1,1)
-        if slots[2] != 0:
-            character = retrieve_character(slots[2], self.characters)
-            if slots[2] == "N. Steen" or slots[2] == "Mysterious Bear" or slots[2] == "Henrietta":
+        if self.slots[2] != 0:
+            character = retrieve_character(self.slots[2], self.characters)
+            if self.slots[2] == "N. Steen" or self.slots[2] == "Mysterious Bear" or self.slots[2] == "Henrietta":
                 blit_image((width, height), width - (width/2/2)-350, -75, character, 1,1,1)
-            elif slots[2] == "Guard":
+            elif self.slots[2] == "Guard":
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
-            elif slots[2] == "Vizier":
+            elif self.slots[2] == "Vizier":
                 blit_image((width, height), width - (width/2/2)-100, 100, character, 1,1,1)
             else:
                 blit_image((width, height), width - (width/2/2), 100, character, 1,1,1)
-        if slots[1] != 0 and slots[2] == 0:
-            slots[2] = slots[1]
-            slots[1] = 0
+        if self.slots[1] != 0 and self.slots[2] == 0:
+            self.slots[2] = self.slots[1]
+            self.slots[1] = 0
 
-    def special_cases_slots_2(self, slots, speaking_name):
-        if speaking_name == "Henrietta" and slots[1] == "Hippo":
+    def special_cases_slots_2(self, speaking_name):
+        if speaking_name == "Henrietta" and self.slots[1] == "Hippo":
             return True
         else:
             return False
         
-    def special_cases_slots_3(self, slots, speaking_name):
-        if speaking_name == "N. Steen" and slots[1] == "Mysterious Bear":
+    def special_cases_slots_3(self, speaking_name):
+        if speaking_name == "N. Steen" and self.slots[1] == "Mysterious Bear":
             return True
         else:
             return False
@@ -318,7 +330,9 @@ class MainGame():
             self.party.append(add_party_member("nsteen"))
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
             self.village_choices()
+            self.slots = [0, 0, 0]
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
+            self.slots = [0, 0, 0]
             choice = self.inn_menu(self.screen, self.progress, self.background)
             self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
@@ -331,6 +345,7 @@ class MainGame():
             proceed = self.sort_options(choice)
             self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
+            self.slots = [0, 0, 0]
         elif self.user_text[0][self.advance][1] == "Please type into the box.":
             array = self.input_box(self.user_text[1], self.background)
             temp = self.user_text[1]
@@ -339,6 +354,7 @@ class MainGame():
             name_global = name
             self.sort_options(temp)
             self.advance = 0
+            self.slots = [0, 0, 0]
         else:
             pass
 
@@ -412,13 +428,14 @@ class MainGame():
 
         color_passive = "BLACK"
 
+        party_rect = pygame.Rect(width-300,height-900,300,50)
         top_left_rect = pygame.Rect(width-1550,height-350,700,50)
         top_right_rect = pygame.Rect(width-750,height-350,700,50)
         bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
         bot_right_rect = pygame.Rect(width-750,height-250,700,50)
         leave_rect = pygame.Rect(width-750,height-150,700,50)
 
-        self.background = retrieve_background("villageinnnight")
+        self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
 
         while True:
             self.screen.fill(black)
@@ -428,6 +445,7 @@ class MainGame():
             color_bot_left = color_passive
             color_bot_right = color_passive
             color_leave = color_passive
+            color_party = color_passive
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
@@ -442,6 +460,8 @@ class MainGame():
                         return target_bot_right
                     if leave_rect.collidepoint(event.pos):
                         return target_leave
+                    if party_rect.collidepoint(event.pos):
+                        self.stats_menu()
 
             if top_left_rect.collidepoint(pygame.mouse.get_pos()):
                 color_top_left = "RED"
@@ -453,12 +473,16 @@ class MainGame():
                 color_bot_right = "RED"
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
                 color_leave = "RED"
+            if party_rect.collidepoint(pygame.mouse.get_pos()):
+                color_party = "RED"
+                
 
             gl_text_name(self.font, color_top_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), text_top_left, 1, 1.115)
             gl_text_name(self.font, color_top_right, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), text_top_right, 1, 1.115)
             gl_text_name(self.font, color_bot_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), text_bot_left, 1, 1.17)
             gl_text_name(self.font, color_bot_right, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), text_bot_right, 1, 1.17)
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), text_leave, 1, 1.31)
+            gl_text_name(self.font, color_party, cgls(width-300, width), cgls(width-0, width), cgls(height-50, height), cgls(height, height), "Party", 1, .99)
 
 
             pygame.display.flip()
@@ -481,6 +505,7 @@ class MainGame():
         character8_rect = pygame.Rect(width-750,height-250,700,50)
         next_rect = pygame.Rect(width-1550,height-150,700,50)
         leave_rect = pygame.Rect(width-750,height-150,700,50)
+        self.slots[0] = self.main_character.get_name()
 
         self.background = retrieve_background("tavern")
 
@@ -765,6 +790,7 @@ class MainGame():
                         char.set_dialog_picture(poss_images[curr_image] + "_port.png")
                         char.set_portrait(poss_images[curr_image] + "_port_100.png")
                         char.set_portrait_dungeon(poss_images[curr_image])
+                        char.set_portrait_dialog(poss_images[curr_image] + "_portrait")
                         self.char_name = input_text[:-1]
                         return char
         
@@ -797,6 +823,92 @@ class MainGame():
             # 60 frames should be passed.
             clock.tick(60)
 
+    def stats_menu(self):
+        size = width, height = 1600, 900
+        clock = pygame.time.Clock()
+        black = 0, 0, 0
+
+        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+        color_passive = "BLACK"
+
+        i = 0
+
+        input_text = ''
+        
+        # create rectangle
+        back_rect = pygame.Rect(width/2+100, height-100, 200, 50)
+        left_rect = pygame.Rect(width-1400, height/2+65, 100, 100)
+        right_rect = pygame.Rect(width-950, height/2+65, 100, 100)
+
+        color_active = pygame.Color('red')
+
+        color = color_passive
+
+        party_member_pics = []
+        for member in self.party:
+            party_member_pics.append(member.get_dialog_picture())
+        current_member = 0
+        
+        active = False
+        self.background, self.background_move = self.determine_background("stat_menu", self.background, self.background_move)
+        
+        while True:
+            self.screen.fill(black)
+            self.i = blit_bg(self.i, self.background, self.background_move)
+            color_back = "BLACK"
+
+            if back_rect.collidepoint(pygame.mouse.get_pos()):
+                color_back = "RED"
+
+            char_name = self.party[current_member].get_name()
+
+            image1 = party_member_pics[current_member]
+            blit_image((width, height), width-1280, height/2/2-50, image1, 1,1,1)
+
+            image2 = pygame.image.load("images/leftarrow.png")
+            blit_image((width, height), width-1400, height/2-(height/8)-50, image2, 1,1,1)
+            image3 = pygame.image.load("images/rightarrow.png")
+            blit_image((width, height), width-950, height/2-(height/8)-50, image3, 1,1,1)
+
+            gl_text_name(self.font, "BLACK", cgls(width-1300, width), cgls(width-950, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name, 1, .93)
+            gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-800, height), cgls(height-850, height), "Back", 1, 1)
+
+            for event in pygame.event.get():
+            # if user types QUIT then the self.screen will close
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+        
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if left_rect.collidepoint(event.pos):
+                        if current_member-1 >= 0:
+                            current_member -= 1
+                        else:
+                            current_member = len(party_member_pics) - 1
+                    if right_rect.collidepoint(event.pos):
+                        if current_member+1 < len(party_member_pics):
+                            current_member += 1
+                        else:
+                            current_member = 0
+                    if back_rect.collidepoint(event.pos):
+                        return
+
+            if active:
+                color = color_active
+            else:
+                color = color_passive
+                
+
+            #glBegin(GL_QUADS)
+            #rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
+            #glEnd()
+        
+            
+            
+            pygame.display.flip()
+
+            clock.tick(60)
 
     def load_dungeon(self, dungeon):
         state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), "cave", True)
@@ -851,6 +963,10 @@ class MainGame():
             return retrieve_background("villageinnnight"), False
         elif dialog == "map":
             return retrieve_background("map"), False
+        elif dialog == "stat_menu":
+            return retrieve_background("stat_menu"), True
+        elif dialog == "The three of you arrive at Habbitt, in front of the familiar inn.":
+            return retrieve_background("villageinnnight"), False
         else:
             return bg, move
         
@@ -873,7 +989,7 @@ class MainGame():
             #self.fade(self.fade_image, self.counter_x, self.counter_y)
             if option == "new_game":
                 self.progress = 1
-                self.main_menu_fade("Start")
+                self.main_menu_fade("Start_quick")
                 self.in_dialog()
             elif option == "dialog skip":
                 name_global = "Dan"
@@ -908,6 +1024,8 @@ class MainGame():
                     self.background = retrieve_background("villageinnnight")
                 elif skip == "Start":
                     self.background = retrieve_background("royalbedroom")
+                elif skip == "Start_quick":
+                    self.background = retrieve_background("cave")
                 else:
                     self.background = retrieve_background("villageinnnight")
             if self.counter_x == 3200:
