@@ -26,8 +26,14 @@ class Character:
         self.portrait = "images/"
         self.portrait_dungeon = "images/"
         self.portrait_dialog = "images/"
+        self.stats_picture = "images/"
         self.role = ""
         self.xp = 0
+        self.bonds = [0, 0, 0, 0, 0, 0, 0]
+        self.buff = 0
+        self.willpower = 0
+        self.stat_spread = None
+
         # bonds list:
         # [0] - Main Character
         # [1] - Bear N. Steen
@@ -38,10 +44,6 @@ class Character:
         # [6] - Cinnamon Bun
         # [7] - None
         # [8] - None
-        self.bonds = [0, 0, 0, 0, 0, 0, 0]
-        self.buff = 0
-        self.willpower = 0
-        self.stat_spread = None
 
     def get_level(self):
         return self.level
@@ -61,14 +63,14 @@ class Character:
     def get_physical_attack(self):
         return self.physical_attack
 
+    def get_magic_attack(self):
+        return self.magic
+
     def get_quickness(self):
         return self.quickness
 
     def get_heartiness(self):
         return self.heartiness
-
-    def get_magic_attack(self):
-        return self.magic
 
     def get_healing(self):
         return self.healing
@@ -94,6 +96,9 @@ class Character:
     def get_portrait_dialog(self):
         return self.portrait_dialog
     
+    def get_stats_picture(self):
+        return self.stats_picture
+    
     def get_portrait_dungeon(self):
         return self.portrait_dungeon
     
@@ -105,6 +110,9 @@ class Character:
     
     def get_buff(self):
         return self.buff
+    
+    def get_xp(self):
+        return self.xp
 
     def set_hp(self, value):
         self.hp = value
@@ -158,6 +166,9 @@ class Character:
         
     def set_portrait_dialog(self, value):
         self.portrait_dialog = pygame.image.load("images/" + value + ".png").convert_alpha()
+
+    def set_stats_picture(self, value):
+        self.stats_picture = pygame.image.load("images/" + value + ".png").convert_alpha()
 
     def set_portrait_dungeon(self, value):
         portrait = pygame.image.load("images/" + value + ".png").convert_alpha()
@@ -302,6 +313,7 @@ class BearKnight(Character):
         self.set_dialog_picture("bear.png")
         self.set_portrait_dungeon("bear")
         self.set_portrait_dialog("bear_portrait")
+        self.set_stats_picture("bear_port_stats")
         self.role = "BEAR KNIGHT"
         self.stat_spread = ["chutz", "phys", "heart", "quick", "heal", "magic"]
         self.fill_xp_array()
@@ -323,6 +335,7 @@ class Bookish(Character):
         self.set_portrait("rabbit_portrait_100.png")
         self.stat_spread = ["magic", "quick", "heal", "heart", "chutz", "phys"]
         self.fill_xp_array()
+        self.set_stats_picture("rabbit_port_stats")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["magic", "quick", "heal", "heart", "chutz", "phys"], stats)
@@ -336,6 +349,7 @@ class Merchant(Character):
         self.set_portrait("grapefart_portrait_100.png")
         self.stat_spread = ["quick", "heal", "chutz", "phys", "heart", "magic"]
         self.fill_xp_array()
+        self.set_stats_picture("grapefart_port_stats")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["quick", "heal", "chutz", "phys", "heart", "magic"], stats)
@@ -352,6 +366,20 @@ class Cleric(Character):
 
     def spread(self, stats):
         Character.distribute_stats(self, ["heal", "phys", "magic", "heart", "quick", "chutz"], stats)
+        self.calculate_stats()
+
+class Innkeeper(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "INNKEEPER"
+        self.set_portrait("hippo_port_100.png")
+        self.stat_spread = ["phys", "heal", "chutz", "quick", "heart", "magic"]
+        self.fill_xp_array()
+        self.set_stats_picture("hippo_port_stats")
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["phys", "heal", "chutz", "quick", "heart", "magic"], stats)
         self.calculate_stats()
 
 class Enemy():

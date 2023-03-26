@@ -322,7 +322,13 @@ class MainGame():
             self.dialog = dia.Dialog(self.main_character.get_name())
             self.user_text = self.dialog.determine_dialog(self.user_text[1], self.progress, self.char_name)
             self.advance = 0
-            self.characters = [self.main_character, self.nsteen]
+            self.rom_characters = [self.main_character, self.nsteen, None, None, None, None, None, None, None, None, None]
+            self.character_names = [self.main_character.get_name(), self.nsteen.get_name(), None, None, None, None, None, None, None, None, None]
+            self.npc_names = ["Henrietta", None, None, None, None, None, None, None, None, None]
+            henrietta = Innkeeper([15, 10, 10, 10, 10, 10])
+            henrietta.set_name("Henrietta")
+            henrietta.set_portrait("hippo_port_100.png")
+            self.npc_characters = [Innkeeper([15, 10, 10, 10, 10, 10]), None, None, None, None, None, None, None, None, None]
             return
         elif self.user_text[0][self.advance][1] == "[Dungeon CAVE]":
             self.fade_over = 1
@@ -377,10 +383,14 @@ class MainGame():
                 self.user_text = self.save_game()
                 self.advance = 0
         elif self.progress == 2:
-            options = ["Inn", "Smithy", "inn", "blacksmith", "Fill Party", "Save", "party_debug", "save", "Venture Out", "leave",]
+            options = ["Inn", "Smithy", "inn", "blacksmith", "Boost Party", "Save", "party_debug", "save", "Venture Out", "leave",]
             choice = self.town_options(self.screen, options, self.background)
             if choice == "party_debug":
-                self.party = fill_party()
+                self.party = boost_party()
+                self.rom_characters[2] = self.party[2]
+                self.rom_characters[3] = self.party[3]
+                self.character_names[2] = "Radish"
+                self.character_names[3] = "Grapefart"
                 self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                 self.advance = 0
             if choice == "blacksmith":
@@ -791,6 +801,7 @@ class MainGame():
                         char.set_portrait(poss_images[curr_image] + "_port_100.png")
                         char.set_portrait_dungeon(poss_images[curr_image])
                         char.set_portrait_dialog(poss_images[curr_image] + "_portrait")
+                        char.set_stats_picture(poss_images[curr_image] + "_port")
                         self.char_name = input_text[:-1]
                         return char
         
@@ -837,9 +848,11 @@ class MainGame():
         input_text = ''
         
         # create rectangle
-        back_rect = pygame.Rect(width/2+100, height-100, 200, 50)
-        left_rect = pygame.Rect(width-1400, height/2+65, 100, 100)
-        right_rect = pygame.Rect(width-950, height/2+65, 100, 100)
+        back_rect = pygame.Rect(width/2-100, height-75, 200, 50)
+        left_rect = pygame.Rect(width-1500, height/2+65, 100, 100)
+        right_rect = pygame.Rect(width-1050, height/2+65, 100, 100)
+        switch_rect = pygame.Rect(width-800+300, height-550, 150, 50)
+        # cgls(bounds[0] + 300, width), cgls(bounds[0] + 450, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height)
 
         color_active = pygame.Color('red')
 
@@ -847,7 +860,7 @@ class MainGame():
 
         party_member_pics = []
         for member in self.party:
-            party_member_pics.append(member.get_dialog_picture())
+            party_member_pics.append(member.get_stats_picture())
         current_member = 0
         
         active = False
@@ -857,22 +870,127 @@ class MainGame():
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
             color_back = "BLACK"
+            color_switch = "BLACK"
 
+            # Make back rectangle red if you hover over it
             if back_rect.collidepoint(pygame.mouse.get_pos()):
                 color_back = "RED"
+            if switch_rect.collidepoint(pygame.mouse.get_pos()):
+                color_switch = "RED"
 
+            # Name of current party member
             char_name = self.party[current_member].get_name()
 
+            # Party member portrait
             image1 = party_member_pics[current_member]
-            blit_image((width, height), width-1280, height/2/2-50, image1, 1,1,1)
+            if char_name == "N. Steen":
+                blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
+            elif char_name == "Radish":
+                blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
+            elif char_name == "Grapefart":
+                blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
+            else:    
+                blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
 
+            # Arrows
             image2 = pygame.image.load("images/leftarrow.png")
-            blit_image((width, height), width-1400, height/2-(height/8)-50, image2, 1,1,1)
+            blit_image((width, height), width-1500, height/2-(height/8)-50, image2, 1,1,1)
             image3 = pygame.image.load("images/rightarrow.png")
-            blit_image((width, height), width-950, height/2-(height/8)-50, image3, 1,1,1)
+            blit_image((width, height), width-1050, height/2-(height/8)-50, image3, 1,1,1)
 
-            gl_text_name(self.font, "BLACK", cgls(width-1300, width), cgls(width-950, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name, 1, .93)
-            gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-800, height), cgls(height-850, height), "Back", 1, 1)
+            # Character name and back button
+            gl_text_name(self.font, "BLACK", cgls(width-1400, width), cgls(width-1050, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name, 1, .89)
+            gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-825, height), cgls(height-875, height), "Back", 1, 2)
+
+            bounds = [width-800, width-50, height-50, height-800]
+
+            # square behind the stats
+            glBegin(GL_QUADS)
+            rect_ogl("BLACK", cgls(bounds[0], width), cgls(bounds[1], width), cgls(bounds[2], height), cgls(bounds[3], height))
+            glEnd()
+
+            name = char_name
+            if char_name == "N. Steen":
+                name = "Bear N. Steen"
+            elif char_name == "Radish":
+                name = "Radish Rabbit"
+            elif char_name == "Grapefart":
+                name = "Gilbert Grapefart"
+
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[1] - 50, width), cgls(bounds[2] - 50, height), cgls(bounds[2] - 100, height), name, 1, 1)
+
+            # stats
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 100, height), cgls(bounds[2] - 150, height), "ROLE: " + self.party[current_member].get_role(), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 100, height), cgls(bounds[2] - 150, height), "LEVEL: " + str(self.party[current_member].get_level()), 1, 1)
+
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 150, height), cgls(bounds[2] - 200, height), "HP: " + str(self.party[current_member].get_hp()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 150, height), cgls(bounds[2] - 200, height), "HEAL: " + str(self.party[current_member].get_healing()), 1, 1)
+                        
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 200, height), cgls(bounds[2] - 250, height), "PHYSICAL: " + str(self.party[current_member].get_physical_attack()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 200, height), cgls(bounds[2] - 250, height), "MAGIC: " + str(self.party[current_member].get_magic_attack()), 1, 1)
+
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 250, height), cgls(bounds[2] - 300, height), "GUARD: " + str(self.party[current_member].get_physical_guard()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 250, height), cgls(bounds[2] - 300, height), "MAG GUARD: " + str(self.party[current_member].get_magical_guard()), 1, 1)
+
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 300, height), cgls(bounds[2] - 350, height), "QUICK: " + str(self.party[current_member].get_quickness()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 300, height), cgls(bounds[2] - 350, height), "HEART: " + str(self.party[current_member].get_heartiness()), 1, 1)
+
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "CHUTZ: " + str(self.party[current_member].get_chutzpah()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "XP: " + str(self.party[current_member].get_xp()), 1, 1)
+
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 100, width), cgls(bounds[0] + 250, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height), "RELATIONSHIPS:", 1, 1)
+            gl_text_name(self.font, color_switch, cgls(bounds[0] + 300, width), cgls(bounds[0] + 450, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height), "SWITCH", 1, 1)
+            
+            question_port = pygame.image.load("images/question_port.png")
+            question_port = pygame.transform.scale(question_port, (50,50))
+            current = 0
+            y = 0
+            which_character = 0
+            which_list = [self.character_names, self.npc_names]
+            what_list = [self.rom_characters, self.npc_characters]
+            switcher = 0
+            romanced = 0
+
+            # relationship portraits, dynamically shows only the other characters
+            for member in which_list[switcher]:
+                if member != char_name:
+                    if current % 2 == 0:
+                        if member == None:
+                            blit_image((width, height), bounds[0] + 50, bounds[2] - 550 + y, question_port, 1, 1, 1)
+                        else:
+                            image = what_list[switcher][which_character].get_portrait()
+                            image = pygame.transform.scale(image, (50,50))
+                            blit_image((width, height), bounds[0] + 50, bounds[2] - 550 + y, image, 1,1,1)
+                            # rectangle "healthbar"-like tracking for relationship status
+                            # show pink rectangle instead of green for bonded characters
+                            glBegin(GL_QUADS)
+                            rect_ogl("RED", cgls(bounds[0]+125, width), cgls(bounds[0]+375, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            if romanced == 1:
+                                rect_ogl("PINK", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            else:
+                                rect_ogl("GREEN", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            glEnd()
+                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 125, width), cgls(bounds[0] + 375, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 550 + y, height), "87%", 1, 1)
+                    else:
+                        if member == None:
+                            blit_image((width, height), bounds[0] + 400, bounds[2] - 550 + y, question_port, 1, 1, 1)
+                        else:
+                            image = what_list[switcher][which_character].get_portrait()
+                            image = pygame.transform.scale(image, (50,50))
+                            blit_image((width, height), bounds[0] + 400, bounds[2] - 550 + y, image, 1,1,1)
+                            # rectangle "healthbar"-like tracking for relationship status
+                            # show pink rectangle instead of green for bonded characters
+                            glBegin(GL_QUADS)
+                            rect_ogl("RED", cgls(bounds[0]+475, width), cgls(bounds[0]+725, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            if romanced == 1:
+                                rect_ogl("PINK", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            else:
+                                rect_ogl("GREEN", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            glEnd()
+                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 475, width), cgls(bounds[0] + 725, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 550 + y, height), "87%", 1, 1)
+                        y -= 50
+                    current += 1
+                which_character += 1
 
             for event in pygame.event.get():
             # if user types QUIT then the self.screen will close
@@ -893,6 +1011,11 @@ class MainGame():
                             current_member = 0
                     if back_rect.collidepoint(event.pos):
                         return
+                    if switch_rect.collidepoint(event.pos):
+                        if switcher == 0:
+                            switcher = 1
+                        elif switcher == 1:
+                            switcher = 0
 
             if active:
                 color = color_active

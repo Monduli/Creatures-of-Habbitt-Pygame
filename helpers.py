@@ -194,10 +194,10 @@ def fill_party():
     radish = Bookish([15, 10, 10, 5, 5, 0])
     radish.set_name("Radish")
     radish.set_portrait("rabbit_portrait_100.png")
-    cinna = Cleric([15, 10, 10, 5, 5, 0])
-    cinna.set_name("Cinna")
-    cinna.set_portrait("cinna_portrait_100.png")
-    party = [mc, nsteen, radish, cinna]
+    grapefart = Merchant([15, 10, 10, 5, 5, 0])
+    grapefart.set_name("Grapefart")
+    grapefart.set_portrait("grapefart_portrait_100.png")
+    party = [mc, nsteen, radish, grapefart]
     for char in party:
         char.print_stats()
     return party
@@ -213,12 +213,13 @@ def boost_party():
     radish.set_name("Radish")
     radish.set_portrait("rabbit_portrait_100.png")
     radish.boost(9998, radish.stat_spread)
-    cinna = Cleric([15, 10, 10, 5, 5, 0])
-    cinna.set_name("Cinna")
-    cinna.set_portrait("cinna_portrait_100.png")
-    cinna.boost(9998, cinna.stat_spread)
-    party = [mc, nsteen, radish, cinna]
+    grapefart = Merchant([15, 10, 10, 5, 5, 0])
+    grapefart.set_name("Grapefart")
+    grapefart.set_portrait("grapefart_portrait_100.png")
+    grapefart.boost(9998, grapefart.stat_spread)
+    party = [mc, nsteen, radish, grapefart]
     for char in party:
+        char.add_xp(char.xp_tiers[-1])
         char.print_stats()
     return party
 
@@ -228,6 +229,7 @@ def create_default_main_character():
     char.set_portrait("dogdude_port_100.png")
     char.set_portrait_dungeon("dogdude")
     char.set_portrait_dialog("dogdude_portrait")
+    char.set_stats_picture("dogdude_port")
     return char
 
 def drawStyleRect(surface, x, y):
@@ -436,7 +438,7 @@ def shape_color(color):
         elif color == "BLACK":
             glColor3f(0.0, 0.0, 0.0)
         elif color == "PINK":
-            glColor3f(222.0, 49.0, 99.0)
+            glColor3f(1, .714, 0.757)
         elif color == "WHITE":
             glColor3f(255.0, 255.0, 255.0)
         elif color == "GRAY":
