@@ -41,7 +41,7 @@ class MainGame():
 
         color_passive = "BLACK"
         
-        self.background = retrieve_background("villageinnnight")
+        self.background, self.background_move = self.determine_background("villageinnnight", None, False)
         
         title_rect = pygame.Rect(width-1100,height-800,500,50)
         start_rect = pygame.Rect(width-900,height-450,200,50)
@@ -328,7 +328,7 @@ class MainGame():
             henrietta = Innkeeper([15, 10, 10, 10, 10, 10])
             henrietta.set_name("Henrietta")
             henrietta.set_portrait("hippo_port_100.png")
-            self.npc_characters = [Innkeeper([15, 10, 10, 10, 10, 10]), None, None, None, None, None, None, None, None, None]
+            self.npc_characters = [henrietta, None, None, None, None, None, None, None, None, None]
             return
         elif self.user_text[0][self.advance][1] == "[Dungeon CAVE]":
             self.fade_over = 1
@@ -866,10 +866,15 @@ class MainGame():
         switcher = 0
 
         color = color_passive
+        what_list = [self.rom_characters, self.npc_characters]
+        characters = []
 
         party_member_pics = []
-        for member in self.party:
-            party_member_pics.append(member.get_stats_picture())
+        for x in what_list:
+            for member in x:
+                if member != None:
+                    characters.append(member)
+                    party_member_pics.append(member.get_stats_picture())
         current_member = 0
         
         active = False
@@ -888,7 +893,7 @@ class MainGame():
                 color_switch = "RED"
 
             # Name of current party member
-            char_name = self.party[current_member].get_name()
+            char_name = characters[current_member].get_name()
 
             # Party member portrait
             image1 = party_member_pics[current_member]
@@ -896,7 +901,7 @@ class MainGame():
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
             elif char_name == "Radish":
                 blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
-            elif char_name == "Grapefart":
+            elif char_name == "Grapefart" or char_name == "Henrietta":
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
@@ -918,41 +923,31 @@ class MainGame():
             rect_ogl("BLACK", cgls(bounds[0], width), cgls(bounds[1], width), cgls(bounds[2], height), cgls(bounds[3], height))
             glEnd()
 
-            name = char_name
-            if char_name == "N. Steen":
-                name = "Bear N. Steen"
-            elif char_name == "Radish":
-                name = "Radish Rabbit"
-            elif char_name == "Grapefart":
-                name = "Gilbert Grapefart"
+            name = character_full_name(char_name)
 
             gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[1] - 50, width), cgls(bounds[2] - 50, height), cgls(bounds[2] - 100, height), name, 1, 1)
 
             # stats
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 100, height), cgls(bounds[2] - 150, height), "ROLE: " + self.party[current_member].get_role(), 1, 1)
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 100, height), cgls(bounds[2] - 150, height), "LEVEL: " + str(self.party[current_member].get_level()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 100, height), cgls(bounds[2] - 150, height), "ROLE: " + characters[current_member].get_role(), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 100, height), cgls(bounds[2] - 150, height), "LEVEL: " + str(characters[current_member].get_level()), 1, 1)
 
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 150, height), cgls(bounds[2] - 200, height), "HP: " + str(self.party[current_member].get_hp()), 1, 1)
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 150, height), cgls(bounds[2] - 200, height), "HEAL: " + str(self.party[current_member].get_healing()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 150, height), cgls(bounds[2] - 200, height), "HP: " + str(characters[current_member].get_hp()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 150, height), cgls(bounds[2] - 200, height), "HEAL: " + str(characters[current_member].get_healing()), 1, 1)
                         
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 200, height), cgls(bounds[2] - 250, height), "PHYSICAL: " + str(self.party[current_member].get_physical_attack()), 1, 1)
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 200, height), cgls(bounds[2] - 250, height), "MAGIC: " + str(self.party[current_member].get_magic_attack()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 200, height), cgls(bounds[2] - 250, height), "PHYSICAL: " + str(characters[current_member].get_physical_attack()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 200, height), cgls(bounds[2] - 250, height), "MAGIC: " + str(characters[current_member].get_magic_attack()), 1, 1)
 
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 250, height), cgls(bounds[2] - 300, height), "GUARD: " + str(self.party[current_member].get_physical_guard()), 1, 1)
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 250, height), cgls(bounds[2] - 300, height), "MAG GUARD: " + str(self.party[current_member].get_magical_guard()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 250, height), cgls(bounds[2] - 300, height), "GUARD: " + str(characters[current_member].get_physical_guard()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 250, height), cgls(bounds[2] - 300, height), "MAG GUARD: " + str(characters[current_member].get_magical_guard()), 1, 1)
 
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 300, height), cgls(bounds[2] - 350, height), "QUICK: " + str(self.party[current_member].get_quickness()), 1, 1)
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 300, height), cgls(bounds[2] - 350, height), "HEART: " + str(self.party[current_member].get_heartiness()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 300, height), cgls(bounds[2] - 350, height), "QUICK: " + str(characters[current_member].get_quickness()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 300, height), cgls(bounds[2] - 350, height), "HEART: " + str(characters[current_member].get_heartiness()), 1, 1)
 
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "CHUTZ: " + str(self.party[current_member].get_chutzpah()), 1, 1)
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "XP: " + str(self.party[current_member].get_xp()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "CHUTZ: " + str(characters[current_member].get_chutzpah()), 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "XP: " + str(characters[current_member].get_xp()), 1, 1)
 
-            if switcher == 0:
-                gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 150, width), cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "CITIZENS:", 1, .95)
-            else:
-                gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 200, width),  cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "SHOPKEEPERS:", 1, .95)
+            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "CREATURES' COMFORTS:", 1, .95)
 
-            
             gl_text_name(self.font, color_switch, cgls(bounds[0] + 550, width), cgls(bounds[0] + 700, width),  cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "[SWITCH]", 1, .95)
             
             if switcher == 0:
@@ -964,7 +959,7 @@ class MainGame():
             y = 0
             which_character = 0
             which_list = [self.character_names, self.npc_names]
-            what_list = [self.rom_characters, self.npc_characters]
+            
             romanced = 0
 
             # relationship portraits, dynamically shows only the other characters
@@ -1016,10 +1011,10 @@ class MainGame():
         
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if left_rect.collidepoint(event.pos):
-                        if current_member-1 >= 0:
-                            current_member -= 1
-                        else:
-                            current_member = len(party_member_pics) - 1
+                            if current_member-1 >= 0:
+                                current_member -= 1
+                            else:
+                                current_member = len(party_member_pics) - 1
                     if right_rect.collidepoint(event.pos):
                         if current_member+1 < len(party_member_pics):
                             current_member += 1
@@ -1089,7 +1084,7 @@ class MainGame():
             return retrieve_background("forest"), True
         elif dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
             return retrieve_background("villageinn"), False
-        elif dialog == "Ah, yes. Here we are! Welcome to Habbitt." or dialog == "To Town" or dialog == "You cross what feels like an endless number of hills until you come upon a single building in a clearing.":
+        elif dialog == "villageinnnight" or dialog == "To Town" or dialog == "You cross what feels like an endless number of hills until you come upon a single building in a clearing.":
             return retrieve_background("villageinnnight"), False
         elif dialog == "After a short time of severe jostling, you are deposited out the back door of the castle.":
             return retrieve_background("outside_castle_wall"), False

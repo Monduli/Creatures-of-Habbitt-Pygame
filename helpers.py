@@ -629,5 +629,15 @@ def drawCircleGL(x, y, z, radius, numSides):
     glVertexAttribPointer(0, 3, GL_FLOAT, False, 3*sizeof(ctypes.c_float), ctypes.c_void_p(0))
     glDrawArrays(GL_TRIANGLE_FAN, 0, numVertices)
 
+def character_full_name(char_name):
+    if char_name == "N. Steen":
+        return "Bear N. Steen"
+    elif char_name == "Grapefart":
+        return "Gilbert Grapefart"
+    elif char_name == "Rayna":
+        return "Rayna Raven"
+    else:
+        return char_name
+
 if __name__ == "__main__":
     print("This is the helper file. Do not run this directly.")
