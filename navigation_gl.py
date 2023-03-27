@@ -389,6 +389,14 @@ class MainGame():
                 self.party = boost_party()
                 self.rom_characters[2] = self.party[2]
                 self.rom_characters[3] = self.party[3]
+                dane = Detective([15, 10, 10, 10, 10, 10])
+                dane.set_name("Dane")
+                self.npc_characters[2] = dane
+                rayna = Haberdasher([15, 10, 10, 10, 10, 10])
+                rayna.set_name("Rayna")
+                self.npc_characters[3] = rayna
+                self.npc_names[2] = "Dane"
+                self.npc_names[3] = "Rayna"
                 self.character_names[2] = "Radish"
                 self.character_names[3] = "Grapefart"
                 self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
@@ -851,10 +859,11 @@ class MainGame():
         back_rect = pygame.Rect(width/2-100, height-75, 200, 50)
         left_rect = pygame.Rect(width-1500, height/2+65, 100, 100)
         right_rect = pygame.Rect(width-1050, height/2+65, 100, 100)
-        switch_rect = pygame.Rect(width-800+300, height-550, 150, 50)
+        switch_rect = pygame.Rect(width-250, height-425, 150, 50)
         # cgls(bounds[0] + 300, width), cgls(bounds[0] + 450, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height)
 
         color_active = pygame.Color('red')
+        switcher = 0
 
         color = color_passive
 
@@ -938,17 +947,24 @@ class MainGame():
             gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 350, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "CHUTZ: " + str(self.party[current_member].get_chutzpah()), 1, 1)
             gl_text_name(self.font, "BLACK", cgls(bounds[0] + 350, width), cgls(bounds[0] + 700, width), cgls(bounds[2] - 350, height), cgls(bounds[2] - 400, height), "XP: " + str(self.party[current_member].get_xp()), 1, 1)
 
-            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 100, width), cgls(bounds[0] + 250, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height), "RELATIONSHIPS:", 1, 1)
-            gl_text_name(self.font, color_switch, cgls(bounds[0] + 300, width), cgls(bounds[0] + 450, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height), "SWITCH", 1, 1)
+            if switcher == 0:
+                gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 150, width), cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "CITIZENS:", 1, .95)
+            else:
+                gl_text_name(self.font, "BLACK", cgls(bounds[0] + 50, width), cgls(bounds[0] + 200, width),  cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "SHOPKEEPERS:", 1, .95)
+
             
-            question_port = pygame.image.load("images/question_port.png")
+            gl_text_name(self.font, color_switch, cgls(bounds[0] + 550, width), cgls(bounds[0] + 700, width),  cgls(bounds[2] - 475, height), cgls(bounds[2] - 450, height), "[SWITCH]", 1, .95)
+            
+            if switcher == 0:
+                question_port = pygame.image.load("images/question_port.png")
+            else:
+                question_port = pygame.image.load("images/question_port.png").convert_alpha()
             question_port = pygame.transform.scale(question_port, (50,50))
             current = 0
             y = 0
             which_character = 0
             which_list = [self.character_names, self.npc_names]
             what_list = [self.rom_characters, self.npc_characters]
-            switcher = 0
             romanced = 0
 
             # relationship portraits, dynamically shows only the other characters
@@ -956,38 +972,38 @@ class MainGame():
                 if member != char_name:
                     if current % 2 == 0:
                         if member == None:
-                            blit_image((width, height), bounds[0] + 50, bounds[2] - 550 + y, question_port, 1, 1, 1)
+                            blit_image((width, height), bounds[0] + 50, bounds[2] - 525 + y, question_port, 1, 1, 1)
                         else:
                             image = what_list[switcher][which_character].get_portrait()
                             image = pygame.transform.scale(image, (50,50))
-                            blit_image((width, height), bounds[0] + 50, bounds[2] - 550 + y, image, 1,1,1)
+                            blit_image((width, height), bounds[0] + 50, bounds[2] - 525 + y, image, 1,1,1)
                             # rectangle "healthbar"-like tracking for relationship status
                             # show pink rectangle instead of green for bonded characters
                             glBegin(GL_QUADS)
-                            rect_ogl("RED", cgls(bounds[0]+125, width), cgls(bounds[0]+375, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            rect_ogl("RED", cgls(bounds[0]+125, width), cgls(bounds[0]+375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             if romanced == 1:
-                                rect_ogl("PINK", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                                rect_ogl("PINK", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             else:
-                                rect_ogl("GREEN", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                                rect_ogl("GREEN", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             glEnd()
-                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 125, width), cgls(bounds[0] + 375, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 550 + y, height), "87%", 1, 1)
+                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 125, width), cgls(bounds[0] + 375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 525 + y, height), "87%", 1, 1)
                     else:
                         if member == None:
-                            blit_image((width, height), bounds[0] + 400, bounds[2] - 550 + y, question_port, 1, 1, 1)
+                            blit_image((width, height), bounds[0] + 400, bounds[2] - 525 + y, question_port, 1, 1, 1)
                         else:
                             image = what_list[switcher][which_character].get_portrait()
                             image = pygame.transform.scale(image, (50,50))
-                            blit_image((width, height), bounds[0] + 400, bounds[2] - 550 + y, image, 1,1,1)
+                            blit_image((width, height), bounds[0] + 400, bounds[2] - 525 + y, image, 1,1,1)
                             # rectangle "healthbar"-like tracking for relationship status
                             # show pink rectangle instead of green for bonded characters
                             glBegin(GL_QUADS)
-                            rect_ogl("RED", cgls(bounds[0]+475, width), cgls(bounds[0]+725, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                            rect_ogl("RED", cgls(bounds[0]+475, width), cgls(bounds[0]+725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             if romanced == 1:
-                                rect_ogl("PINK", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                                rect_ogl("PINK", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             else:
-                                rect_ogl("GREEN", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 500 + y, height))
+                                rect_ogl("GREEN", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             glEnd()
-                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 475, width), cgls(bounds[0] + 725, width), cgls(bounds[2] - 550 + y, height), cgls(bounds[2] - 550 + y, height), "87%", 1, 1)
+                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 475, width), cgls(bounds[0] + 725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 525 + y, height), "87%", 1, 1)
                         y -= 50
                     current += 1
                 which_character += 1
@@ -1021,13 +1037,10 @@ class MainGame():
                 color = color_active
             else:
                 color = color_passive
-                
 
             #glBegin(GL_QUADS)
             #rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
             #glEnd()
-        
-            
             
             pygame.display.flip()
 

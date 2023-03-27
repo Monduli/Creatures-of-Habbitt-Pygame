@@ -382,6 +382,34 @@ class Innkeeper(Character):
         Character.distribute_stats(self, ["phys", "heal", "chutz", "quick", "heart", "magic"], stats)
         self.calculate_stats()
 
+class Detective(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "DETECTIVE"
+        self.set_portrait("dane_port_100.png")
+        self.stat_spread = ["quick", "phys", "chutz", "heal", "heart", "magic"]
+        self.fill_xp_array()
+        self.set_stats_picture("dane_port_stats")
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["quick", "phys", "chutz", "heal", "heart", "magic"], stats)
+        self.calculate_stats()
+
+class Haberdasher(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "HABERDASHER"
+        self.set_portrait("rayna_port_100.png")
+        self.stat_spread = ["magic", "chutz", "phys", "heal", "quick", "heart"]
+        self.fill_xp_array()
+        self.set_stats_picture("rayna_port_stats")
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["magic", "chutz", "phys", "heal", "quick", "heart"], stats)
+        self.calculate_stats()
+
 class Enemy():
     def __init__(self, name, health, att, gua, quickness, maggua, xp):
         self.name = name
