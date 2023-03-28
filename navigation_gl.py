@@ -866,7 +866,10 @@ class MainGame():
         switcher = 0
 
         color = color_passive
-        what_list = [self.rom_characters, self.npc_characters]
+        rom_no_mc = self.rom_characters.copy()
+        rom_no_mc.remove(self.main_character)
+        mc_what_list = [self.main_character]
+        what_list = [rom_no_mc, self.npc_characters, mc_what_list]
         characters = []
 
         party_member_pics = []
@@ -879,6 +882,12 @@ class MainGame():
         
         active = False
         self.background, self.background_move = self.determine_background("stat_menu", self.background, self.background_move)
+        new_char_names_list = self.character_names.copy()
+        if self.main_character.get_name() in new_char_names_list:
+            new_char_names_list.remove(self.main_character.get_name())
+        mc_list = [self.main_character]
+        which_list = [new_char_names_list, self.npc_names, mc_list]
+        switcher = 2
         
         while True:
             self.screen.fill(black)
@@ -897,12 +906,14 @@ class MainGame():
 
             # Party member portrait
             image1 = party_member_pics[current_member]
-            if char_name == "N. Steen":
-                blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
-            elif char_name == "Radish":
+            if char_name == "Radish":
                 blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
-            elif char_name == "Grapefart" or char_name == "Henrietta":
+            elif char_name in ["Grapefart", "Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
+            elif char_name in ["Dane"]:
+                blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
+            elif char_name == "Rayna":    
+                blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
 
@@ -958,7 +969,7 @@ class MainGame():
             current = 0
             y = 0
             which_character = 0
-            which_list = [self.character_names, self.npc_names]
+            
             
             romanced = 0
 
@@ -1015,17 +1026,24 @@ class MainGame():
                                 current_member -= 1
                             else:
                                 current_member = len(party_member_pics) - 1
+                            switcher = 0
                     if right_rect.collidepoint(event.pos):
                         if current_member+1 < len(party_member_pics):
                             current_member += 1
                         else:
                             current_member = 0
+                        switcher = 0
                     if back_rect.collidepoint(event.pos):
                         return
                     if switch_rect.collidepoint(event.pos):
                         if switcher == 0:
                             switcher = 1
                         elif switcher == 1:
+                            if char_name == self.main_character.get_name():
+                                switcher = 0
+                            else:
+                                switcher = 2
+                        elif switcher == 2:
                             switcher = 0
 
             if active:
