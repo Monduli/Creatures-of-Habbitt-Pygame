@@ -855,20 +855,23 @@ class MainGame():
 
         input_text = ''
         
-        # create rectangle
+        # create rectangles (invisible)
         back_rect = pygame.Rect(width/2-100, height-75, 200, 50)
         left_rect = pygame.Rect(width-1500, height/2+65, 100, 100)
         right_rect = pygame.Rect(width-1050, height/2+65, 100, 100)
         switch_rect = pygame.Rect(width-250, height-425, 150, 50)
-        # cgls(bounds[0] + 300, width), cgls(bounds[0] + 450, width), cgls(bounds[2] - 500, height), cgls(bounds[2] - 450, height)
 
-        color_active = pygame.Color('red')
+        # switcher for relationships (npcs, romances, and mc)
         switcher = 0
 
-        color = color_passive
+        # remove mc from rom list or else it's uneven
         rom_no_mc = self.rom_characters.copy()
         rom_no_mc.remove(self.main_character)
+
+        # add mc to their own list
         mc_what_list = [self.main_character]
+
+        # make list out of lists for each character
         what_list = [rom_no_mc, self.npc_characters, mc_what_list]
         characters = []
 
