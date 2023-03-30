@@ -875,6 +875,8 @@ class MainGame():
         what_list = [rom_no_mc, self.npc_characters, mc_what_list]
         characters = []
 
+        # make a list that has all party member pictures and a separate list with all
+        # characters that do not equal "None"
         party_member_pics = []
         for x in what_list:
             for member in x:
