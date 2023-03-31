@@ -310,38 +310,84 @@ class MainGame():
             clock.tick(60)       
 
     def pick_dialog(self):
+        """
+        Determines what to do with particular dialog.
+        inputs: None
+        return: None
+        """
+        # determine the background
         self.background, self.background_move = self.determine_background(self.user_text[0][self.advance][1], self.background, self.background_move)
+        
+        # if exit flag set, exit
         if self.exit_next == 1:
             sys.exit()
+
+        # character creator
         elif self.user_text[0][self.advance][1] == "[Character creation]":
+            # main character = result of character creator
             self.main_character = self.character_creator()
+
+            # add mc to party
             self.party.append(self.main_character)
+
+            # create n steen
             self.nsteen.set_name("N. Steen")
             self.nsteen.set_portrait_dungeon("bear")
+
+            # add n steen to party by default
             self.party.append(self.nsteen)
+
+            # set dialog MC variable to name of MC for replacement
             self.dialog = dia.Dialog(self.main_character.get_name())
+            
+            # find the next dialog
             self.user_text = self.dialog.determine_dialog(self.user_text[1], self.progress, self.char_name)
             self.advance = 0
+
+            # create lists with romance characters and npcs for later use
             self.rom_characters = [self.main_character, self.nsteen, None, None, None, None, None, None, None, None, None]
             self.character_names = [self.main_character.get_name(), self.nsteen.get_name(), None, None, None, None, None, None, None, None, None]
+            self.characters = []
+
+            # add all characters that we have so far into "self.characters" array for later
+            for char in self.rom_characters:
+                if char != None:
+                    self.characters.append(char)
+            
+            # create and add Henrietta as we will rescue her before returning to town the first time
             self.npc_names = ["Henrietta", None, None, None, None, None, None, None, None, None]
             henrietta = Innkeeper([15, 10, 10, 10, 10, 10])
             henrietta.set_name("Henrietta")
             henrietta.set_portrait("hippo_port_100.png")
             self.npc_characters = [henrietta, None, None, None, None, None, None, None, None, None]
+
+            # same as above
+            for char in self.npc_characters:
+                if char != None:
+                    self.characters.append(char)
             return
+        
+        # start the fade if [Dungeon CAVE] is dialog
         elif self.user_text[0][self.advance][1] == "[Dungeon CAVE]":
             self.fade_over = 1
+
+        # add n. steen to party if dialog says to (deprecated)
         elif self.user_text[0][self.advance][1] == "[Bear N. Steen has joined your party.]":
             self.party.append(add_party_member("nsteen"))
+
+        # open town menu
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
             self.village_choices()
             self.slots = [0, 0, 0]
+
+        # end inn dialog
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
             self.slots = [0, 0, 0]
             choice = self.inn_menu(self.screen, self.progress, self.background)
             self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
+
+        # create two buttons with selections on them 
         elif self.user_text[0][self.advance][1] == "SELECTION":
             left_option = self.user_text[0][self.advance+1][1]
             right_option = self.user_text[0][self.advance+2][1]
@@ -352,6 +398,8 @@ class MainGame():
             self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
             self.slots = [0, 0, 0]
+
+        # input box (deprecated)
         elif self.user_text[0][self.advance][1] == "Please type into the box.":
             array = self.input_box(self.user_text[1], self.background)
             temp = self.user_text[1]
@@ -365,6 +413,11 @@ class MainGame():
             pass
 
     def village_choices(self):
+        """
+        Display choices for village menu 
+        inputs: None
+        return: None
+        """
         self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
         if self.progress == 1:
             options = ["Inn", "???", "inn", None, "Save", "Add Party", "save", "party_debug", "Venture Out", "leave"]
