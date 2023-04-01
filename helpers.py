@@ -638,6 +638,16 @@ def character_full_name(char_name):
         return "Rayna Raven"
     else:
         return char_name
+    
+def add_char(char):
+    if char == "dane":
+        dane = Detective([15, 10, 10, 10, 10, 10])
+        dane.set_name("Dane")
+        return dane
+    if char == "rayna":
+        rayna = Haberdasher([15, 10, 10, 10, 10, 10])
+        rayna.set_name("Rayna")
+        return rayna
 
 if __name__ == "__main__":
     print("This is the helper file. Do not run this directly.")

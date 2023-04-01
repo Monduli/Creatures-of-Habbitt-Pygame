@@ -418,52 +418,77 @@ class MainGame():
         inputs: None
         return: None
         """
+        # retrieve background
         self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
+
+        # if progress is 1 (Context: Deprecated, before Henrietta retrieved)
         if self.progress == 1:
+            # MENU:
+            # Inn       || ???
+            # Add Party || Save
+            #           || Venture Out
             options = ["Inn", "???", "inn", None, "Save", "Add Party", "save", "party_debug", "Venture Out", "leave"]
-            choice = self.town_options(self.screen, options, self.background)
+            choice = self.town_options(options)
+            # Add party members
             if choice == "party_debug":
                 self.party = fill_party()
                 self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                 self.advance = 0
+            # Try to enter the inn (nobody to run it)
             elif choice == "inn":
                 self.user_text = [[[None, "There is currently no one to run the inn."], [None, "[Returning to town.]"]]]
                 self.advance = 0
+            # Try to leave town (no party members)
             elif choice == "leave":
                 self.user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
                 self.advance = 0
+            # Save the game
             elif choice == "save":
                 self.user_text = self.save_game()
                 self.advance = 0
+        # MENU:
+            # Inn           || Smithy
+            # Boost Party   || Save
+            #               || Venture Out
         elif self.progress == 2:
             options = ["Inn", "Smithy", "inn", "blacksmith", "Boost Party", "Save", "party_debug", "save", "Venture Out", "leave",]
-            choice = self.town_options(self.screen, options, self.background)
+            choice = self.town_options(options)
+            # Add all current characters and then boost them to 9999
             if choice == "party_debug":
+                # give party of MC, Bear, Radish, Grapefart, lvl9999
                 self.party = boost_party()
+                # add chars to rom list and name list
                 self.rom_characters[2] = self.party[2]
                 self.rom_characters[3] = self.party[3]
-                dane = Detective([15, 10, 10, 10, 10, 10])
-                dane.set_name("Dane")
-                self.npc_characters[2] = dane
-                rayna = Haberdasher([15, 10, 10, 10, 10, 10])
-                rayna.set_name("Rayna")
-                self.npc_characters[3] = rayna
-                self.npc_names[2] = "Dane"
-                self.npc_names[3] = "Rayna"
                 self.character_names[2] = "Radish"
                 self.character_names[3] = "Grapefart"
+
+                # generate 2 npc characters, add to npc and name lists
+                self.npc_characters[2] = add_char("dane")
+                self.npc_characters[3] = add_char("rayna")
+                self.npc_names[2] = "Dane"
+                self.npc_names[3] = "Rayna"
+                
+                # return confirm text
                 self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                 self.advance = 0
+            # No blacksmith to run yet
             if choice == "blacksmith":
                 self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
                 self.advance = 0
+            
+            # Inn menu loads because Henrietta is retrieved by prog2
             elif choice == "inn":
                 choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
                 self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
                 self.advance = 0
+
+            # save game (TODO: Broken)
             elif choice == "save":
                 self.user_text = self.save_game()
                 self.advance = 0
+
+            # Open dungeons menu and process result
             elif choice == "leave":
                 if len(self.party) > 0:
                 # Should go to location menu
@@ -477,6 +502,11 @@ class MainGame():
                     self.advance = 0
 
     def save_game(self):
+        """
+        Saves game using Pickle module
+        Input: None
+        Returns: user_text for save game
+        """
         if not os.path.isfile("save.txt"):
             file = open('save.txt', 'x')
             file.close()
@@ -486,19 +516,31 @@ class MainGame():
         file.close()
         return [[[None, "Your data has been saved."], [None, "[Returning to town.]"]]]
 
-    def town_options(self, screen, options, background):
+    def town_options(self, options):
+        """
+        Render options for town menu (Inn, Smithy, Boost Party, Save, Leave usually)
+        Inputs: Options - a list that includes the text and targets to be rendered
+        Returns: Target for intended button
+        """
 
+        # Distribute "options" input into separate variables
         text_top_left, text_top_right, target_top_left, target_top_right = options[0], options[1], options[2], options[3]
         text_bot_left, text_bot_right, target_bot_left, target_bot_right = options[4], options[5], options[6], options[7]
         text_leave, target_leave = options[8], options[9]
+
+        # default pygame setup
         size = width, height = 1600, 900
         clock = pygame.time.Clock()
+
+        # for screen fill
         black = 0, 0, 0
 
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
 
+        # for everything other than screen fill (OpenGL)
         color_passive = "BLACK"
 
+        # rectangles representing clickable space
         party_rect = pygame.Rect(width-300,height-900,300,50)
         top_left_rect = pygame.Rect(width-1550,height-350,700,50)
         top_right_rect = pygame.Rect(width-750,height-350,700,50)
@@ -506,11 +548,13 @@ class MainGame():
         bot_right_rect = pygame.Rect(width-750,height-250,700,50)
         leave_rect = pygame.Rect(width-750,height-150,700,50)
 
-        self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
-
         while True:
+            # pick background every loop because otherwise moving from stats screen won't return background to Habbitt
+            self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
+
+            # set the colors to black so we can use highlighting
             color_top_left = color_passive
             color_top_right = color_passive
             color_bot_left = color_passive
@@ -547,7 +591,7 @@ class MainGame():
             if party_rect.collidepoint(pygame.mouse.get_pos()):
                 color_party = "RED"
                 
-
+            # render text on buttons and draw rectangles
             gl_text_name(self.font, color_top_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), text_top_left, 1, 1.115)
             gl_text_name(self.font, color_top_right, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), text_top_right, 1, 1.115)
             gl_text_name(self.font, color_bot_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), text_bot_left, 1, 1.17)
@@ -555,11 +599,16 @@ class MainGame():
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), text_leave, 1, 1.31)
             gl_text_name(self.font, color_party, cgls(width-300, width), cgls(width-0, width), cgls(height-50, height), cgls(height, height), "Party", 1, .99)
 
-
             pygame.display.flip()
             clock.tick(60)
 
-    def inn_menu(self, screen, progress, background):
+    def inn_menu(self):
+        """
+        The conversations menu when you click "Inn" from Habbit screen
+        Inputs: None
+        Return: Name of character to load dialog for, or "town" to return to town menu
+        """
+
         size = width, height = 1600, 900
         clock = pygame.time.Clock()
         black = 0, 0, 0
