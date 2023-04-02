@@ -7,10 +7,11 @@ from classes import *
 import crawler
 import pickle
 
+SIZE = width, height = 1600, 900
+
 class MainGame():
     def __init__(self):
         pygame.init()
-        size = width, height = 1600, 900
         self.progress = 1
         self.advance = 0
         self.exit_next = 0
@@ -29,6 +30,9 @@ class MainGame():
         self.move_to_crawl = 0
         self.fade_over = 0
         self.save_object = None
+        self.color_passive = "BLACK" 
+        self.clock = pygame.time.Clock()
+        pygame.mixer.init()
 
     def start_screen(self):
         #### SETUP ####
@@ -37,9 +41,6 @@ class MainGame():
         black = 0, 0, 0
         speed = [3, 0]
 
-        clock = pygame.time.Clock()
-
-        color_passive = "BLACK"
         
         self.background, self.background_move = self.determine_background("villageinnnight", None, False)
         
@@ -50,11 +51,9 @@ class MainGame():
         options_rect = pygame.Rect(width-900,height-225,200,50)
         exit_rect = pygame.Rect(width-850,height-150,100,50)
 
-        i = 0
-
         while True:
             self.screen.fill(black)
-            color_start, color_town_start, color_options, color_exit, color_load = color_passive, color_passive, color_passive, color_passive, color_passive
+            color_start, color_town_start, color_options, color_exit, color_load = self.color_passive, self.color_passive, self.color_passive, self.color_passive, self.color_passive
             color_exit = "BLACK"
 
             for event in pygame.event.get():                  
@@ -83,8 +82,8 @@ class MainGame():
             if not os.path.isfile("save.txt"):
                 color_load = "GRAY"
 
-            self.gl_draw_start_screen(color_passive, color_start, color_town_start, color_load, color_options, color_exit)
-            clock.tick(60)
+            self.gl_draw_start_screen(self.color_passive, color_start, color_town_start, color_load, color_options, color_exit)
+            self.clock.tick(60)
 
     def gl_draw_start_screen(self, cp, c1, c2, c3, c4, c5):
         self.i = blit_bg(self.i, self.background, self.background_move)
@@ -102,16 +101,12 @@ class MainGame():
     def in_dialog(self, skip=False, progress=1):
 
         #### SETUP ####
-        size = width, height = 1600, 900
         speed = [3, 0]
         black = 0, 0, 0
-
-        clock = pygame.time.Clock()
 
         if self.background == None:
             self.background = retrieve_background("cave")
 
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
         self.user_text = [[[None, "[Character creation]"]
         ], "intro_3_quick"]
 
@@ -119,13 +114,9 @@ class MainGame():
 
         dialog_rect = pygame.Rect(width-1550,height-250, 1500, 200)
         name_rect = pygame.Rect(width-1550, height-320, 300, 50)
-        color_passive = pygame.Color('black')
 
         remove = ["VIZGONE", "GUARDGONE", "MYSTBEARGONE", "HENRIETTAGONE"]
 
-        i = 0
-        global party
-        party = []
         self.slots = [0, 0, 0]
 
         curr_text = self.user_text[0][self.advance][1]
@@ -157,7 +148,7 @@ class MainGame():
                 gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height), "Loading dungeon...", .7, 2.15, self.level)
                 self.fade_out()
                 pygame.display.flip()
-                clock.tick(60)
+                self.clock.tick(60)
             else:
                 self.who_is_on_the_screen()
 
@@ -211,14 +202,20 @@ class MainGame():
                                 self.pick_dialog()
 
                 pygame.display.flip()
-                clock.tick(60)
+                self.clock.tick(60)
 
     def who_is_on_the_screen(self):
+        """
+        Adjusts speaking position for individual characters using a slot system
+        inputs/returns: None, as it directly blits the character itself
+        """
         if self.slots != [0,0,0] and self.debug == 1:
             print(self.slots)    
+
         if self.slots[0] != 0:
             character = retrieve_character(self.slots[0], self.characters)
             blit_image((width, height), width-1500, 100, character, 1,1,1)
+
         if self.slots[1] != 0:
             character = retrieve_character(self.slots[1], self.characters)
             if self.slots[1] == "N. Steen" or self.slots[1] == "Mysterious Bear":
@@ -231,6 +228,7 @@ class MainGame():
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
             else:
                 blit_image((width, height), width/2-150, 100, character, 1,1,1)
+
         if self.slots[2] != 0:
             character = retrieve_character(self.slots[2], self.characters)
             if self.slots[2] == "N. Steen" or self.slots[2] == "Mysterious Bear" or self.slots[2] == "Henrietta":
@@ -241,6 +239,7 @@ class MainGame():
                 blit_image((width, height), width - (width/2/2)-100, 100, character, 1,1,1)
             else:
                 blit_image((width, height), width - (width/2/2), 100, character, 1,1,1)
+
         if self.slots[1] != 0 and self.slots[2] == 0:
             self.slots[2] = self.slots[1]
             self.slots[1] = 0
@@ -271,18 +270,10 @@ class MainGame():
             self.move_to_crawl = 1
 
     def dialog_options(self, screen, text_left, text_right, target_left, target_right):
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
         black = 0, 0, 0
-
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-        color_passive = pygame.Color('black')
 
         left_rect = pygame.Rect(width-1550,height-250,700,50)
         right_rect = pygame.Rect(width-750,height-250,700,50)
-
-        i = 0
 
         while True:
             self.screen.fill(black)
@@ -307,7 +298,7 @@ class MainGame():
             gl_text_name(self.font, color_right, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), text_right, 1, 1.17)
 
             pygame.display.flip()
-            clock.tick(60)       
+            self.clock.tick(60)       
 
     def pick_dialog(self):
         """
@@ -401,11 +392,10 @@ class MainGame():
 
         # input box (deprecated)
         elif self.user_text[0][self.advance][1] == "Please type into the box.":
-            array = self.input_box(self.user_text[1], self.background)
+            array = ["To Town", "Name"]
             temp = self.user_text[1]
             self.user_text, name = array[0], array[1]
-            global name_global
-            name_global = name
+            self.name_global = name
             self.sort_options(temp)
             self.advance = 0
             self.slots = [0, 0, 0]
@@ -418,6 +408,9 @@ class MainGame():
         inputs: None
         return: None
         """
+        self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
+        self.habbitt_music.set_volume(0)
+        self.habbitt_music.play(-1)
         # retrieve background
         self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
 
@@ -528,17 +521,8 @@ class MainGame():
         text_bot_left, text_bot_right, target_bot_left, target_bot_right = options[4], options[5], options[6], options[7]
         text_leave, target_leave = options[8], options[9]
 
-        # default pygame setup
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
-
         # for screen fill
         black = 0, 0, 0
-
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-        # for everything other than screen fill (OpenGL)
-        color_passive = "BLACK"
 
         # rectangles representing clickable space
         party_rect = pygame.Rect(width-300,height-900,300,50)
@@ -555,12 +539,12 @@ class MainGame():
             self.i = blit_bg(self.i, self.background, self.background_move)
 
             # set the colors to black so we can use highlighting
-            color_top_left = color_passive
-            color_top_right = color_passive
-            color_bot_left = color_passive
-            color_bot_right = color_passive
-            color_leave = color_passive
-            color_party = color_passive
+            color_top_left = self.color_passive
+            color_top_right = self.color_passive
+            color_bot_left = self.color_passive
+            color_bot_right = self.color_passive
+            color_leave = self.color_passive
+            color_party = self.color_passive
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
@@ -600,7 +584,7 @@ class MainGame():
             gl_text_name(self.font, color_party, cgls(width-300, width), cgls(width-0, width), cgls(height-50, height), cgls(height, height), "Party", 1, .99)
 
             pygame.display.flip()
-            clock.tick(60)
+            self.clock.tick(60)
 
     def inn_menu(self):
         """
@@ -608,12 +592,7 @@ class MainGame():
         Inputs: None
         Return: Name of character to load dialog for, or "town" to return to town menu
         """
-
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
         black = 0, 0, 0
-
-        color_passive = "BLACK"
 
         character1_rect = pygame.Rect(width-1550,height-550,700,50)
         character2_rect = pygame.Rect(width-750,height-550,700,50)
@@ -632,16 +611,16 @@ class MainGame():
         while True:
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
-            color_c1 = color_passive
-            color_c2 = color_passive
-            color_c3 = color_passive
-            color_c4 = color_passive
-            color_c5 = color_passive
-            color_c6 = color_passive
-            color_c7 = color_passive
-            color_c8 = color_passive
-            color_next = color_passive
-            color_leave = color_passive
+            color_c1 = self.color_passive
+            color_c2 = self.color_passive
+            color_c3 = self.color_passive
+            color_c4 = self.color_passive
+            color_c5 = self.color_passive
+            color_c6 = self.color_passive
+            color_c7 = self.color_passive
+            color_c8 = self.color_passive
+            color_next = self.color_passive
+            color_leave = self.color_passive
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
@@ -728,7 +707,7 @@ class MainGame():
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), "Leave", 1, 1.31)
 
             pygame.display.flip()
-            clock.tick(60)
+            self.clock.tick(60)
 
 
     def location_menu(self):
@@ -739,13 +718,9 @@ class MainGame():
         """
 
         # default setup stuff
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
         black = 0, 0, 0
         progress = self.progress
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
         self.background, self.background_move = self.determine_background("map", self.background, self.background_move)
-        color_passive = "BLACK"
 
         # page for multiple dungeon lists
         page = 1
@@ -767,7 +742,7 @@ class MainGame():
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
             colors = ["BLACK" for x in range(0,8)]
-            color_c1, color_c2, color_c3, color_c4, color_c5, color_c6, color_c7, color_c8, color_next, color_leave = colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7], color_passive, color_passive
+            color_c1, color_c2, color_c3, color_c4, color_c5, color_c6, color_c7, color_c8, color_next, color_leave = colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7], self.color_passive, self.color_passive
 
             # assign maps to buttons based on page
             # process map checks if you have the progress assigned and otherwise returns ???
@@ -846,7 +821,7 @@ class MainGame():
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), "Leave", 1, 1.31)
 
             pygame.display.flip()
-            clock.tick(60)
+            self.clock.tick(60)
 
     def character_creator(self):
         """
@@ -856,14 +831,8 @@ class MainGame():
         """
         
         # default setup stuff
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
         black = 0, 0, 0
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-        color_passive = "BLACK"
-        color = color_passive
-
-        i = 0
+        color = self.color_passive
 
         # variable that holds the typed name
         input_text = ''
@@ -953,7 +922,7 @@ class MainGame():
             if active:
                 color = color_active
             else:
-                color = color_passive
+                color = self.color_passive
                 
             # draw rectangle and argument passed which should
             # be on self.screen
@@ -975,9 +944,9 @@ class MainGame():
             # self.screen to updated, not full area
             pygame.display.flip()
             
-            # clock.tick(60) means that for every second at most
+            # self.clock.tick(60) means that for every second at most
             # 60 frames should be passed.
-            clock.tick(60)
+            self.clock.tick(60)
 
     def stats_menu(self):
         """
@@ -985,20 +954,13 @@ class MainGame():
         inputs: None
         returns: None
         """
-        size = width, height = 1600, 900
-        clock = pygame.time.Clock()
+
+        # black for fill
         black = 0, 0, 0
-
-        base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-        color_passive = "BLACK"
-
-        i = 0
-
-        input_text = ''
         
         # create rectangles (invisible)
         back_rect = pygame.Rect(width/2-100, height-75, 200, 50)
+        party_rect = pygame.Rect(width-500, height-75, 400, 50)
         left_rect = pygame.Rect(width-1500, height/2+65, 100, 100)
         right_rect = pygame.Rect(width-1050, height/2+65, 100, 100)
         switch_rect = pygame.Rect(width-250, height-425, 150, 50)
@@ -1041,12 +1003,19 @@ class MainGame():
             self.i = blit_bg(self.i, self.background, self.background_move)
             color_back = "BLACK"
             color_switch = "BLACK"
+            color_party = "BLACK"
+
+            party_names = []
+            for member in self.party:
+                party_names.append(member.get_name())
 
             # Make back rectangle red if you hover over it
             if back_rect.collidepoint(pygame.mouse.get_pos()):
                 color_back = "RED"
             if switch_rect.collidepoint(pygame.mouse.get_pos()):
                 color_switch = "RED"
+            if party_rect.collidepoint(pygame.mouse.get_pos()):
+                color_party = "RED"
 
             # Name of current party member
             char_name = characters[current_member].get_name()
@@ -1073,6 +1042,25 @@ class MainGame():
             # Character name and back button
             gl_text_name(self.font, "BLACK", cgls(width-1400, width), cgls(width-1050, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name, 1, .89)
             gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-825, height), cgls(height-875, height), "Back", 1, 2)
+
+            # party portraits
+            """
+            if len(self.party) > 0:
+                blit_image(SIZE, width - 100, height-825, self.party[0].get_portrait_dungeon(), 1, 1, 1)
+            if len(self.party) > 1:
+                blit_image(SIZE, width - 200, height-825, self.party[1].get_portrait_dungeon(), 1, 1, 1)
+            if len(self.party) > 2:
+                blit_image(SIZE, width - 300, height-825, self.party[2].get_portrait_dungeon(), 1, 1, 1)
+            if len(self.party) > 3:
+                blit_image(SIZE, width - 400, height-825, self.party[3].get_portrait_dungeon(), 1, 1, 1)
+            """
+
+            # Add/Remove party member button
+            if characters[current_member] != self.main_character:
+                if char_name not in party_names:
+                    gl_text_name(self.font, color_party, cgls(width-100, width), cgls(width-500, width), cgls(height-825, height), cgls(height-875, height), "Add to Party", 1, 2)
+                else:
+                    gl_text_name(self.font, color_party, cgls(width-100, width), cgls(width-500, width), cgls(height-825, height), cgls(height-875, height), "Remove from Party", 1, 2)
 
             bounds = [width-800, width-50, height-50, height-800]
 
@@ -1192,11 +1180,13 @@ class MainGame():
                                 switcher = 2
                         elif switcher == 2:
                             switcher = 0
-
-            if active:
-                color = color_active
-            else:
-                color = color_passive
+                    if party_rect.collidepoint(event.pos):
+                        if len(self.party) > 4:
+                            pass
+                        elif characters[current_member] in self.party:
+                            self.party.remove(characters[current_member])
+                        else:
+                            self.party.append(characters[current_member])
 
             #glBegin(GL_QUADS)
             #rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
@@ -1204,7 +1194,7 @@ class MainGame():
             
             pygame.display.flip()
 
-            clock.tick(60)
+            self.clock.tick(60)
 
     def load_dungeon(self, dungeon):
         state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), "cave", True)
@@ -1215,11 +1205,11 @@ class MainGame():
     def sort_options(self, choice):
         if choice == "martial_choice":
             prof = classes.Martial([12,10,10,10,10,10])
-            prof.set_name(name_global) 
+            prof.set_name(self.name_global) 
             return ["class", prof]
         elif choice == "bookish_choice":
             prof = classes.Bookish([10,10,10,12,10,10])
-            prof.set_name(name_global)
+            prof.set_name(self.name_global)
             return ["class", prof]
         
     def fade(self, fade_image, counter_x, counter_y):
@@ -1273,8 +1263,7 @@ class MainGame():
             return "???"
 
     def in_party(self, name):
-        global party
-        for member in party:
+        for member in self.party:
             if member.get_name() == name:
                 return True
         return False
@@ -1288,7 +1277,7 @@ class MainGame():
                 self.main_menu_fade("Start_quick")
                 self.in_dialog()
             elif option == "dialog skip":
-                name_global = "Dan"
+                self.name_global = "Dan"
                 self.progress = 2
                 self.main_menu_fade("Habbitt")
                 self.in_dialog("To Town", 0)
