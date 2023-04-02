@@ -695,11 +695,15 @@ class MainGame():
             if next_rect.collidepoint(pygame.mouse.get_pos()):
                 color_next = "RED"
 
+            # create an array that has names in it
+            # all are ??? at first
             names = []
             names = ["???" for x in range(0,8)]
 
+            # add N. Steen to the array since he's always in your party
             names[0] = "Bear N. Steen"
 
+            # add Radish, Grapefart, and Cinna (will remove Cinna later)
             if self.in_party("Radish"):
                 names[1] = "Radish Rabbit"
 
@@ -711,6 +715,7 @@ class MainGame():
 
             bulk_adjust_y = 1.07
 
+            # draw names for menu
             gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), names[0], 1,  bulk_adjust_y)
             gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), names[1], 1,  bulk_adjust_y)
             gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), names[2], 1,  bulk_adjust_y+.01)
@@ -727,17 +732,25 @@ class MainGame():
 
 
     def location_menu(self):
+        """
+        The menu with the dungeons on it.
+        Inputs: None
+        Return: loaded dungeon depending on button pressed
+        """
+
+        # default setup stuff
         size = width, height = 1600, 900
         clock = pygame.time.Clock()
         black = 0, 0, 0
         progress = self.progress
-
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-        color_passive = "BLACK"
-        page = 1
         self.background, self.background_move = self.determine_background("map", self.background, self.background_move)
+        color_passive = "BLACK"
 
+        # page for multiple dungeon lists
+        page = 1
+      
+        # clickable rects for each button
         dungeon_1_rect = pygame.Rect(width-1550,height-550,700,50)
         dungeon_2_rect = pygame.Rect(width-750,height-550,700,50)
         dungeon_3_rect = pygame.Rect(width-1550,height-450,700,50)
@@ -750,11 +763,14 @@ class MainGame():
         leave_rect = pygame.Rect(width-750,height-150,700,50)
 
         while True:
+            # fill screen to cover up previous elements and assign black to all the buttons
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
             colors = ["BLACK" for x in range(0,8)]
             color_c1, color_c2, color_c3, color_c4, color_c5, color_c6, color_c7, color_c8, color_next, color_leave = colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7], color_passive, color_passive
 
+            # assign maps to buttons based on page
+            # process map checks if you have the progress assigned and otherwise returns ???
             if page == 1:
                 dungeon_1 = "Cave"
                 dungeon_2 = self.process_map(1, "Temple")
@@ -773,8 +789,11 @@ class MainGame():
                 dungeon_6 = "Error"
                 dungeon_7 = "Error"
                 dungeon_8 = "Error"
+
+            # add dungeons to an array
             dungeons = [dungeon_1, dungeon_2, dungeon_3, dungeon_4, dungeon_5, dungeon_6, dungeon_7, dungeon_8]
 
+            # click events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -789,6 +808,7 @@ class MainGame():
                     if leave_rect.collidepoint(event.pos):
                         return "LEFT"
 
+            # make buttons red if you hover over them
             if dungeon_1_rect.collidepoint(pygame.mouse.get_pos()):
                 color_c1 = "RED"
             if dungeon_2_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 1:
@@ -810,8 +830,10 @@ class MainGame():
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
                 color_leave = "RED"
 
+            # handy variable for text position adjustments (y)
             bulk_adjust_y = 1.07
 
+            # create visual buttons and text
             gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), dungeons[0], 1,  bulk_adjust_y)
             gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), dungeons[1], 1,  bulk_adjust_y)
             gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), dungeons[2], 1,  bulk_adjust_y+.01)
@@ -827,55 +849,66 @@ class MainGame():
             clock.tick(60)
 
     def character_creator(self):
+        """
+        Allows player to customize and create their avatar.
+        inputs: None
+        return: Main Character object
+        """
+        
+        # default setup stuff
         size = width, height = 1600, 900
         clock = pygame.time.Clock()
         black = 0, 0, 0
-
         base_font = pygame.font.Font("font/VCR.001.ttf", 32)
-
-        color_passive = pygame.Color('black')
+        color_passive = "BLACK"
+        color = color_passive
 
         i = 0
 
+        # variable that holds the typed name
         input_text = ''
         
-        # create rectangle
+        # create interactable rectangles
         input_rect = pygame.Rect(width-750, height/2/2, 200, 50)
         input_rect.center = (width/2, height/2/2*3)
         left_rect = pygame.Rect(width-1050, height/2, 100, 100)
         right_rect = pygame.Rect(width-650, height/2, 100, 100)
 
-        color_active = pygame.Color('red')
+        color_active = "RED"
 
-        color = color_passive
-
+        # array of possible image names for creatable characters
         poss_images = ["dogdude", "batdude"]
         curr_image = 0
         
+        # active is for the text box being clicked on
         active = False
         
         while True:
+            # typical background stuff
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
 
+            # stop the input name from being longer than 15 letters (cuz it would go out of the box)
             if len(input_text) > 16:
                 input_text = input_text[:14]
 
+            # load and blit the images that has been selected
             image1 = pygame.image.load("images/" + poss_images[curr_image] + ".png").convert_alpha()
             blit_image((width, height), width-900, height/2/2, image1, 1,1,1)
 
+            # load and blit the arrows for changing which character is selected
             image2 = pygame.image.load("images/leftarrow.png")
             blit_image((width, height), width-1050, height/2-(height/8), image2, 1,1,1)
             image3 = pygame.image.load("images/rightarrow.png")
             blit_image((width, height), width-650, height/2-(height/8), image3, 1,1,1)
 
             for event in pygame.event.get():
-            # if user types QUIT then the self.screen will close
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
         
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    # swap images if an arrow is clicked
                     if left_rect.collidepoint(event.pos):
                         if curr_image-1 >= 0:
                             curr_image -= 1
@@ -886,6 +919,7 @@ class MainGame():
                             curr_image += 1
                         else:
                             curr_image = 0
+                    # make input rectangle active if clicked on
                     if input_rect.collidepoint(event.pos):
                         active = True
                     else:
@@ -896,7 +930,7 @@ class MainGame():
                     # Check for backspace
                     if event.key == pygame.K_BACKSPACE:
         
-                        # get text input from 0 to -1 i.e. end.
+                        # Input text equals itself minus the last letter
                         input_text = input_text[:-1]
         
                     # Unicode standard is used for string
@@ -905,6 +939,7 @@ class MainGame():
                         input_text += event.unicode
                     
                     if event.key == pygame.K_RETURN:
+                        # submit character name and fill in character object
                         char = MainCharacter([10,10,10,10,10,10])
                         char.set_name(input_text[:-1])
                         char.set_dialog_picture(poss_images[curr_image] + "_port.png")
@@ -925,10 +960,10 @@ class MainGame():
             glBegin(GL_QUADS)
             #pygame.draw.rect(self.screen, color, input_rect)
             # width-750, height/2/2, 200, 50
-            rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
+            rect_ogl(color, cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
             glEnd()
         
-            rect = gl_text_name(self.font, "BLACK", cgls(width-650, width), cgls(width-950, width), cgls(height/2/2-75, height), cgls(height/2/2-25, height), input_text, 1, .93)
+            rect = gl_text_name(self.font, color, cgls(width-650, width), cgls(width-950, width), cgls(height/2/2-75, height), cgls(height/2/2-25, height), input_text, 1, .93)
             
             # set width of textfield so that text cannot get
             # outside of user's text input
@@ -945,6 +980,11 @@ class MainGame():
             clock.tick(60)
 
     def stats_menu(self):
+        """
+        Menu that displays recruited members, their stats, and their relationships.
+        inputs: None
+        returns: None
+        """
         size = width, height = 1600, 900
         clock = pygame.time.Clock()
         black = 0, 0, 0
