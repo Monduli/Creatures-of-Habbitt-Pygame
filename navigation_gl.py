@@ -31,6 +31,7 @@ class MainGame():
         self.fade_over = 0
         self.save_object = None
         self.color_passive = "BLACK" 
+        self.color_active = "RED"
         self.clock = pygame.time.Clock()
         pygame.mixer.init()
 
@@ -65,19 +66,21 @@ class MainGame():
                         return "dialog skip"
                     if load_rect.collidepoint(event.pos) and os.path.isfile("save.txt"):
                         return "load"
+                    if options_rect.collidepoint(event.pos):
+                        self.options_menu()
                     if exit_rect.collidepoint(event.pos):
                         return "exit"
 
             if start_rect.collidepoint(pygame.mouse.get_pos()):
-                color_start = "RED"
+                color_start = self.color_active
             if town_start_rect.collidepoint(pygame.mouse.get_pos()):
-                color_town_start = "RED"
+                color_town_start = self.color_active
             if load_rect.collidepoint(pygame.mouse.get_pos()):
-                color_load = "RED"
+                color_load = self.color_active
             if options_rect.collidepoint(pygame.mouse.get_pos()):
-                color_options = "RED"
+                color_options = self.color_active
             if exit_rect.collidepoint(pygame.mouse.get_pos()):
-                color_exit = "RED"
+                color_exit = self.color_active
 
             if not os.path.isfile("save.txt"):
                 color_load = "GRAY"
@@ -290,9 +293,9 @@ class MainGame():
                         return target_right
                 
             if left_rect.collidepoint(pygame.mouse.get_pos()):
-                color_left = "RED"
+                color_left = self.color_active
             if right_rect.collidepoint(pygame.mouse.get_pos()):
-                color_right = "RED"
+                color_right = self.color_active
 
             gl_text_name(self.font, color_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), text_left, 1, 1.17)
             gl_text_name(self.font, color_right, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), text_right, 1, 1.17)
@@ -496,7 +499,7 @@ class MainGame():
 
     def save_game(self):
         """
-        Saves game using Pickle module
+        Saves game using Pickle module (TODO: Currently crashes the game)
         Input: None
         Returns: user_text for save game
         """
@@ -546,6 +549,7 @@ class MainGame():
             color_leave = self.color_passive
             color_party = self.color_passive
 
+            # Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -562,18 +566,19 @@ class MainGame():
                     if party_rect.collidepoint(event.pos):
                         self.stats_menu()
 
+            # Turn boxes/text backgrounds red if moused over
             if top_left_rect.collidepoint(pygame.mouse.get_pos()):
-                color_top_left = "RED"
+                color_top_left = self.color_active
             if top_right_rect.collidepoint(pygame.mouse.get_pos()):
-                color_top_right = "RED"
+                color_top_right = self.color_active
             if bot_left_rect.collidepoint(pygame.mouse.get_pos()):
-                color_bot_left = "RED"
+                color_bot_left = self.color_active
             if bot_right_rect.collidepoint(pygame.mouse.get_pos()):
-                color_bot_right = "RED"
+                color_bot_right = self.color_active
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
-                color_leave = "RED"
+                color_leave = self.color_active
             if party_rect.collidepoint(pygame.mouse.get_pos()):
-                color_party = "RED"
+                color_party = self.color_active
                 
             # render text on buttons and draw rectangles
             gl_text_name(self.font, color_top_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), text_top_left, 1, 1.115)
@@ -589,11 +594,13 @@ class MainGame():
     def inn_menu(self):
         """
         The conversations menu when you click "Inn" from Habbit screen
+        TODO: This needs to be overhauled so you can start conversations as characters other than the MC
         Inputs: None
         Return: Name of character to load dialog for, or "town" to return to town menu
         """
         black = 0, 0, 0
 
+        # rects for character names
         character1_rect = pygame.Rect(width-1550,height-550,700,50)
         character2_rect = pygame.Rect(width-750,height-550,700,50)
         character3_rect = pygame.Rect(width-1550,height-450,700,50)
@@ -606,11 +613,15 @@ class MainGame():
         leave_rect = pygame.Rect(width-750,height-150,700,50)
         self.slots[0] = self.main_character.get_name()
 
+        # background
         self.background = retrieve_background("tavern")
 
         while True:
+            # background stuff
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
+
+            # set rect colors as black
             color_c1 = self.color_passive
             color_c2 = self.color_passive
             color_c3 = self.color_passive
@@ -622,6 +633,7 @@ class MainGame():
             color_next = self.color_passive
             color_leave = self.color_passive
 
+            # handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -632,7 +644,7 @@ class MainGame():
                             return "radish"
                     if character3_rect.collidepoint(event.pos):
                         if self.progress >= 3:
-                            return "radish"
+                            return "grapefart"
                     if character4_rect.collidepoint(event.pos):
                         if self.progress >= 3:
                             return "radish"
@@ -653,26 +665,27 @@ class MainGame():
                     if next_rect.collidepoint(event.pos):
                         pass
 
+            # turn red if moused over
             if character1_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c1 = "RED"
+                color_c1 = self.color_active
             if character2_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c2 = "RED"
+                color_c2 = self.color_active
             if character3_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c3 = "RED"
+                color_c3 = self.color_active
             if character4_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c4 = "RED"
+                color_c4 = self.color_active
             if character5_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c5 = "RED"
+                color_c5 = self.color_active
             if character6_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c6 = "RED"
+                color_c6 = self.color_active
             if character7_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c7 = "RED"
+                color_c7 = self.color_active
             if character8_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c8 = "RED"
+                color_c8 = self.color_active
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
-                color_leave = "RED"
+                color_leave = self.color_active
             if next_rect.collidepoint(pygame.mouse.get_pos()):
-                color_next = "RED"
+                color_next = self.color_active
 
             # create an array that has names in it
             # all are ??? at first
@@ -682,7 +695,7 @@ class MainGame():
             # add N. Steen to the array since he's always in your party
             names[0] = "Bear N. Steen"
 
-            # add Radish, Grapefart, and Cinna (will remove Cinna later)
+            # add Radish, Grapefart, and Cinna (TODO: will remove Cinna later)
             if self.in_party("Radish"):
                 names[1] = "Radish Rabbit"
 
@@ -692,6 +705,7 @@ class MainGame():
             if self.in_party("Cinna"):
                 names[6] = "Cinnamon Bun"
 
+            # bulk adjustment variable to ease the process a little
             bulk_adjust_y = 1.07
 
             # draw names for menu
@@ -785,25 +799,25 @@ class MainGame():
 
             # make buttons red if you hover over them
             if dungeon_1_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c1 = "RED"
+                color_c1 = self.color_active
             if dungeon_2_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 1:
-                color_c2 = "RED"
+                color_c2 = self.color_active
             if dungeon_3_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 2:
-                color_c3 = "RED"
+                color_c3 = self.color_active
             if dungeon_4_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 3:
-                color_c4 = "RED"
+                color_c4 = self.color_active
             if dungeon_5_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 4:
-                color_c5 = "RED"
+                color_c5 = self.color_active
             if dungeon_6_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 5:
-                color_c6 = "RED"
+                color_c6 = self.color_active
             if dungeon_7_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 6:
-                color_c7 = "RED"
+                color_c7 = self.color_active
             if dungeon_8_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 7:
-                color_c8 = "RED"
+                color_c8 = self.color_active
             if next_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 7:
-                color_next = "RED"
+                color_next = self.color_active
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
-                color_leave = "RED"
+                color_leave = self.color_active
 
             # handy variable for text position adjustments (y)
             bulk_adjust_y = 1.07
@@ -843,8 +857,6 @@ class MainGame():
         left_rect = pygame.Rect(width-1050, height/2, 100, 100)
         right_rect = pygame.Rect(width-650, height/2, 100, 100)
 
-        color_active = "RED"
-
         # array of possible image names for creatable characters
         poss_images = ["dogdude", "batdude"]
         curr_image = 0
@@ -871,6 +883,7 @@ class MainGame():
             image3 = pygame.image.load("images/rightarrow.png")
             blit_image((width, height), width-650, height/2-(height/8), image3, 1,1,1)
 
+            # handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -919,8 +932,9 @@ class MainGame():
                         self.char_name = input_text[:-1]
                         return char
         
+            # change the color of the box if it's active
             if active:
-                color = color_active
+                color = self.color_active
             else:
                 color = self.color_passive
                 
@@ -1011,11 +1025,11 @@ class MainGame():
 
             # Make back rectangle red if you hover over it
             if back_rect.collidepoint(pygame.mouse.get_pos()):
-                color_back = "RED"
+                color_back = self.color_active
             if switch_rect.collidepoint(pygame.mouse.get_pos()):
-                color_switch = "RED"
+                color_switch = self.color_active
             if party_rect.collidepoint(pygame.mouse.get_pos()):
-                color_party = "RED"
+                color_party = self.color_active
 
             # Name of current party member
             char_name = characters[current_member].get_name()
@@ -1121,7 +1135,7 @@ class MainGame():
                             # rectangle "healthbar"-like tracking for relationship status
                             # show pink rectangle instead of green for bonded characters
                             glBegin(GL_QUADS)
-                            rect_ogl("RED", cgls(bounds[0]+125, width), cgls(bounds[0]+375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
+                            rect_ogl(self.color_active, cgls(bounds[0]+125, width), cgls(bounds[0]+375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             if romanced == 1:
                                 rect_ogl("PINK", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             else:
@@ -1138,7 +1152,7 @@ class MainGame():
                             # rectangle "healthbar"-like tracking for relationship status
                             # show pink rectangle instead of green for bonded characters
                             glBegin(GL_QUADS)
-                            rect_ogl("RED", cgls(bounds[0]+475, width), cgls(bounds[0]+725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
+                            rect_ogl(self.color_active, cgls(bounds[0]+475, width), cgls(bounds[0]+725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             if romanced == 1:
                                 rect_ogl("PINK", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             else:
@@ -1194,6 +1208,117 @@ class MainGame():
             
             pygame.display.flip()
 
+            self.clock.tick(60)
+
+    def options_menu(self):
+        """
+        The options menu, accessed from a number of different places
+        Inputs: None
+        Return: None
+        """
+        black = 0, 0, 0
+
+        # rects for character names
+        option1_rect = pygame.Rect(width-1550,height-550,700,50)
+        option2_rect = pygame.Rect(width-750,height-550,700,50)
+        option3_rect = pygame.Rect(width-1550,height-450,700,50)
+        option4_rect = pygame.Rect(width-750,height-450,700,50)
+        option5_rect = pygame.Rect(width-1550,height-350,700,50)
+        option6_rect = pygame.Rect(width-750,height-350,700,50)
+        option7_rect = pygame.Rect(width-1550,height-250,700,50)
+        option8_rect = pygame.Rect(width-750,height-250,700,50)
+        next_rect = pygame.Rect(width-1550,height-150,700,50)
+        leave_rect = pygame.Rect(width-750,height-150,700,50)
+
+        # background
+        self.background = retrieve_background("options_menu")
+        self.background_move = True
+
+        while True:
+            # background stuff
+            self.screen.fill(black)
+            self.i = blit_bg(self.i, self.background, self.background_move)
+
+            # set rect colors as black
+            color_c1 = self.color_passive
+            color_c2 = self.color_passive
+            color_c3 = self.color_passive
+            color_c4 = self.color_passive
+            color_c5 = self.color_passive
+            color_c6 = self.color_passive
+            color_c7 = self.color_passive
+            color_c8 = self.color_passive
+            color_next = self.color_passive
+            color_leave = self.color_passive
+
+            # handle events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if option1_rect.collidepoint(event.pos):
+                        if self.color_active == "RED":
+                            self.color_active = "BLUE"
+                        elif self.color_active == "BLUE":
+                            self.color_active = "GREEN"
+                        elif self.color_active == "GREEN":
+                            self.color_active = "RED"
+                    if option2_rect.collidepoint(event.pos):
+                        pass
+                    if option3_rect.collidepoint(event.pos):
+                        pass
+                    if option4_rect.collidepoint(event.pos):
+                        pass
+                    if option5_rect.collidepoint(event.pos):
+                        pass
+                    if option6_rect.collidepoint(event.pos):
+                        pass
+                    if option7_rect.collidepoint(event.pos):
+                        pass
+                    if option8_rect.collidepoint(event.pos):
+                        pass
+                    if leave_rect.collidepoint(event.pos):
+                        return
+                    if next_rect.collidepoint(event.pos):
+                        pass
+
+            # turn red if moused over
+            if option1_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c1 = self.color_active
+            if option2_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c2 = self.color_active
+            if option3_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c3 = self.color_active
+            if option4_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c4 = self.color_active
+            if option5_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c5 = self.color_active
+            if option6_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c6 = self.color_active
+            if option7_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c7 = self.color_active
+            if option8_rect.collidepoint(pygame.mouse.get_pos()):
+                color_c8 = self.color_active
+            if leave_rect.collidepoint(pygame.mouse.get_pos()):
+                color_leave = self.color_active
+            if next_rect.collidepoint(pygame.mouse.get_pos()):
+                color_next = self.color_active
+
+            # bulk adjustment variable to ease the process a little
+            bulk_adjust_y = 1.07
+
+            # draw names for menu
+            gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), "Active Color: " + self.color_active, 1,  bulk_adjust_y)
+            gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), "NONE", 1,  bulk_adjust_y)
+            gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), "NONE", 1,  bulk_adjust_y+.01)
+            gl_text_name(self.font, color_c4, cgls(width-750, width), cgls(width-50, width), cgls(height-450, height), cgls(height-500, height), "NONE", 1,  bulk_adjust_y+.01)
+            gl_text_name(self.font, color_c5, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), "NONE", 1, 1.115)
+            gl_text_name(self.font, color_c6, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), "NONE", 1, 1.115)
+            gl_text_name(self.font, color_c7, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), "NONE", 1, 1.17)
+            gl_text_name(self.font, color_c8, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), "NONE", 1, 1.17)
+            gl_text_name(self.font, color_next, cgls(width-1550, width), cgls(width-850, width), cgls(height-750, height), cgls(height-800, height), "Next", 1, 1.31)
+            gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), "Leave", 1, 1.31)
+
+            pygame.display.flip()
             self.clock.tick(60)
 
     def load_dungeon(self, dungeon):

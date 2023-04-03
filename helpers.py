@@ -36,6 +36,8 @@ def retrieve_background(choice):
         background = "royalbedroom.png"
     elif choice == "stat_menu":
         background = "menu_bg.png"
+    elif choice == "options_menu":
+        background = "options_menu_bg.png"
     if background != None:
         return background
     return Exception()
