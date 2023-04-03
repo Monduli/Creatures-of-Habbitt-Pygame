@@ -29,7 +29,7 @@ class Character:
         self.stats_picture = "images/"
         self.role = ""
         self.xp = 0
-        self.bonds = [0, 0, 0, 0, 0, 0, 0]
+        self.bonds = [0 for _ in range(22)]
         self.buff = 0
         self.willpower = 0
         self.stat_spread = None
@@ -39,11 +39,24 @@ class Character:
         # [1] - Bear N. Steen
         # [2] - Radish Rabbit
         # [3] - Gil Grapefart
-        # [4] - None
-        # [5] - None
-        # [6] - Cinnamon Bun
+        # [4] - Lam'baste
+        # [5] - Sunny
+        # [6] - Victor
         # [7] - None
         # [8] - None
+        # [9] - None
+        # [10] - Hollow
+        # [11] - Henrietta
+        # [12] - Grilla
+        # [13] - Dane
+        # [14] - Rayna
+        # [15] - None
+        # [16] - None
+        # [17] - None
+        # [18] - None
+        # [19] - None
+        # [20] - None
+        # [21] - None
 
     def get_level(self):
         return self.level
