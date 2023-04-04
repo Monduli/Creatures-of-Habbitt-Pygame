@@ -29,21 +29,22 @@ class Character:
         self.stats_picture = "images/"
         self.role = ""
         self.xp = 0
-        self.bonds = [0 for _ in range(22)]
+        self.bonds = [[0,0] for _ in range(22)]
         self.buff = 0
         self.willpower = 0
         self.stat_spread = None
+        self.bonds_to_next = [1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000]
 
         # bonds list:
-        # [0] - Main Character
-        # [1] - Bear N. Steen
-        # [2] - Radish Rabbit
-        # [3] - Gil Grapefart
-        # [4] - Lam'baste
-        # [5] - Sunny
-        # [6] - Victor
-        # [7] - None
-        # [8] - None
+        # [0] - Main Character (M/F)
+        # [1] - Bear N. Steen (M)
+        # [2] - Radish Rabbit (F)
+        # [3] - Gil Grapefart (M)
+        # [4] - Lam'baste Lamb (F)
+        # [5] - Sunny Spider (F)
+        # [6] - Victor (M)
+        # [7] - Hans Horse (M)
+        # [8] - Sidney Shark (F)
         # [9] - None
         # [10] - Hollow
         # [11] - Henrietta
@@ -126,6 +127,18 @@ class Character:
     
     def get_xp(self):
         return self.xp
+    
+    def get_bonds(self):
+        return self.bonds
+    
+    def get_bond_rank(self, char_num):
+        return self.bonds[char_num][0]
+    
+    def get_bond_points(self, char_num):
+        return self.bonds[char_num][1]
+    
+    def get_needed_to_next_rank(self, rank):
+        return self.bonds_to_next[rank]
 
     def set_hp(self, value):
         self.hp = value
@@ -252,23 +265,37 @@ class Character:
 
     def add_support_points(self, target, points, mcname):
         if target == mcname:
-            self.bonds[0] += points
-        if target == "N. Steen":
-            self.bonds[1] += points
-        if target == "Radish":
-            self.bonds[2] += points
-        if target == "Grapefart":
-            self.bonds[3] += points
-        if target == "4":
-            self.bonds[4] += points
-        if target == "5":
-            self.bonds[5] += points
-        if target == "Cinna":
-            self.bonds[6] += points
-        if target == "7":
-            self.bonds[7] += points
-        if target == "8":
-            self.bonds[8] += points
+            p = 0
+            self.bonds[0][1] += points
+        elif target == "N. Steen":
+            p = 1
+            self.bonds[1][1] += points
+        elif target == "Radish":
+            p = 2
+            self.bonds[2][1] += points
+        elif target == "Grapefart":
+            p = 3
+            self.bonds[3][1] += points
+        elif target == "4":
+            p = 4
+            self.bonds[4][1] += points
+        elif target == "5":
+            p = 5
+            self.bonds[5][1] += points
+        elif target == "Cinna":
+            p = 6
+            self.bonds[6][1] += points
+        elif target == "7":
+            p = 7
+            self.bonds[7][1] += points
+        elif target == "8":
+            p = 8
+            self.bonds[8][1] += points
+        
+        if self.bonds[p][1] >= self.bonds_to_next[self.bonds[p][0]]:
+            self.bonds[p][1] = 0
+            self.bonds[p][0] += 1
+            print("Bond has ranked up to rank " + str(self.bonds[p][0]))
 
     def boost(self, target, spread):
         for x in range(0, target):

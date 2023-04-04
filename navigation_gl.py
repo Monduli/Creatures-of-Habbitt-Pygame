@@ -124,7 +124,7 @@ class MainGame():
 
         curr_text = self.user_text[0][self.advance][1]
         if curr_text in ["inn"]:
-            choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
+            choice = self.inn_menu()
 
         if skip != False:
             self.dialog = dia.Dialog("Player")
@@ -377,7 +377,7 @@ class MainGame():
         # end inn dialog
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
             self.slots = [0, 0, 0]
-            choice = self.inn_menu(self.screen, self.progress, self.background)
+            choice = self.inn_menu()
             self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
             self.advance = 0
 
@@ -475,7 +475,7 @@ class MainGame():
             
             # Inn menu loads because Henrietta is retrieved by prog2
             elif choice == "inn":
-                choice = self.inn_menu(self.screen, self.progress, retrieve_background("tavern"))
+                choice = self.inn_menu()
                 self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
                 self.advance = 0
 
@@ -1008,7 +1008,7 @@ class MainGame():
         new_char_names_list = self.character_names.copy()
         if self.main_character.get_name() in new_char_names_list:
             new_char_names_list.remove(self.main_character.get_name())
-        mc_list = [self.main_character]
+        mc_list = [self.main_character.get_name()]
         which_list = [new_char_names_list, self.npc_names, mc_list]
         switcher = 2
         
@@ -1040,10 +1040,10 @@ class MainGame():
                 blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
             elif char_name in ["Grapefart", "Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
-            elif char_name in ["Dane"]:
+            elif char_name in ["Dane", "Rayna"]:
                 blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
             elif char_name == "Rayna":    
-                blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
+                blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
 
@@ -1121,10 +1121,28 @@ class MainGame():
             
             
             romanced = 0
+            char = characters[current_member]
+            bonds = char.get_bonds()
+            
 
             # relationship portraits, dynamically shows only the other characters
             for member in which_list[switcher]:
                 if member != char_name:
+                    if member != None:
+                        # retrieve which number party member we're talking about
+                        party_member_num = which_num_party_member_bonds(member, self.main_character.get_name())
+
+                        # calculate how many points are required to rank up
+                        rank = char.get_bond_rank(party_member_num)
+                        points = char.get_bond_points(party_member_num)
+                        to_next = char.get_needed_to_next_rank(rank)
+                        decimal = (points/to_next)
+                        percentage = decimal*100
+
+                    else:
+                        decimal = 0
+                        percentage = 0
+
                     if current % 2 == 0:
                         if member == None:
                             blit_image((width, height), bounds[0] + 50, bounds[2] - 525 + y, question_port, 1, 1, 1)
@@ -1136,12 +1154,12 @@ class MainGame():
                             # show pink rectangle instead of green for bonded characters
                             glBegin(GL_QUADS)
                             rect_ogl(self.color_active, cgls(bounds[0]+125, width), cgls(bounds[0]+375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
-                            if romanced == 1:
-                                rect_ogl("PINK", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
-                            else:
-                                rect_ogl("GREEN", cgls(bounds[0]+125, width), cgls(bounds[0]+300, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
+                            if romanced == 1 and percentage != 0:
+                                rect_ogl("PINK", cgls(bounds[0]+125, width), cgls(bounds[0]+125+(250*decimal), width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
+                            elif percentage != 0:
+                                rect_ogl("GREEN", cgls(bounds[0]+125, width), cgls(bounds[0]+125+(250*decimal), width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             glEnd()
-                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 125, width), cgls(bounds[0] + 375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 525 + y, height), "87%", 1, 1)
+                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 125, width), cgls(bounds[0] + 375, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 525 + y, height), "RANK " + str(rank), 1, 1)
                     else:
                         if member == None:
                             blit_image((width, height), bounds[0] + 400, bounds[2] - 525 + y, question_port, 1, 1, 1)
@@ -1154,11 +1172,11 @@ class MainGame():
                             glBegin(GL_QUADS)
                             rect_ogl(self.color_active, cgls(bounds[0]+475, width), cgls(bounds[0]+725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             if romanced == 1:
-                                rect_ogl("PINK", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
+                                rect_ogl("PINK", cgls(bounds[0]+475, width), cgls(bounds[0]+475+(250*decimal), width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             else:
-                                rect_ogl("GREEN", cgls(bounds[0]+475, width), cgls(bounds[0]+650, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
+                                rect_ogl("GREEN", cgls(bounds[0]+475, width), cgls(bounds[0]+475+(250*decimal), width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 475 + y, height))
                             glEnd()
-                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 475, width), cgls(bounds[0] + 725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 525 + y, height), "87%", 1, 1)
+                            gl_text_name(self.font, "BLACK", cgls(bounds[0] + 475, width), cgls(bounds[0] + 725, width), cgls(bounds[2] - 525 + y, height), cgls(bounds[2] - 525 + y, height), "RANK " + str(rank), 1, 1)
                         y -= 50
                     current += 1
                 which_character += 1
