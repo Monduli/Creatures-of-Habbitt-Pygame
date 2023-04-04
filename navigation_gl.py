@@ -600,18 +600,39 @@ class MainGame():
         """
         black = 0, 0, 0
 
-        # rects for character names
-        character1_rect = pygame.Rect(width-1550,height-550,700,50)
-        character2_rect = pygame.Rect(width-750,height-550,700,50)
-        character3_rect = pygame.Rect(width-1550,height-450,700,50)
-        character4_rect = pygame.Rect(width-750,height-450,700,50)
-        character5_rect = pygame.Rect(width-1550,height-350,700,50)
-        character6_rect = pygame.Rect(width-750,height-350,700,50)
-        character7_rect = pygame.Rect(width-1550,height-250,700,50)
-        character8_rect = pygame.Rect(width-750,height-250,700,50)
-        next_rect = pygame.Rect(width-1550,height-150,700,50)
-        leave_rect = pygame.Rect(width-750,height-150,700,50)
-        self.slots[0] = self.main_character.get_name()
+        # create rectangles left (invisible)
+        left_larrow_rect = pygame.Rect(width-1500, height/2+65, 100, 100)
+        left_rarrow_rect = pygame.Rect(width-1050, height/2+65, 100, 100)
+
+        # create rectangles right (invisible)
+        right_larrow_rect = pygame.Rect(width-650, height/2+65, 100, 100)
+        right_rarrow_rect = pygame.Rect(width-200, height/2+65, 100, 100)
+
+        back_rect = pygame.Rect(width/2-100, height-75, 200, 50)
+
+        # remove mc from rom list or else it's uneven
+        rom_no_mc = self.rom_characters.copy()
+        rom_no_mc.remove(self.main_character)
+
+        # add mc to their own list
+        mc_what_list = [self.main_character]
+
+        # make list out of lists for each character
+        what_list = [rom_no_mc, self.npc_characters, mc_what_list]
+        characters_left = []
+
+        # make a list that has all party member pictures and a separate list with all
+        # characters that do not equal "None"
+        party_member_pics = []
+        for x in what_list:
+            for member in x:
+                if member != None:
+                    characters_left.append(member)
+                    party_member_pics.append(member.get_stats_picture())
+        current_member_left = 0
+        current_member_right = 1
+
+        characters_right = characters_left.copy()
 
         # background
         self.background = retrieve_background("tavern")
@@ -622,103 +643,104 @@ class MainGame():
             self.i = blit_bg(self.i, self.background, self.background_move)
 
             # set rect colors as black
-            color_c1 = self.color_passive
-            color_c2 = self.color_passive
-            color_c3 = self.color_passive
-            color_c4 = self.color_passive
-            color_c5 = self.color_passive
-            color_c6 = self.color_passive
-            color_c7 = self.color_passive
-            color_c8 = self.color_passive
-            color_next = self.color_passive
-            color_leave = self.color_passive
+            color_back = "BLACK"
+
+            # Make back rectangle red if you hover over it
+            if back_rect.collidepoint(pygame.mouse.get_pos()):
+                color_back = self.color_active
+
+            # Name of current party member
+            char_name_left = characters_left[current_member_left].get_name()
+
+            # Party member portrait
+            image1 = party_member_pics[current_member_left]
+            if char_name_left == "Radish":
+                blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
+            elif char_name_left in ["Grapefart", "Henrietta", "N. Steen"]:
+                blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
+            elif char_name_left in ["Dane", "Rayna"]:
+                blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
+            elif char_name_left == "Rayna":    
+                blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
+            else:    
+                blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
+
+            # Name of current party member
+            char_name_right = characters_left[current_member_right].get_name()
+
+            # Party member portrait
+            image2 = party_member_pics[current_member_right]
+            if char_name_right == "Radish":
+                blit_image((width, height), width-700, height/2/2-50, image2, 1,1,1)
+            elif char_name_right in ["Grapefart", "Henrietta", "N. Steen"]:
+                blit_image((width, height), width-630, height/2/2-50, image2, 1,1,1)
+            elif char_name_right in ["Dane", "Rayna"]:
+                blit_image((width, height), width-590, height/2/2-50, image2, 1,1,1)
+            else:    
+                blit_image((width, height), width-540, height/2/2-50, image2, 1,1,1)
+
+            image2 = pygame.image.load("images/leftarrow.png")
+            blit_image((width, height), width-1500, height/2-(height/8)-50, image2, 1,1,1)
+            blit_image((width, height), width-650, height/2-(height/8)-50, image2, 1,1,1)
+            image3 = pygame.image.load("images/rightarrow.png")
+            blit_image((width, height), width-1050, height/2-(height/8)-50, image3, 1,1,1)
+            blit_image((width, height), width-200, height/2-(height/8)-50, image3, 1,1,1)
+
+            gl_text_name(self.font, "BLACK", cgls(width-1400, width), cgls(width-1050, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name_left, 1, .89)
+            gl_text_name(self.font, "BLACK", cgls(width-200, width), cgls(width-550, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name_right, 1, .89)
+            gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-825, height), cgls(height-875, height), "Back", 1, 2)
 
             # handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if character1_rect.collidepoint(event.pos):
-                        return "nsteen"
-                    if character2_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "radish"
-                    if character3_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "grapefart"
-                    if character4_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "radish"
-                    if character5_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "radish"
-                    if character6_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "radish"
-                    if character7_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "radish"
-                    if character8_rect.collidepoint(event.pos):
-                        if self.progress >= 3:
-                            return "radish"
-                    if leave_rect.collidepoint(event.pos):
+                    if left_larrow_rect.collidepoint(event.pos):
+                        if current_member_left-1 >= 0:
+                            current_member_left -= 1
+                        else:
+                            current_member_left = len(party_member_pics) - 1
+                        arrow = 1
+                    elif left_rarrow_rect.collidepoint(event.pos):
+                        if current_member_left+1 < len(party_member_pics):
+                            current_member_left += 1
+                        else:
+                            current_member_left = 0
+                        arrow = 2
+                    elif right_larrow_rect.collidepoint(event.pos):
+                        if current_member_right-1 >= 0:
+                            current_member_right -= 1
+                        else:
+                            current_member_right = len(party_member_pics) - 1
+                        arrow = 3
+                    elif right_rarrow_rect.collidepoint(event.pos):
+                        if current_member_right+1 < len(party_member_pics):
+                            current_member_right += 1
+                        else:
+                            current_member_right = 0
+                        arrow = 4
+                    if current_member_left == current_member_right:
+                        if arrow == 1:
+                            if current_member_right+1 < len(party_member_pics):
+                                current_member_right += 1
+                            else:
+                                current_member_right = 0
+                        if arrow == 2:
+                            if current_member_right-1 < 0:
+                                current_member_right = len(party_member_pics) - 1
+                            else:
+                                current_member_right -= 1
+                        if arrow == 3:
+                            if current_member_left+1 < len(party_member_pics):
+                                current_member_left += 1
+                            else:
+                                current_member_left = 0
+                        if arrow == 4:
+                            if current_member_left-1 < 0:
+                                current_member_left = len(party_member_pics) - 1
+                            else:
+                                current_member_left -= 1
+                    if back_rect.collidepoint(event.pos):
                         return "town"
-                    if next_rect.collidepoint(event.pos):
-                        pass
-
-            # turn red if moused over
-            if character1_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c1 = self.color_active
-            if character2_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c2 = self.color_active
-            if character3_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c3 = self.color_active
-            if character4_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c4 = self.color_active
-            if character5_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c5 = self.color_active
-            if character6_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c6 = self.color_active
-            if character7_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c7 = self.color_active
-            if character8_rect.collidepoint(pygame.mouse.get_pos()):
-                color_c8 = self.color_active
-            if leave_rect.collidepoint(pygame.mouse.get_pos()):
-                color_leave = self.color_active
-            if next_rect.collidepoint(pygame.mouse.get_pos()):
-                color_next = self.color_active
-
-            # create an array that has names in it
-            # all are ??? at first
-            names = []
-            names = ["???" for x in range(0,8)]
-
-            # add N. Steen to the array since he's always in your party
-            names[0] = "Bear N. Steen"
-
-            # add Radish, Grapefart, and Cinna (TODO: will remove Cinna later)
-            if self.in_party("Radish"):
-                names[1] = "Radish Rabbit"
-
-            if self.in_party("Grapefart"):
-                names[2] = "Gil Grapefart"
-
-            if self.in_party("Cinna"):
-                names[6] = "Cinnamon Bun"
-
-            # bulk adjustment variable to ease the process a little
-            bulk_adjust_y = 1.07
-
-            # draw names for menu
-            gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), names[0], 1,  bulk_adjust_y)
-            gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), names[1], 1,  bulk_adjust_y)
-            gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), names[2], 1,  bulk_adjust_y+.01)
-            gl_text_name(self.font, color_c4, cgls(width-750, width), cgls(width-50, width), cgls(height-450, height), cgls(height-500, height), names[3], 1,  bulk_adjust_y+.01)
-            gl_text_name(self.font, color_c5, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), names[4], 1, 1.115)
-            gl_text_name(self.font, color_c6, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), names[5], 1, 1.115)
-            gl_text_name(self.font, color_c7, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), names[6], 1, 1.17)
-            gl_text_name(self.font, color_c8, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), names[7], 1, 1.17)
-            gl_text_name(self.font, color_next, cgls(width-1550, width), cgls(width-850, width), cgls(height-750, height), cgls(height-800, height), "Next", 1, 1.31)
-            gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), "Leave", 1, 1.31)
 
             pygame.display.flip()
             self.clock.tick(60)
@@ -1003,7 +1025,6 @@ class MainGame():
                     party_member_pics.append(member.get_stats_picture())
         current_member = 0
         
-        active = False
         self.background, self.background_move = self.determine_background("stat_menu", self.background, self.background_move)
         new_char_names_list = self.character_names.copy()
         if self.main_character.get_name() in new_char_names_list:

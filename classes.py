@@ -33,7 +33,7 @@ class Character:
         self.buff = 0
         self.willpower = 0
         self.stat_spread = None
-        self.bonds_to_next = [1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000]
+        self.bonds_to_next = [100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000]
 
         # bonds list:
         # [0] - Main Character (M/F)
