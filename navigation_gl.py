@@ -34,6 +34,7 @@ class MainGame():
         self.color_active = "RED"
         self.clock = pygame.time.Clock()
         pygame.mixer.init()
+        self.boosted = 0
 
     def start_screen(self):
         #### SETUP ####
@@ -447,30 +448,39 @@ class MainGame():
             # Boost Party   || Save
             #               || Venture Out
         elif self.progress == 2:
-            options = ["Inn", "Smithy", "inn", "blacksmith", "Boost Party", "Save", "party_debug", "save", "Venture Out", "leave",]
+            options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Venture Out", "leave",]
             choice = self.town_options(options)
             # Add all current characters and then boost them to 9999
             if choice == "party_debug":
-                # give party of MC, Bear, Radish, Grapefart, lvl9999
-                self.party = boost_party()
-                # add chars to rom list and name list
-                self.rom_characters[2] = self.party[2]
-                self.rom_characters[3] = self.party[3]
-                self.character_names[2] = "Radish"
-                self.character_names[3] = "Grapefart"
+                if self.boosted == 1:
+                    self.user_text = [[[None, "Party has already been boosted."], [None, "[Returning to town.]"]]]
+                    self.advance = 0
+                else:
+                    # give party of MC, Bear, Radish, Grapefart, lvl9999
+                    self.party = boost_party()
+                    # add chars to rom list and name list
+                    self.rom_characters[2] = self.party[2]
+                    self.rom_characters[3] = self.party[3]
+                    self.character_names[2] = "Radish"
+                    self.character_names[3] = "Grapefart"
 
-                # generate 2 npc characters, add to npc and name lists
-                self.npc_characters[2] = add_char("dane")
-                self.npc_characters[3] = add_char("rayna")
-                self.npc_names[2] = "Dane"
-                self.npc_names[3] = "Rayna"
-                
-                # return confirm text
-                self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
-                self.advance = 0
+                    # generate 2 npc characters, add to npc and name lists
+                    self.npc_characters[2] = add_char("dane")
+                    self.npc_characters[3] = add_char("rayna")
+                    self.npc_names[2] = "Dane"
+                    self.npc_names[3] = "Rayna"
+                    
+                    # return confirm text
+                    self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
+                    self.advance = 0
+                    self.boosted = 1
             # No blacksmith to run yet
             if choice == "blacksmith":
                 self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
+                self.advance = 0
+
+            if choice == "haberdashery":
+                self.user_text = [[[None, "There is no one to run the accessories shop, so it remains closed."], [None, "[Returning to town.]"]]]
                 self.advance = 0
             
             # Inn menu loads because Henrietta is retrieved by prog2
@@ -534,6 +544,7 @@ class MainGame():
         bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
         bot_right_rect = pygame.Rect(width-750,height-250,700,50)
         leave_rect = pygame.Rect(width-750,height-150,700,50)
+        debug_rect = pygame.Rect(width-500, height-75, 400, 50)
 
         while True:
             # pick background every loop because otherwise moving from stats screen won't return background to Habbitt
@@ -548,6 +559,7 @@ class MainGame():
             color_bot_right = self.color_passive
             color_leave = self.color_passive
             color_party = self.color_passive
+            color_boost = self.color_passive
 
             # Handle events
             for event in pygame.event.get():
@@ -565,6 +577,8 @@ class MainGame():
                         return target_leave
                     if party_rect.collidepoint(event.pos):
                         self.stats_menu()
+                    if debug_rect.collidepoint(event.pos):
+                        return "party_debug"
 
             # Turn boxes/text backgrounds red if moused over
             if top_left_rect.collidepoint(pygame.mouse.get_pos()):
@@ -579,12 +593,15 @@ class MainGame():
                 color_leave = self.color_active
             if party_rect.collidepoint(pygame.mouse.get_pos()):
                 color_party = self.color_active
+            if debug_rect.collidepoint(pygame.mouse.get_pos()):
+                color_boost = self.color_active
                 
             # render text on buttons and draw rectangles
             gl_text_name(self.font, color_top_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), text_top_left, 1, 1.115)
             gl_text_name(self.font, color_top_right, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), text_top_right, 1, 1.115)
             gl_text_name(self.font, color_bot_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), text_bot_left, 1, 1.17)
             gl_text_name(self.font, color_bot_right, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), text_bot_right, 1, 1.17)
+            gl_text_name(self.font, color_boost, cgls(width-100, width), cgls(width-500, width), cgls(height-825, height), cgls(height-875, height), "Boost Party", 1, 2)
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), text_leave, 1, 1.31)
             gl_text_name(self.font, color_party, cgls(width-300, width), cgls(width-0, width), cgls(height-50, height), cgls(height, height), "Party", 1, .99)
 
@@ -654,13 +671,9 @@ class MainGame():
 
             # Party member portrait
             image1 = party_member_pics[current_member_left]
-            if char_name_left == "Radish":
-                blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
-            elif char_name_left in ["Grapefart", "Henrietta", "N. Steen"]:
+            if char_name_left in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
-            elif char_name_left in ["Dane", "Rayna"]:
-                blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
-            elif char_name_left == "Rayna":    
+            elif char_name_left in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
                 blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
@@ -670,11 +683,9 @@ class MainGame():
 
             # Party member portrait
             image2 = party_member_pics[current_member_right]
-            if char_name_right == "Radish":
-                blit_image((width, height), width-700, height/2/2-50, image2, 1,1,1)
-            elif char_name_right in ["Grapefart", "Henrietta", "N. Steen"]:
+            if char_name_right in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-630, height/2/2-50, image2, 1,1,1)
-            elif char_name_right in ["Dane", "Rayna"]:
+            elif char_name_right in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
                 blit_image((width, height), width-590, height/2/2-50, image2, 1,1,1)
             else:    
                 blit_image((width, height), width-540, height/2/2-50, image2, 1,1,1)
@@ -950,7 +961,7 @@ class MainGame():
                         char.set_portrait(poss_images[curr_image] + "_port_100.png")
                         char.set_portrait_dungeon(poss_images[curr_image])
                         char.set_portrait_dialog(poss_images[curr_image] + "_portrait")
-                        char.set_stats_picture(poss_images[curr_image] + "_port")
+                        char.set_stats_picture(poss_images[curr_image] + "_port_stats")
                         self.char_name = input_text[:-1]
                         return char
         
@@ -1057,13 +1068,9 @@ class MainGame():
 
             # Party member portrait
             image1 = party_member_pics[current_member]
-            if char_name == "Radish":
-                blit_image((width, height), width-1540, height/2/2-50, image1, 1,1,1)
-            elif char_name in ["Grapefart", "Henrietta", "N. Steen"]:
+            if char_name in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
-            elif char_name in ["Dane", "Rayna"]:
-                blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
-            elif char_name == "Rayna":    
+            elif char_name in ["Dane", "Rayna", "Radish", "Grapefart", self.main_character.get_name()]:
                 blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
@@ -1234,11 +1241,9 @@ class MainGame():
                         elif switcher == 2:
                             switcher = 0
                     if party_rect.collidepoint(event.pos):
-                        if len(self.party) > 4:
-                            pass
-                        elif characters[current_member] in self.party:
+                        if characters[current_member] in self.party:
                             self.party.remove(characters[current_member])
-                        else:
+                        elif len(self.party) < 4:
                             self.party.append(characters[current_member])
 
             #glBegin(GL_QUADS)
