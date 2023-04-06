@@ -457,18 +457,8 @@ class MainGame():
                     self.advance = 0
                 else:
                     # give party of MC, Bear, Radish, Grapefart, lvl9999
-                    self.party = boost_party()
-                    # add chars to rom list and name list
-                    self.rom_characters[2] = self.party[2]
-                    self.rom_characters[3] = self.party[3]
-                    self.character_names[2] = "Radish"
-                    self.character_names[3] = "Grapefart"
-
-                    # generate 2 npc characters, add to npc and name lists
-                    self.npc_characters[2] = add_char("dane")
-                    self.npc_characters[3] = add_char("rayna")
-                    self.npc_names[2] = "Dane"
-                    self.npc_names[3] = "Rayna"
+                    self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names = add_all_characters(self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names)
+                    self.party = boost_party(self.party)
                     
                     # return confirm text
                     self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]

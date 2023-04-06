@@ -204,26 +204,38 @@ def fill_party():
         char.print_stats()
     return party
 
-def boost_party():
-    mc = create_default_main_character()
-    mc.boost(9998, mc.stat_spread)
-    nsteen = BearKnight([15, 10, 10, 5, 5, 0])
-    nsteen.set_name("N. Steen")
-    nsteen.set_portrait_dungeon("bear")
-    nsteen.boost(9998, nsteen.stat_spread)
+def boost_party(party):
+    #mc.boost(9998, mc.stat_spread)
+    for char in party:
+        char.boost(9998, char.stat_spread)
+    return party
+
+def add_all_characters(party, rom_characters, character_names, npc_characters, npc_names):
     radish = Bookish([15, 10, 10, 5, 5, 0])
     radish.set_name("Radish")
     radish.set_portrait("rabbit_portrait_100.png")
-    radish.boost(9998, radish.stat_spread)
     grapefart = Merchant([15, 10, 10, 5, 5, 0])
     grapefart.set_name("Grapefart")
     grapefart.set_portrait("grapefart_portrait_100.png")
-    grapefart.boost(9998, grapefart.stat_spread)
-    party = [mc, nsteen, radish, grapefart]
-    for char in party:
-        char.add_xp(char.xp_tiers[-1])
-        char.print_stats()
-    return party
+    dane = Detective([15, 10, 10, 10, 10, 10])
+    dane.set_name("Dane")
+    rayna = Haberdasher([15, 10, 10, 10, 10, 10])
+    rayna.set_name("Rayna")
+
+    party.append(radish)
+    party.append(grapefart)
+
+    rom_characters[2] = party[2]
+    rom_characters[3] = party[3]
+    character_names[2] = "Radish"
+    character_names[3] = "Grapefart"
+
+    # generate 2 npc characters, add to npc and name lists
+    npc_characters[2] = dane
+    npc_characters[3] = rayna
+    npc_names[2] = "Dane"
+    npc_names[3] = "Rayna"
+    return party, rom_characters, character_names, npc_names
 
 def create_default_main_character():
     char = MainCharacter([10,10,10,10,10,10])
