@@ -418,84 +418,64 @@ class MainGame():
         # retrieve background
         self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
 
-        # if progress is 1 (Context: Deprecated, before Henrietta retrieved)
-        if self.progress == 1:
-            # MENU:
-            # Inn       || ???
-            # Add Party || Save
-            #           || Venture Out
-            options = ["Inn", "???", "inn", None, "Save", "Add Party", "save", "party_debug", "Venture Out", "leave"]
-            choice = self.town_options(options)
-            # Add party members
-            if choice == "party_debug":
-                self.party = fill_party()
-                self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
-                self.advance = 0
-            # Try to enter the inn (nobody to run it)
-            elif choice == "inn":
-                self.user_text = [[[None, "There is currently no one to run the inn."], [None, "[Returning to town.]"]]]
-                self.advance = 0
-            # Try to leave town (no party members)
-            elif choice == "leave":
-                self.user_text = [[[None, "You shouldn't go out alone. Maybe someone in the inn can help you?"], [None, "[Returning to town.]"]]]
-                self.advance = 0
-            # Save the game
-            elif choice == "save":
-                self.user_text = self.save_game()
-                self.advance = 0
         # MENU:
             # Inn           || Smithy
-            # Boost Party   || Save
+            # Haberdasher   || Save
             #               || Venture Out
-        elif self.progress == 2:
-            options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Venture Out", "leave",]
-            choice = self.town_options(options)
-            # Add all current characters and then boost them to 9999
-            if choice == "party_debug":
-                if self.boosted == 1:
-                    self.user_text = [[[None, "Party has already been boosted."], [None, "[Returning to town.]"]]]
-                    self.advance = 0
-                else:
-                    # give party of MC, Bear, Radish, Grapefart, lvl9999
-                    self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names = add_all_characters(self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names)
-                    self.party = boost_party(self.party)
-                    
-                    # return confirm text
-                    self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
-                    self.advance = 0
-                    self.boosted = 1
-            # No blacksmith to run yet
-            if choice == "blacksmith":
-                self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
+            #               || Boost Party
+        if self.progress > 2:
+            options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Venture Out", "leave"]
+        elif self.progress == 1:
+            options = ["Inn", "???", "inn", "???", "???", "Save", "???", "save", "Venture Out", "leave"]
+        choice = self.town_options(options)
+        # Add all current characters and then boost them to 9999
+        if choice == "party_debug":
+            if self.boosted == 1:
+                self.user_text = [[[None, "Party has already been boosted."], [None, "[Returning to town.]"]]]
                 self.advance = 0
 
-            if choice == "haberdashery":
-                self.user_text = [[[None, "There is no one to run the accessories shop, so it remains closed."], [None, "[Returning to town.]"]]]
+            else:
+                # give party of MC, Bear, Radish, Grapefart, lvl9999
+                self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names = add_all_characters(self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names)
+                self.party = boost_party(self.party)
+                
+                # return confirm text
+                self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                 self.advance = 0
-            
-            # Inn menu loads because Henrietta is retrieved by prog2
-            elif choice == "inn":
-                choice = self.inn_menu()
-                self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
-                self.advance = 0
+                self.boosted = 1
 
-            # save game (TODO: Broken)
-            elif choice == "save":
-                self.user_text = self.save_game()
-                self.advance = 0
+        # No blacksmith to run yet
+        if choice == "blacksmith":
+            self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
+            self.advance = 0
 
-            # Open dungeons menu and process result
-            elif choice == "leave":
-                if len(self.party) > 0:
-                # Should go to location menu
-                    state = self.location_menu()
-                    if state == "FINISHED":
-                        self.user_text = [[[None, "Your party finished exploring the dungeon."],[None, "[Returning to town.]"]]]
-                    elif state == "DEAD":
-                        self.user_text = [[[None, "Your party was wiped out..."],[None, "[Returning to town.]"]]]
-                    elif state == "RAN" or "LEFT":
-                        self.user_text = [[[None, "[Returning to town.]"]]]
-                    self.advance = 0
+        if choice == "haberdashery":
+            self.user_text = [[[None, "There is no one to run the accessories shop, so it remains closed."], [None, "[Returning to town.]"]]]
+            self.advance = 0
+        
+        # Inn menu loads because Henrietta is retrieved by prog2
+        elif choice == "inn":
+            choice = self.inn_menu()
+            self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
+            self.advance = 0
+
+        # save game (TODO: Broken)
+        elif choice == "save":
+            self.user_text = self.save_game()
+            self.advance = 0
+
+        # Open dungeons menu and process result
+        elif choice == "leave":
+            if len(self.party) > 0:
+            # Should go to location menu
+                state = self.location_menu()
+                if state == "FINISHED":
+                    self.user_text = [[[None, "Your party finished exploring the dungeon."],[None, "[Returning to town.]"]]]
+                elif state == "DEAD":
+                    self.user_text = [[[None, "Your party was wiped out..."],[None, "[Returning to town.]"]]]
+                elif state == "RAN" or "LEFT":
+                    self.user_text = [[[None, "[Returning to town.]"]]]
+                self.advance = 0
 
     def save_game(self):
         """
