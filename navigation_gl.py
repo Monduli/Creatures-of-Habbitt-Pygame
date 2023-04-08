@@ -423,6 +423,7 @@ class MainGame():
             # Haberdasher   || Save
             #               || Venture Out
             #               || Boost Party
+        # determine which menu options are available
         if self.progress > 2:
             options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Venture Out", "leave"]
         elif self.progress == 1:
