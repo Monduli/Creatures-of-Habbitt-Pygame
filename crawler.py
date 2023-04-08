@@ -410,7 +410,10 @@ class Crawler():
                            print("Clicked on Right Door")
                         if top_door.collidepoint(pos):
                            print("Clicked on Top Door")
-                        for x in range(0, len(self.party)):
+                        for x in self.party:
+                            if x != None:
+                                tot += 1
+                        for x in range(0, tot):
                             if self.party_ports[x].collidepoint(pos):
                                 is_expanded = self.check_for_expand(x)
                                 if is_expanded == False:
@@ -545,13 +548,13 @@ class Crawler():
         self.party_ports = []
         port1_rect = pygame.Rect(nums[0][0],height-850,90,90)
         self.party_ports.append(port1_rect)
-        if len(self.party) > 1:
+        if self.party[1] != None:
             port2_rect = pygame.Rect(nums[0][1],height-850,90,90)
             self.party_ports.append(port2_rect)
-        if len(self.party) > 2:
+        if self.party[2] != None:
             port3_rect = pygame.Rect(nums[0][2],height-850,90,90)
             self.party_ports.append(port3_rect)
-        if len(self.party) > 3:
+        if self.party[3] != None:
             port4_rect = pygame.Rect(nums[0][3],height-850,90,90)
             self.party_ports.append(port4_rect)
 

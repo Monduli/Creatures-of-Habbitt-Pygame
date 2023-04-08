@@ -18,7 +18,7 @@ class MainGame():
         self.background_move = True
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
-        self.party = []
+        self.party = [None, None, None, None]
         self.counter_x = 0
         self.counter_y = 0
         self.fade_image = pygame.image.load("images/black_pass.png").convert_alpha()
@@ -35,6 +35,53 @@ class MainGame():
         self.clock = pygame.time.Clock()
         pygame.mixer.init()
         self.boosted = 0
+        self.characters = [
+            # Main Character
+            MainCharacter([10,10,10,10,10,10]),
+            # Bear N. Steen
+            BearKnight([10,10,10,10,10,10]),
+            # Radish
+            Bookish([10,10,10,10,10,10]),
+            # Grapefart
+            Merchant([10,10,10,10,10,10]),
+            # Lam'baste
+            BlankCharacter([10,10,10,10,10,10]),
+            # Sunny
+            BlankCharacter([10,10,10,10,10,10]),
+            # Victor
+            BlankCharacter([10,10,10,10,10,10]),
+            # Donkey Hote
+            BlankCharacter([10,10,10,10,10,10]),
+            # Sidney
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # Hollow
+            BlankCharacter([10,10,10,10,10,10]),
+            # Henrietta
+            Innkeeper([10,10,10,10,10,10]),
+            # Grilla
+            BlankCharacter([10,10,10,10,10,10]),
+            # Dane
+            Detective([10,10,10,10,10,10]),
+            # Rayna
+            Haberdasher([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10]),
+            # None
+            BlankCharacter([10,10,10,10,10,10])
+            ]
+        self.set_rom_npc()
 
     def start_screen(self):
         #### SETUP ####
@@ -131,6 +178,8 @@ class MainGame():
             self.dialog = dia.Dialog("Player")
             if skip == "To Town":
                 self.user_text = self.dialog.intro_skip_to_town
+            elif skip == "Load":
+                self.user_text = self.dialog.to_town
             else:
                 self.user_text = self.dialog.intro_1_quick
 
@@ -322,15 +371,15 @@ class MainGame():
             # main character = result of character creator
             self.main_character = self.character_creator()
 
-            # add mc to party
-            self.party.append(self.main_character)
+            # add mc to characters
+            self.characters[0] = self.main_character
 
-            # create n steen
-            self.nsteen.set_name("N. Steen")
-            self.nsteen.set_portrait_dungeon("bear")
+            # add mc to party
+            self.party[0] = self.main_character           
 
             # add n steen to party by default
-            self.party.append(self.nsteen)
+            self.party[1] = self.nsteen
+            self.characters[1] = self.nsteen
 
             # set dialog MC variable to name of MC for replacement
             self.dialog = dia.Dialog(self.main_character.get_name())
@@ -342,33 +391,19 @@ class MainGame():
             # create lists with romance characters and npcs for later use
             self.rom_characters = [self.main_character, self.nsteen, None, None, None, None, None, None, None, None, None]
             self.character_names = [self.main_character.get_name(), self.nsteen.get_name(), None, None, None, None, None, None, None, None, None]
-            self.characters = []
 
-            # add all characters that we have so far into "self.characters" array for later
-            for char in self.rom_characters:
-                if char != None:
-                    self.characters.append(char)
-            
             # create and add Henrietta as we will rescue her before returning to town the first time
             self.npc_names = ["Henrietta", None, None, None, None, None, None, None, None, None]
             henrietta = Innkeeper([15, 10, 10, 10, 10, 10])
             henrietta.set_name("Henrietta")
             henrietta.set_portrait("hippo_port_100.png")
+            henrietta.set_recruited(True)
             self.npc_characters = [henrietta, None, None, None, None, None, None, None, None, None]
-
-            # same as above
-            for char in self.npc_characters:
-                if char != None:
-                    self.characters.append(char)
-            return
+            self.characters[11] = henrietta
         
         # start the fade if [Dungeon CAVE] is dialog
         elif self.user_text[0][self.advance][1] == "[Dungeon CAVE]":
             self.fade_over = 1
-
-        # add n. steen to party if dialog says to (deprecated)
-        elif self.user_text[0][self.advance][1] == "[Bear N. Steen has joined your party.]":
-            self.party.append(add_party_member("nsteen"))
 
         # open town menu
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
@@ -412,6 +447,7 @@ class MainGame():
         inputs: None
         return: None
         """
+        self.set_rom_npc()
         self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
         self.habbitt_music.set_volume(0)
         self.habbitt_music.play(-1)
@@ -424,9 +460,9 @@ class MainGame():
             #               || Venture Out
             #               || Boost Party
         # determine which menu options are available
-        if self.progress > 2:
+        if self.progress > 1:
             options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Venture Out", "leave"]
-        elif self.progress == 1:
+        elif self.progress == 0:
             options = ["Inn", "???", "inn", "???", "???", "Save", "???", "save", "Venture Out", "leave"]
         choice = self.town_options(options)
         # Add all current characters and then boost them to 9999
@@ -437,7 +473,8 @@ class MainGame():
 
             else:
                 # give party of MC, Bear, Radish, Grapefart, lvl9999
-                self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names = add_all_characters(self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names)
+                self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names, self.characters = add_all_characters(
+                    self.party, self.rom_characters, self.character_names, self.npc_characters, self.npc_names, self.characters)
                 self.party = boost_party(self.party)
                 
                 # return confirm text
@@ -488,8 +525,26 @@ class MainGame():
             file = open('save.txt', 'x')
             file.close()
         file = open('save.txt', 'wb')
-        self.data = [self.progress, self.party]
-        pickle.dump(self.data, file)
+        data = [[] for x in range(26)]
+        data[0] = [self.progress]
+        for x in range(1, 22):
+            c = self.characters[x-1]
+            data[x] = [
+                c.get_hp(), c.get_physical_guard(), c.get_magical_guard(), c.get_physical_attack(), 
+                c.get_magic_attack(), c.get_quickness(), c.get_heartiness(), c.get_healing(),
+                c.get_chutzpah(), c.get_willpower(), c.get_xp(), c.get_bonds(), c.get_recruited(), c.get_level()
+            ]
+        party_save = []
+        for x in range(0, len(self.party)):
+            if self.party[x] != None:
+                party_save.append(self.party[x].get_num())
+            else:
+                party_save.append(None)
+        data[22] = party_save
+        data[23] = self.mc_for_save
+        data[24] = self.character_names
+        data[25] = self.npc_names
+        pickle.dump(data, file)
         file.close()
         return [[[None, "Your data has been saved."], [None, "[Returning to town.]"]]]
 
@@ -926,13 +981,8 @@ class MainGame():
                     
                     if event.key == pygame.K_RETURN:
                         # submit character name and fill in character object
-                        char = MainCharacter([10,10,10,10,10,10])
-                        char.set_name(input_text[:-1])
-                        char.set_dialog_picture(poss_images[curr_image] + "_port.png")
-                        char.set_portrait(poss_images[curr_image] + "_port_100.png")
-                        char.set_portrait_dungeon(poss_images[curr_image])
-                        char.set_portrait_dialog(poss_images[curr_image] + "_portrait")
-                        char.set_stats_picture(poss_images[curr_image] + "_port_stats")
+                        char = MainCharacter([10,10,10,10,10,10], poss_images[curr_image], input_text[:-1])
+                        self.mc_for_save = [poss_images[curr_image], input_text[:-1]]
                         self.char_name = input_text[:-1]
                         return char
         
@@ -1003,8 +1053,9 @@ class MainGame():
         for x in what_list:
             for member in x:
                 if member != None:
-                    characters.append(member)
-                    party_member_pics.append(member.get_stats_picture())
+                    if member.get_recruited() != False:
+                        characters.append(member)
+                        party_member_pics.append(member.get_stats_picture())
         current_member = 0
         
         self.background, self.background_move = self.determine_background("stat_menu", self.background, self.background_move)
@@ -1024,7 +1075,8 @@ class MainGame():
 
             party_names = []
             for member in self.party:
-                party_names.append(member.get_name())
+                if member != None:
+                    party_names.append(member.get_name())
 
             # Make back rectangle red if you hover over it
             if back_rect.collidepoint(pygame.mouse.get_pos()):
@@ -1214,8 +1266,13 @@ class MainGame():
                     if party_rect.collidepoint(event.pos):
                         if characters[current_member] in self.party:
                             self.party.remove(characters[current_member])
-                        elif len(self.party) < 4:
-                            self.party.append(characters[current_member])
+                            self.party.append(None)
+                        elif self.party[1] == None:
+                            self.party[1] = characters[current_member]
+                        elif self.party[2] == None:
+                            self.party[2] = characters[current_member]
+                        elif self.party[3] == None:
+                            self.party[3] = characters[current_member]
 
             #glBegin(GL_QUADS)
             #rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
@@ -1404,8 +1461,9 @@ class MainGame():
 
     def in_party(self, name):
         for member in self.party:
-            if member.get_name() == name:
-                return True
+            if member != None:
+                if member.get_name() == name:
+                    return True
         return False
 
     def controller(self):
@@ -1429,8 +1487,9 @@ class MainGame():
                     self.data = pickle.load(file)
                     file.close()
                     #place player in location associated with progress (usually town)
+                    self.distribute_data()
                     self.main_menu_fade("Habbitt")
-                    self.in_dialog("To Town", self.progress)
+                    self.in_dialog("Load", self.progress)
                 else:
                     print("Save file does not exist.")
             elif option == "exit":
@@ -1461,14 +1520,52 @@ class MainGame():
         background = pygame.image.load("images/" + bg).convert_alpha()
         background = pygame.transform.scale(background,(1600,900))
         blit_image([width, height], 0, 0, background, 1, 1, 1)
-        
 
-    """def draw_start_screen(font, color_start, color_town_start, color_options, color_exit):
-        gl_text(font, "BLACK", cgls(1100, width), cgls(600, width), cgls(750, height), cgls(800, height), "Creatures of Habbitt", 1, 1)
-        gl_text(font, color_start, cgls(900, width), cgls(700, width), cgls(500, height), cgls(550, height), "Start", 1, 1)
-        gl_text(font, color_town_start, width-900, width-700, height-425, height-475, "Skip to Town", 1, 1)
-        gl_text(font, color_options, width-900, width-700, height-350, height-400, "Options", 1, 1)
-        gl_text(font, color_exit, width-850, width-750, height-200, height-250, "Exit", 1, 1)"""
+    def distribute_data(self):
+        print(len(self.data))
+        print(self.data)
+        self.progress = self.data[0][0]
+        for x in range(1, 22):
+            c = self.characters[x-1]
+            if self.data[x][12] != False:
+                c.set_hp(self.data[x][0])
+                c.set_physical_guard(self.data[x][1])
+                c.set_magical_guard(self.data[x][2])
+                c.set_physical_attack(self.data[x][3])
+                c.set_magic_attack(self.data[x][4])
+                c.set_quickness(self.data[x][5])
+                c.set_heartiness(self.data[x][6])
+                c.set_healing(self.data[x][7])
+                c.set_chutzpah(self.data[x][8])
+                c.set_willpower(self.data[x][9])
+                c.set_xp(self.data[x][10])
+                c.set_bonds(self.data[x][11])
+                c.set_recruited(self.data[x][12])
+                c.set_level(self.data[x][13]) 
+        self.main_character = self.characters[0]
+        self.party[0] = self.characters[self.data[22][0]] 
+        if self.data[22][1] != None:
+            self.party[1] = self.characters[self.data[22][1]] 
+        else:
+            self.party[1] = None
+        if self.data[22][2] != None:
+            self.party[2] = self.characters[self.data[22][2]]
+        else:
+            self.party[2] = None
+        if self.data[22][3] != None:
+            self.party[3] = self.characters[self.data[22][3]]
+        else:
+            self.party[3] = None
+        self.mc_for_save = self.data[23]
+        self.characters[0].set_name(self.mc_for_save[1])
+        self.characters[0].set_pictures_mc(self.mc_for_save[0])
+        self.character_names = self.data[24]
+        self.npc_names = self.data[25]
+
+    def set_rom_npc(self):
+        c = self.characters
+        self.rom_characters = [c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10]]
+        self.npc_characters = [c[11],c[12],c[13],c[14],c[15],c[16],c[17],c[18],c[19],c[20],c[21]]
 
 if __name__ == "__main__":
     MainGame().controller()

@@ -33,6 +33,8 @@ class Character:
         self.buff = 0
         self.willpower = 0
         self.stat_spread = None
+        self.recruited = False
+        self.num = 0
         self.bonds_to_next = [100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000]
 
         # bonds list:
@@ -139,6 +141,15 @@ class Character:
     
     def get_needed_to_next_rank(self, rank):
         return self.bonds_to_next[rank]
+    
+    def get_recruited(self):
+        return self.recruited
+    
+    def get_num(self):
+        return self.num
+    
+    def get_level(self):
+        return self.level
 
     def set_hp(self, value):
         self.hp = value
@@ -182,6 +193,9 @@ class Character:
     def set_buff(self, value):
         self.buff = value
 
+    def set_level(self, value):
+        self.level = value
+
     def set_dialog_picture(self, value):
         pic = pygame.image.load("images/" + value).convert_alpha()
         self.dialog_picture = pic
@@ -201,6 +215,15 @@ class Character:
         portrait = pygame.transform.scale(portrait,(60,120))
         self.portrait_dungeon = portrait
         self.portrait_dungeon_name = "images/" + value
+
+    def set_recruited(self, value):
+        self.recruited = value
+
+    def set_xp(self, value):
+        self.xp = value
+
+    def set_bonds(self, value):
+        self.bonds = value
 
     def distribute_stats(self, spread, stats):
         temp = stats
@@ -322,16 +345,28 @@ class Character:
             return False
 
 class MainCharacter(Character):
-    def __init__(self, stats) -> None:
+    def __init__(self, stats, poss_image=None, name=None) -> None:
         super().__init__()
         self.spread(stats)
         self.role = "LEADER"
         self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
         self.fill_xp_array()
+        if name != None:
+            self.set_name(name)
+        if poss_image != None:
+            self.set_pictures_mc(poss_image)
+        self.set_recruited(True)
 
     def spread(self, stats):
         self.distribute_stats(["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
         self.calculate_stats()
+
+    def set_pictures_mc(self, poss_image):
+        self.set_dialog_picture(poss_image + "_port.png")
+        self.set_portrait(poss_image + "_port_100.png")
+        self.set_portrait_dungeon(poss_image)
+        self.set_portrait_dialog(poss_image + "_portrait")
+        self.set_stats_picture(poss_image + "_port_stats")
 
 class Martial(Character):
     def __init__(self, stats) -> None:
@@ -357,6 +392,10 @@ class BearKnight(Character):
         self.role = "BEAR KNIGHT"
         self.stat_spread = ["chutz", "phys", "heart", "quick", "heal", "magic"]
         self.fill_xp_array()
+        self.num = 1
+        self.set_name("N. Steen")
+        self.set_portrait_dungeon("bear")
+        self.recruited = True
 
     def spread(self, stats):
         Character.distribute_stats(self, ["chutz", "phys", "heart", "quick", "heal", "magic"], stats)
@@ -376,6 +415,9 @@ class Bookish(Character):
         self.stat_spread = ["magic", "quick", "heal", "heart", "chutz", "phys"]
         self.fill_xp_array()
         self.set_stats_picture("rabbit_port_stats")
+        self.num = 2
+        self.set_name("Radish")
+        self.set_portrait_dungeon("bear")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["magic", "quick", "heal", "heart", "chutz", "phys"], stats)
@@ -390,6 +432,8 @@ class Merchant(Character):
         self.stat_spread = ["quick", "heal", "chutz", "phys", "heart", "magic"]
         self.fill_xp_array()
         self.set_stats_picture("grapefart_port_stats")
+        self.set_name("Grapefart")
+        self.num = 3
 
     def spread(self, stats):
         Character.distribute_stats(self, ["quick", "heal", "chutz", "phys", "heart", "magic"], stats)
@@ -417,6 +461,8 @@ class Innkeeper(Character):
         self.stat_spread = ["phys", "heal", "chutz", "quick", "heart", "magic"]
         self.fill_xp_array()
         self.set_stats_picture("hippo_port_stats")
+        self.set_name("Henrietta")
+        self.num = 11
 
     def spread(self, stats):
         Character.distribute_stats(self, ["phys", "heal", "chutz", "quick", "heart", "magic"], stats)
@@ -430,7 +476,9 @@ class Detective(Character):
         self.set_portrait("dane_port_100.png")
         self.stat_spread = ["quick", "phys", "chutz", "heal", "heart", "magic"]
         self.fill_xp_array()
+        self.set_name("Dane")
         self.set_stats_picture("dane_port_stats")
+        self.num = 13
 
     def spread(self, stats):
         Character.distribute_stats(self, ["quick", "phys", "chutz", "heal", "heart", "magic"], stats)
@@ -444,7 +492,24 @@ class Haberdasher(Character):
         self.set_portrait("rayna_port_100.png")
         self.stat_spread = ["magic", "chutz", "phys", "heal", "quick", "heart"]
         self.fill_xp_array()
+        self.set_name("Rayna")
         self.set_stats_picture("rayna_port_stats")
+        self.num = 14
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["magic", "chutz", "phys", "heal", "quick", "heart"], stats)
+        self.calculate_stats()
+
+class BlankCharacter(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "NONE"
+        self.set_portrait("blank.png")
+        self.stat_spread = ["magic", "chutz", "phys", "heal", "quick", "heart"]
+        self.fill_xp_array()
+        self.set_name("BLANK")
+        self.set_stats_picture("blank")
 
     def spread(self, stats):
         Character.distribute_stats(self, ["magic", "chutz", "phys", "heal", "quick", "heart"], stats)

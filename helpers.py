@@ -210,7 +210,7 @@ def boost_party(party):
         char.boost(9998, char.stat_spread)
     return party
 
-def add_all_characters(party, rom_characters, character_names, npc_characters, npc_names):
+def add_all_characters(party, rom_characters, character_names, npc_characters, npc_names, characters):
     radish = Bookish([15, 10, 10, 5, 5, 0])
     radish.set_name("Radish")
     radish.set_portrait("rabbit_portrait_100.png")
@@ -222,8 +222,13 @@ def add_all_characters(party, rom_characters, character_names, npc_characters, n
     rayna = Haberdasher([15, 10, 10, 10, 10, 10])
     rayna.set_name("Rayna")
 
-    party.append(radish)
-    party.append(grapefart)
+    radish.set_recruited(True)
+    grapefart.set_recruited(True)
+    dane.set_recruited(True)
+    rayna.set_recruited(True)
+
+    party[2] = radish
+    party[3] = grapefart
 
     rom_characters[2] = party[2]
     rom_characters[3] = party[3]
@@ -235,7 +240,13 @@ def add_all_characters(party, rom_characters, character_names, npc_characters, n
     npc_characters[3] = rayna
     npc_names[2] = "Dane"
     npc_names[3] = "Rayna"
-    return party, rom_characters, character_names, npc_names
+
+    characters[2] = radish
+    characters[3] = grapefart
+    characters[13] = dane
+    characters[14] = rayna
+
+    return party, rom_characters, character_names, npc_characters, npc_names, characters
 
 def create_default_main_character():
     char = MainCharacter([10,10,10,10,10,10])
