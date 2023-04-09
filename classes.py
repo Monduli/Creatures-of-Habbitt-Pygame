@@ -45,21 +45,21 @@ class Character:
         # [4] - Lam'baste Lamb (F)
         # [5] - Sunny Spider (F)
         # [6] - Victor (M)
-        # [7] - Hans Horse (M)
+        # [7] - Donkey Hote (M)
         # [8] - Sidney Shark (F)
-        # [9] - None
+        # [9] - Romance NPC 9
         # [10] - Hollow
         # [11] - Henrietta
         # [12] - Grilla
         # [13] - Dane
         # [14] - Rayna
-        # [15] - None
-        # [16] - None
-        # [17] - None
-        # [18] - None
-        # [19] - None
-        # [20] - None
-        # [21] - None
+        # [15] - Ranch NPC
+        # [16] - Story NPC
+        # [17] - Story NPC
+        # [18] - Story NPC
+        # [19] - Story NPC
+        # [20] - Ward N. Steen
+        # [21] - Juliette
 
     def get_level(self):
         return self.level
