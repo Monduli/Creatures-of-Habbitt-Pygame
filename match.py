@@ -341,12 +341,21 @@ class MatchGame(object):
         pygame.quit()
         sys.exit()
 
-    def play(self, party, enemies, display=screen, need_fade=0):
+    def play(self, new_party, enemies, display=screen, need_fade=0):
         self.start()
+        party = new_party.copy()
         self.end_fade = need_fade
         if display != screen:
             self.display = display
         self.mc_name = party[0].get_name()
+
+        to_remove = []
+        for x in range(4):
+            if party[x] == None:
+                to_remove.append(party[x])
+        
+        for x in to_remove:
+            party.remove(x)
 
         #gluPerspective(45, (1600/900), 0.1, 50.0)
         #glTranslatef(0.0, 0.0, -5)

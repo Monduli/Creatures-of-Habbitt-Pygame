@@ -289,31 +289,52 @@ class Character:
     def add_support_points(self, target, points, mcname):
         if target == mcname:
             p = 0
-            self.bonds[0][1] += points
         elif target == "N. Steen":
             p = 1
-            self.bonds[1][1] += points
         elif target == "Radish":
             p = 2
-            self.bonds[2][1] += points
         elif target == "Grapefart":
             p = 3
-            self.bonds[3][1] += points
-        elif target == "4":
+        elif target == "Lam'baste":
             p = 4
-            self.bonds[4][1] += points
-        elif target == "5":
+        elif target == "Sunny":
             p = 5
-            self.bonds[5][1] += points
-        elif target == "Cinna":
+        elif target == "Victor":
             p = 6
-            self.bonds[6][1] += points
-        elif target == "7":
+        elif target == "Donkey":
             p = 7
-            self.bonds[7][1] += points
-        elif target == "8":
+        elif target == "Sidney":
             p = 8
-            self.bonds[8][1] += points
+        elif target == "9":
+            p = 9
+        elif target == "Hollow":
+            p = 10
+        elif target == "Henrietta":
+            p = 11
+        elif target == "Grilla":
+            p = 12
+        elif target == "Dane":
+            p = 13
+        elif target == "Rayna":
+            p = 14
+        elif target == "15":
+            p = 15
+        elif target == "16":
+            p = 16
+        elif target == "17":
+            p = 17
+        elif target == "18":
+            p = 18
+        elif target == "19":
+            p = 19
+        elif target == "N. Stain":
+            p = 20
+        elif target == "Juliette":
+            p = 21
+        else:
+            p = 0
+        
+        self.bonds[p][1] += points
         
         if self.bonds[p][1] >= self.bonds_to_next[self.bonds[p][0]]:
             self.bonds[p][1] = 0

@@ -410,6 +410,7 @@ class Crawler():
                            print("Clicked on Right Door")
                         if top_door.collidepoint(pos):
                            print("Clicked on Top Door")
+                        tot = 0
                         for x in self.party:
                             if x != None:
                                 tot += 1
@@ -559,13 +560,13 @@ class Crawler():
             self.party_ports.append(port4_rect)
 
         shape_color("BLACK")
-        if len(party) > 0:    
+        if party[0] != None:    
             blit_image([width, height], width-400,height-100, party[0].get_portrait().convert_alpha(), 1, 1, 1)
-        if len(party) > 1:    
+        if party[1] != None:  
             blit_image([width, height], width-310,height-100, party[1].get_portrait().convert_alpha(), 1, 1, 1)
-        if len(party) > 2:
+        if party[2] != None:
             blit_image([width, height], width-220,height-100, party[2].get_portrait().convert_alpha(), 1, 1, 1)
-        if len(party) > 3:
+        if party[3] != None:
             blit_image([width, height], width-130,height-100, party[3].get_portrait().convert_alpha(), 1, 1, 1)
 
         if self.expand == 0:

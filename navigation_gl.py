@@ -443,7 +443,7 @@ class MainGame():
 
     def village_choices(self):
         """
-        Display choices for village menu 
+        Display choices avillage menu 
         inputs: None
         return: None
         """
