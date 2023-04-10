@@ -35,6 +35,8 @@ class MainGame():
         self.clock = pygame.time.Clock()
         pygame.mixer.init()
         self.boosted = 0
+        self.music = pygame.mixer.Channel(5)
+        self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
         self.characters = [
             # Main Character
             MainCharacter([10,10,10,10,10,10]),
@@ -81,7 +83,7 @@ class MainGame():
             # None
             BlankCharacter([10,10,10,10,10,10])
             ]
-        self.set_rom_npc()
+        self.set_char_lists()
 
     def start_screen(self):
         #### SETUP ####
@@ -448,9 +450,9 @@ class MainGame():
         return: None
         """
         self.set_char_lists()
-        self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
-        self.habbitt_music.set_volume(0)
-        self.habbitt_music.play(-1)
+        if not self.music.get_busy():
+            self.music.play(self.habbitt_music, -1)
+            self.music.set_volume(7)
         # retrieve background
         self.background, self.background_move = self.determine_background("Habbitt", self.background, self.background_move)
 
@@ -493,8 +495,9 @@ class MainGame():
         
         # Inn menu loads because Henrietta is retrieved by prog2
         elif choice == "inn":
+            self.music.fadeout(300)
             choice = self.inn_menu()
-            self.user_text = self.dialog.determine_dialog(choice, self.progress, self.char_name)
+            self.user_text = self.dialog.determine_dialog(choice, self.progress, self.main_character.get_name())
             self.advance = 0
 
         # save game (TODO: Broken)
@@ -506,6 +509,7 @@ class MainGame():
         elif choice == "leave":
             if len(self.party) > 0:
             # Should go to location menu
+                self.music.fadeout(300)
                 state = self.location_menu()
                 if state == "FINISHED":
                     self.user_text = [[[None, "Your party finished exploring the dungeon."],[None, "[Returning to town.]"]]]
