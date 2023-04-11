@@ -489,6 +489,7 @@ class MainGame():
             self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
             self.advance = 0
 
+        # No haberdashery to run yet
         if choice == "haberdashery":
             self.user_text = [[[None, "There is no one to run the accessories shop, so it remains closed."], [None, "[Returning to town.]"]]]
             self.advance = 0
