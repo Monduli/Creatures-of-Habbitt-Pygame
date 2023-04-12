@@ -1,0 +1,30 @@
+Remake dungeons
+    Implement camera system
+    Use tiled to make template dungeons
+    Replace tiles in tiled with Ally's tilesets when she makes them 
+
+Implement boss fight (generic)
+    Allow navigation_gl.py to call match.py with boss context
+    Allow for dialog during boss fights
+    Allow for boss fight gimmicks
+        Flames that fire columns or rows on the beat
+            Normal: 1 fire column per 2 beats sometimes 
+            Hard: 1 fire column per beat sometimes 
+            Headache: Introduce rows, which can blast at the same time as columns and not synced
+            Chaos: Rows and columns, 1 per half beat, spontaneous but more common
+        Replacing random tiles with non-matching tiles
+            Normal: 1 tile per 2 beats
+            Hard: 1 tile per beat
+            Headache: 2 tiles per beat
+            Chaos: 4 tiles per beat
+        Vines that make tiles unmatchable
+            Clear a tile next to it to make the vines go away
+            Ice alternative
+
+System for voice acting
+    Make it generic enough so I can use a sort of
+    voice_line(filename)
+    Which will take several things into consideration
+        Length of voice line
+        Presence or absence of existing voice line
+        Volume (set in options menu, can be a private variable)
