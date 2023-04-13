@@ -20,6 +20,7 @@ Implement boss fight (generic)
         Vines that make tiles unmatchable
             Clear a tile next to it to make the vines go away
             Ice alternative
+            Difficulty determines how many tiles are blocked by vines/ice per turn
 
 System for voice acting
     Make it generic enough so I can use a sort of
