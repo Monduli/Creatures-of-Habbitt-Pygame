@@ -1,3 +1,6 @@
+Implement difficulty options in the Options menu
+    Smooth, Groovy, Bodacious, Chaos
+
 Remake dungeons
     Implement camera system
     Use tiled to make template dungeons
@@ -29,3 +32,26 @@ System for voice acting
         Length of voice line
         Presence or absence of existing voice line
         Volume (set in options menu, can be a private variable)
+
+Characters and their dungeons (need lore and proper names)
+    Henrietta - Cave
+    Grilla - Robotic Complex
+    Radish - Mage Tower
+    Grapefart - Rainforest (Clearing)
+    Dane + Rayna - Temple (Dane before, Rayna after)
+    Lam'baste -
+    Sunny - 
+    Rancher NPC - Pristine Pasture
+    Victor (TBA) -
+    Boss NPC 1 - 
+    Donkey Hote - Tilting at Windmills (Don Quixote)
+    Boss NPC 2 -
+    Sidney - 
+    Boss NPC 3 - 
+    Wolf Rom NPC 9 - 
+    Boss NPC 4 - 
+    Ward N. Steen - Ward's Keep
+    Hollow - Volcano
+        Hollow has lost his dominant arm (left) covers it with his cloak
+        Someone can give him shit about it if they are ambidextrous
+    Candy Caniche, Fox Vizier - Starting Town Keep 
