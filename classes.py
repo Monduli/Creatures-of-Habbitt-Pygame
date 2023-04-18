@@ -401,7 +401,7 @@ class Martial(Character):
         Character.distribute_stats(self, ["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
         self.calculate_stats(self)
 
-class BearKnight(Character):
+class BearNSteen(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
@@ -427,7 +427,7 @@ class BearKnight(Character):
         image = pygame.transform.scale(image, (700, 1021))
         self.dialog_picture = image
 
-class Bookish(Character):
+class Radish(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
@@ -444,7 +444,7 @@ class Bookish(Character):
         Character.distribute_stats(self, ["magic", "quick", "heal", "heart", "chutz", "phys"], stats)
         self.calculate_stats()
 
-class Merchant(Character):
+class Grapefart(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
@@ -473,7 +473,7 @@ class Cleric(Character):
         Character.distribute_stats(self, ["heal", "phys", "magic", "heart", "quick", "chutz"], stats)
         self.calculate_stats()
 
-class Innkeeper(Character):
+class Henrietta(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
@@ -489,7 +489,7 @@ class Innkeeper(Character):
         Character.distribute_stats(self, ["phys", "heal", "chutz", "quick", "heart", "magic"], stats)
         self.calculate_stats()
 
-class Detective(Character):
+class Dane(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
@@ -505,7 +505,7 @@ class Detective(Character):
         Character.distribute_stats(self, ["quick", "phys", "chutz", "heal", "heart", "magic"], stats)
         self.calculate_stats()
 
-class Haberdasher(Character):
+class Rayna(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
