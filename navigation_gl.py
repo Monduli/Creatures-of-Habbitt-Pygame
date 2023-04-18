@@ -669,7 +669,7 @@ class MainGame():
         characters_left = []
 
         # make a list that has all party member pictures and a separate list with all
-        # characters that do not equal "None"
+        # characters that have been recruited
         party_member_pics = []
         for member in self.characters:
             if member.get_recruited() != 0:
