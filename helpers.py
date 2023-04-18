@@ -170,11 +170,11 @@ def find_and_remove_from_turn(turns, character):
 
 def add_party_member(name, char=None):
     if name == "nsteen":
-        nsteen = BearKnight([15, 15, 10, 10, 10, 10])
+        nsteen = BearNSteen([15, 15, 10, 10, 10, 10])
         nsteen.set_name("N. Steen")
         return nsteen
     if name == "radish":
-        radish = Bookish([15, 15, 10, 10, 10, 10])
+        radish = Radish([15, 15, 10, 10, 10, 10])
         radish.set_name("Radish")
         return radish
     if name == "toffee":
@@ -182,7 +182,7 @@ def add_party_member(name, char=None):
         toffee.set_name("Toffee")
         return toffee
     if name == "grapefart":
-        grapefart = Merchant([15, 15, 10, 10, 10, 10])
+        grapefart = Grapefart([15, 15, 10, 10, 10, 10])
         grapefart.set_name("Grapefart")
         return grapefart
     if name == "maincharacter":
@@ -190,15 +190,9 @@ def add_party_member(name, char=None):
 
 def fill_party():
     mc = create_default_main_character()
-    nsteen = BearKnight([15, 10, 10, 5, 5, 0])
-    nsteen.set_name("N. Steen")
-    nsteen.set_portrait_dungeon("bear")
-    radish = Bookish([15, 10, 10, 5, 5, 0])
-    radish.set_name("Radish")
-    radish.set_portrait("rabbit_portrait_100.png")
-    grapefart = Merchant([15, 10, 10, 5, 5, 0])
-    grapefart.set_name("Grapefart")
-    grapefart.set_portrait("grapefart_portrait_100.png")
+    nsteen = BearNSteen([15, 10, 10, 5, 5, 0])
+    radish = Radish([15, 10, 10, 5, 5, 0])
+    grapefart = Grapefart([15, 10, 10, 5, 5, 0])
     party = [mc, nsteen, radish, grapefart]
     for char in party:
         char.print_stats()
@@ -211,16 +205,10 @@ def boost_party(party):
     return party
 
 def add_all_characters(party, rom_characters, character_names, npc_characters, npc_names, characters):
-    radish = Bookish([15, 10, 10, 5, 5, 0])
-    radish.set_name("Radish")
-    radish.set_portrait("rabbit_portrait_100.png")
-    grapefart = Merchant([15, 10, 10, 5, 5, 0])
-    grapefart.set_name("Grapefart")
-    grapefart.set_portrait("grapefart_portrait_100.png")
-    dane = Detective([15, 10, 10, 10, 10, 10])
-    dane.set_name("Dane")
-    rayna = Haberdasher([15, 10, 10, 10, 10, 10])
-    rayna.set_name("Rayna")
+    radish = Radish([15, 10, 10, 5, 5, 0])
+    grapefart = Grapefart([15, 10, 10, 5, 5, 0])
+    dane = Dane([15, 10, 10, 10, 10, 10])
+    rayna = Rayna([15, 10, 10, 10, 10, 10])
 
     radish.set_recruited(True)
     grapefart.set_recruited(True)
@@ -666,12 +654,10 @@ def character_full_name(char_name):
     
 def add_char(char):
     if char == "dane":
-        dane = Detective([15, 10, 10, 10, 10, 10])
-        dane.set_name("Dane")
+        dane = Dane([15, 10, 10, 10, 10, 10])
         return dane
     if char == "rayna":
-        rayna = Haberdasher([15, 10, 10, 10, 10, 10])
-        rayna.set_name("Rayna")
+        rayna = Rayna([15, 10, 10, 10, 10, 10])
         return rayna
     
 def which_num_party_member_bonds(m_n, mc_name):

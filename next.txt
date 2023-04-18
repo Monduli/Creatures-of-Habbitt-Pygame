@@ -37,16 +37,16 @@ Characters and their dungeons (need lore and proper names)
     Henrietta - Cave
     Grilla - Grilla Garage
     Radish - Mage Tower
-    Grapefart - Rainforest (Clearing)
-    Dane + Rayna - Temple (Dane before, Rayna after)
-    Lam'baste -
-    Sunny - 
+    Grapefart - City of Gold
+    Dane + Rayna - Desert Temple (Dane before, Rayna after)
+    Lam'baste - Overgrown Restaurant
+    Sunny - Old Manor (daytime)
     Rancher NPC - Pristine Pasture
-    Victor (TBA) -
+    Victor (TBA) - 
     Boss NPC 1 - 
     Donkey Hote - Tilting at Windmills (Don Quixote)
     Boss NPC 2 -
-    Sidney - Something Underwater?
+    Sidney - 
     Boss NPC 3 - 
     Wolf Rom NPC 9 - 
     Giver of Life - Lake of Creation 

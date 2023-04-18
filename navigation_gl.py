@@ -26,7 +26,7 @@ class MainGame():
         self.font = pygame.font.Font("font/VCR.001.ttf", 32)
         self.level = 0
         self.debug = 0
-        self.nsteen = BearKnight([15, 10, 10, 5, 5, 0])
+        self.nsteen = BearNSteen([15, 10, 10, 5, 5, 0])
         self.move_to_crawl = 0
         self.fade_over = 0
         self.save_object = None
@@ -41,11 +41,11 @@ class MainGame():
             # Main Character
             MainCharacter([10,10,10,10,10,10]),
             # Bear N. Steen
-            BearKnight([10,10,10,10,10,10]),
+            BearNSteen([10,10,10,10,10,10]),
             # Radish
-            Bookish([10,10,10,10,10,10]),
+            Radish([10,10,10,10,10,10]),
             # Grapefart
-            Merchant([10,10,10,10,10,10]),
+            Grapefart([10,10,10,10,10,10]),
             # Lam'baste
             BlankCharacter([10,10,10,10,10,10]),
             # Sunny
@@ -61,13 +61,13 @@ class MainGame():
             # Hollow
             BlankCharacter([10,10,10,10,10,10]),
             # Henrietta
-            Innkeeper([10,10,10,10,10,10]),
+            Henrietta([10,10,10,10,10,10]),
             # Grilla
             BlankCharacter([10,10,10,10,10,10]),
             # Dane
-            Detective([10,10,10,10,10,10]),
+            Dane([10,10,10,10,10,10]),
             # Rayna
-            Haberdasher([10,10,10,10,10,10]),
+            Rayna([10,10,10,10,10,10]),
             # None
             BlankCharacter([10,10,10,10,10,10]),
             # None
@@ -396,7 +396,7 @@ class MainGame():
 
             # create and add Henrietta as we will rescue her before returning to town the first time
             self.npc_names = ["Henrietta", None, None, None, None, None, None, None, None, None]
-            henrietta = Innkeeper([15, 10, 10, 10, 10, 10])
+            henrietta = Henrietta([15, 10, 10, 10, 10, 10])
             henrietta.set_name("Henrietta")
             henrietta.set_portrait("hippo_port_100.png")
             henrietta.set_recruited(True)
@@ -642,7 +642,6 @@ class MainGame():
     def inn_menu(self):
         """
         The conversations menu when you click "Inn" from Habbit screen
-        TODO: This needs to be overhauled so you can start conversations as characters other than the MC
         Inputs: None
         Return: Name of character to load dialog for, or "town" to return to town menu
         """
@@ -656,6 +655,7 @@ class MainGame():
         right_larrow_rect = pygame.Rect(width-650, height/2+65, 100, 100)
         right_rarrow_rect = pygame.Rect(width-200, height/2+65, 100, 100)
 
+        check_rect = pygame.Rect(width/2-100, height-150, 200, 50)
         back_rect = pygame.Rect(width/2-100, height-75, 200, 50)
 
         # remove mc from rom list or else it's uneven
@@ -666,17 +666,15 @@ class MainGame():
         mc_what_list = [self.main_character]
 
         # make list out of lists for each character
-        what_list = [rom_no_mc, self.npc_characters, mc_what_list]
         characters_left = []
 
         # make a list that has all party member pictures and a separate list with all
         # characters that do not equal "None"
         party_member_pics = []
-        for x in what_list:
-            for member in x:
-                if member != None:
-                    characters_left.append(member)
-                    party_member_pics.append(member.get_stats_picture())
+        for member in self.characters:
+            if member.get_recruited() != 0:
+                characters_left.append(member)
+                party_member_pics.append(member.get_stats_picture())
         current_member_left = 0
         current_member_right = 1
 
@@ -692,13 +690,17 @@ class MainGame():
 
             # set rect colors as black
             color_back = "BLACK"
+            color_check = "BLACK"
 
             # Make back rectangle red if you hover over it
             if back_rect.collidepoint(pygame.mouse.get_pos()):
                 color_back = self.color_active
+            if check_rect.collidepoint(pygame.mouse.get_pos()):
+                color_check = self.color_active
 
             # Name of current party member
-            char_name_left = characters_left[current_member_left].get_name()
+            char_left = characters_left[current_member_left]
+            char_name_left = char_left.get_name()
 
             # Party member portrait
             image1 = party_member_pics[current_member_left]
@@ -710,7 +712,8 @@ class MainGame():
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
 
             # Name of current party member
-            char_name_right = characters_left[current_member_right].get_name()
+            char_right = characters_left[current_member_right]
+            char_name_right = char_right.get_name()
 
             # Party member portrait
             image2 = party_member_pics[current_member_right]
@@ -728,9 +731,15 @@ class MainGame():
             blit_image((width, height), width-1050, height/2-(height/8)-50, image3, 1,1,1)
             blit_image((width, height), width-200, height/2-(height/8)-50, image3, 1,1,1)
 
+            # get current rank for selected pair
+            num = which_num_party_member_bonds(char_right.get_name(), self.main_character.get_name())
+            bond_rank = char_left.get_bond_rank(num)
+
+            gl_text_name(self.font, "BLACK", cgls(width/2+200, width), cgls(width/2-200, width), cgls(825, height), cgls(875, height), "Bond Rank: " + str(bond_rank), 1, .985)
             gl_text_name(self.font, "BLACK", cgls(width-1400, width), cgls(width-1050, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name_left, 1, .89)
             gl_text_name(self.font, "BLACK", cgls(width-200, width), cgls(width-550, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name_right, 1, .89)
             gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-825, height), cgls(height-875, height), "Back", 1, 2)
+            gl_text_name(self.font, color_check, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), "Check", 1, .88)
 
             # handle events
             for event in pygame.event.get():
@@ -783,6 +792,9 @@ class MainGame():
                                 current_member_left -= 1
                     if back_rect.collidepoint(event.pos):
                         return "town"
+                    if check_rect.collidepoint(event.pos):
+                        return "town"
+                    
 
             pygame.display.flip()
             self.clock.tick(60)
@@ -1403,16 +1415,6 @@ class MainGame():
         self.counter_x = 1600
         self.main_menu_fade("Habbitt", False)
         return state
-
-    def sort_options(self, choice):
-        if choice == "martial_choice":
-            prof = classes.Martial([12,10,10,10,10,10])
-            prof.set_name(self.name_global) 
-            return ["class", prof]
-        elif choice == "bookish_choice":
-            prof = classes.Bookish([10,10,10,12,10,10])
-            prof.set_name(self.name_global)
-            return ["class", prof]
         
     def fade(self, fade_image, counter_x, counter_y):
         fade_out = 1
