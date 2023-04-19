@@ -384,6 +384,12 @@ class Character:
             return self.mc_conversations
         if name == "N. Steen":
             return self.bear_conversations
+        elif name == "Radish":
+            return self.bear_conversations
+        elif name == "Grapefart":
+            return self.bear_conversations
+        elif name == "Lambaste":
+            return self.bear_conversations
         elif name == "Henrietta":
             return self.henrietta_conversations
 
