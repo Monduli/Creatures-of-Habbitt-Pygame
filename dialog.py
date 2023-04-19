@@ -338,7 +338,7 @@ class Dialog():
                 ]
             if name1 == "Henrietta" or name2 == "Henrietta":
                 dialog = [
-                    "Henrietta has confided in you her concerns about her husband's wellbeing. You decided to go rescue him from his own devices.",
+                    "Henrietta has confided in you her concerns about her husband's wellbeing. You decided to go rescue him from his own... devices.",
                     "MC HENRIETTA Rank 2",
                     "MC HENRIETTA Rank 3",
                     "MC HENRIETTA Rank 4",
@@ -348,10 +348,9 @@ class Dialog():
                     "MC HENRIETTA Rank 8",
                     "MC HENRIETTA Rank 9",
                     "MC HENRIETTA Rank 10",
-                    "MC HENRIETTA ROM Rank 1",
-                    "MC HENRIETTA ROM Rank 2",
-                    "MC HENRIETTAR ROM Rank 3",
-                    "MC HENRIETTA ROM Rank 4",
-                    "MC HENRIETTA ROM Rank 5"
+                    None, None, None, None, None
                 ]
-        return dialog[active_rank]
+        if active_rank != None:
+            return dialog[active_rank]
+        else:
+            return dialog[r_active_rank]

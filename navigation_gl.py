@@ -899,8 +899,12 @@ class MainGame():
                 color_r5 = self.color_active
                 r_active_rank = 5
 
+            complete = char_left.get_conversation_completeness(char_right.get_name(), self.main_character.get_name())
             if active_rank != None or r_active_rank != None:
-                description = self.dialog.get_dialog_description(char_left.get_name(), char_right.get_name(), self.main_character.get_name(), active_rank, r_active_rank)
+                if complete[active_rank] == 1:
+                    description = self.dialog.get_dialog_description(char_left.get_name(), char_right.get_name(), self.main_character.get_name(), active_rank, r_active_rank)
+                else:
+                    description = char_right.get_name() + " would like to speak with you."
             else:
                 description = "Please select a rank to view."
 
@@ -961,7 +965,7 @@ class MainGame():
             if r_bond_rank > 4:
                 gl_text_name(self.font, color_r5, cgls(1396, width), cgls(1496, width), cgls(525, height), cgls(625, height), "5", 1, .94)
 
-            gl_text_name(self.font, "PINK", cgls(width/2+400, width), cgls(width/2-400, width), cgls(height-600, height), cgls(height-650, height), "RANK " + str(bond_rank), 1, 1.14)
+            gl_text_name(self.font, "GREEN", cgls(width/2+400, width), cgls(width/2-400, width), cgls(height-600, height), cgls(height-650, height), "RANK " + str(bond_rank), 1, 1.14, True)
             gl_text_name(self.font, "BLACK", cgls(width/2-200, width), cgls(width/2-400, width), cgls(height-550, height), cgls(height-600, height), char_left_name, 1, 1.12)
             gl_text_name(self.font, "BLACK", cgls(width/2+400, width), cgls(width/2+200, width), cgls(height-550, height), cgls(height-600, height), char_right_name, 1, 1.12)
             gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1200, width), cgls(width-400, width), cgls(height-650, height), -.999999, description, .95, 2.15, self.level)

@@ -470,11 +470,15 @@ def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
     glEnd()
     drawText_gl_internal(rect_color, font, left, bot, text, x_adjust, y_adjust)
 
-def gl_text_name(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
+def gl_text_name(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust, black_text=False):
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    drawText_gl_internal(rect_color, font, left - ((left-right)/2), bot, text, x_adjust, y_adjust, True)
+    if black_text == True:
+        text_color = (0,0,0, 255) 
+    else:
+        text_color = (255, 255, 255, 255)
+    drawText_gl_internal(rect_color, font, left - ((left-right)/2), bot, text, x_adjust, y_adjust, text_color, True)
 
 def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
     glBegin(GL_QUADS)
@@ -484,8 +488,8 @@ def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjus
     rect_height = abs(reverse_cgls(bot, height) - reverse_cgls(top, height))
     drawTextWrap_internal(rect_color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
 
-def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, center=False):                                                
-    textSurface = font.render(text, True, (255, 255, 255, 255), rect_color)
+def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, text_color=(255, 255, 255, 255), center=False):                                                
+    textSurface = font.render(text, True, text_color, rect_color)
     textData = pygame.image.tostring(textSurface, "RGBA", True)
     if center == True:
         new_x = ((x+1)/2)*width/x_adjust - (textSurface.get_width() / 2)

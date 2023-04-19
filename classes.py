@@ -38,6 +38,9 @@ class Character:
         self.bonds_to_next = [100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000]
         self.rom_bond_rank = 0
         self.romanced = False
+        self.mc_conversations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.bear_conversations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.henrietta_conversations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
         # bonds list:
         # [0] - Main Character (M/F)
@@ -375,6 +378,14 @@ class Character:
                 return False
         else:
             return False
+        
+    def get_conversation_completeness(self, name, mc_name):
+        if name == mc_name:
+            return self.mc_conversations
+        if name == "N. Steen":
+            return self.bear_conversations
+        elif name == "Henrietta":
+            return self.henrietta_conversations
 
 class MainCharacter(Character):
     def __init__(self, stats, poss_image=None, name=None) -> None:
@@ -388,6 +399,7 @@ class MainCharacter(Character):
         if poss_image != None:
             self.set_pictures_mc(poss_image)
         self.set_recruited(True)
+        
 
     def spread(self, stats):
         self.distribute_stats(["phys", "heart", "quick", "heal", "chutz", "magic"], stats)
