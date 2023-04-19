@@ -451,13 +451,18 @@ def shape_color(color):
         elif color == "BLACK":
             glColor3f(0.0, 0.0, 0.0)
         elif color == "PINK":
-            glColor3f(1, .714, 0.757)
+            glColor3f(c_c(227), c_c(28), c_c(121))
         elif color == "WHITE":
             glColor3f(255.0, 255.0, 255.0)
         elif color == "GRAY":
             glColor3f(47.0, 79.0, 79.0)
         else:
             Exception("Wrong format")
+
+def c_c(c):
+    # color conversion for rgb format
+    return c/255
+
 
 def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
     glBegin(GL_QUADS)
@@ -491,6 +496,8 @@ def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, cente
     glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
 def drawTextWrap_internal(rect_color, font, surface, text, color, x, y, x_adjust, y_adjust, level, r_w, r_h, bkg=None, aa=False, center=False):
+    if rect_color == "PINK":
+        rect_color = (227, 28, 121)
     rect = pygame.Rect(x, y, r_w, r_h)
     y = rect.top
     lineSpacing = 0

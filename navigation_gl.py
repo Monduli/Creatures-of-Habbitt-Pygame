@@ -734,6 +734,13 @@ class MainGame():
             # get current rank for selected pair
             num = which_num_party_member_bonds(char_right.get_name(), self.main_character.get_name())
             bond_rank = char_left.get_bond_rank(num)
+            r_bond_rank = 0
+
+            if char_left == self.main_character or char_right == self.main_character:
+                if char_left.get_romanced() == True:
+                    r_bond_rank = char_left.get_rom_bond_rank()
+                if char_right.get_romanced() == True:
+                    r_bond_rank = char_right.get_rom_bond_rank()
 
             gl_text_name(self.font, "BLACK", cgls(width/2+200, width), cgls(width/2-200, width), cgls(825, height), cgls(875, height), "Bond Rank: " + str(bond_rank), 1, .985)
             gl_text_name(self.font, "BLACK", cgls(width-1400, width), cgls(width-1050, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name_left, 1, .89)
@@ -793,7 +800,178 @@ class MainGame():
                     if back_rect.collidepoint(event.pos):
                         return "town"
                     if check_rect.collidepoint(event.pos):
-                        return "town"
+                        self.show_inn_dialog_options(char_left, char_right, bond_rank, r_bond_rank)
+                    
+
+            pygame.display.flip()
+            self.clock.tick(60)
+
+    def show_inn_dialog_options(self, char_left, char_right, bond_rank, r_bond_rank):
+        """
+        The conversations menu when you click "Inn" from Habbit screen
+        Inputs: None
+        Return: Name of character to load dialog for, or "town" to return to town menu
+        """
+        black = 0, 0, 0
+
+        opt1_rect = pygame.Rect(100, height-750, 100, 100)
+        opt2_rect = pygame.Rect(244, height-750, 100, 100)
+        opt3_rect = pygame.Rect(388, height-750, 100, 100)
+        opt4_rect = pygame.Rect(532, height-750, 100, 100)
+        opt5_rect = pygame.Rect(676, height-750, 100, 100)
+        opt6_rect = pygame.Rect(820, height-750, 100, 100)
+        opt7_rect = pygame.Rect(964, height-750, 100, 100)
+        opt8_rect = pygame.Rect(1108, height-750, 100, 100)
+        opt9_rect = pygame.Rect(1252, height-750, 100, 100)
+        opt10_rect = pygame.Rect(1396, height-750, 100, 100)
+        optr1_rect = pygame.Rect(820, height-625, 100, 100)
+        optr2_rect = pygame.Rect(964, height-625, 100, 100)
+        optr3_rect = pygame.Rect(1108, height-625, 100, 100)
+        optr4_rect = pygame.Rect(1252, height-625, 100, 100)
+        optr5_rect = pygame.Rect(1396, height-625, 100, 100)
+
+        back_rect = pygame.Rect(100, height-875, 100, 100)
+
+        # make a list that has all party member pictures and a separate list with all
+        # characters that have been recruited
+        party_member_pics = []
+        party_member_pics.append(char_left.get_stats_picture)
+        party_member_pics.append(char_right.get_stats_picture)
+
+        # background
+        self.background = retrieve_background("tavern")
+
+        while True:
+            # background stuff
+            self.screen.fill(black)
+            self.i = blit_bg(self.i, self.background, self.background_move)
+
+            # set rect colors as black
+            color_1, color_2, color_3, color_4, color_5, color_6, color_7, color_8, color_9, color_10 = "BLACK", "BLACK", "BLACK", "BLACK", "BLACK", "BLACK", "BLACK", "BLACK", "BLACK", "BLACK" 
+            color_r1, color_r2, color_r3, color_r4, color_r5 = "PINK", "PINK", "PINK", "PINK", "PINK"
+
+            active_rank = None
+            r_active_rank = None
+            # Make back rectangle red if you hover over it
+            if opt1_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 1:
+                color_1 = self.color_active
+                active_rank = 0
+            if opt2_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 2:
+                color_2 = self.color_active
+                active_rank = 1
+            if opt3_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 3:
+                color_3 = self.color_active
+                active_rank = 2
+            if opt4_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 4:
+                color_4 = self.color_active
+                active_rank = 3
+            if opt5_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 5:
+                color_5 = self.color_active
+                active_rank = 4
+            if opt6_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 6:
+                color_6 = self.color_active
+                active_rank = 5
+            if opt7_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 7:
+                color_7 = self.color_active
+                active_rank = 6
+            if opt8_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 8:
+                color_8 = self.color_active
+                active_rank = 7
+            if opt9_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 9:
+                color_9 = self.color_active
+                active_rank = 8
+            if opt10_rect.collidepoint(pygame.mouse.get_pos()) and bond_rank >= 10:
+                color_10 = self.color_active
+                active_rank = 9
+            if optr1_rect.collidepoint(pygame.mouse.get_pos()) and r_bond_rank >= 1:
+                color_r1 = self.color_active
+                r_active_rank = 1
+            if optr2_rect.collidepoint(pygame.mouse.get_pos()) and r_bond_rank >= 2:
+                color_r2 = self.color_active
+                r_active_rank = 2
+            if optr3_rect.collidepoint(pygame.mouse.get_pos()) and r_bond_rank >= 3:
+                color_r3 = self.color_active
+                r_active_rank = 3
+            if optr4_rect.collidepoint(pygame.mouse.get_pos()) and r_bond_rank >= 4:
+                color_r4 = self.color_active
+                r_active_rank = 4
+            if optr5_rect.collidepoint(pygame.mouse.get_pos()) and r_bond_rank >= 5:
+                color_r5 = self.color_active
+                r_active_rank = 5
+
+            if active_rank != None or r_active_rank != None:
+                description = self.dialog.get_dialog_description(char_left.get_name(), char_right.get_name(), self.main_character.get_name(), active_rank, r_active_rank)
+            else:
+                description = "Please select a rank to view."
+
+            # Name of current party member
+            char_left_name = char_left.get_name()
+            char_right_name = char_right.get_name()
+
+            # Party member portrait
+            image1 = char_left.get_stats_picture()
+            if char_left_name in ["Henrietta", "N. Steen"]:
+                blit_image((width, height), width-1650, height/2/2-350, image1, 1,1,1)
+            elif char_left_name in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
+                blit_image((width, height), width-1600, height/2/2-300, image1, 1,1,1)
+            else:    
+                blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
+
+            # Party member portrait
+            image2 = char_right.get_stats_picture()
+            if char_right_name in ["Henrietta", "N. Steen"]:
+                blit_image((width, height), width-450, height/2/2-350, image2, 1,1,1)
+            elif char_right_name in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
+                blit_image((width, height), width-400, height/2/2-300, image2, 1,1,1)
+            else:    
+                blit_image((width, height), width-540, height/2/2-50, image2, 1,1,1)
+
+            image2 = pygame.image.load("images/leftarrow.png")
+            blit_image((width, height), 100, 775, image2, 1,1,1)
+
+            # draw support boxes depending on the rank
+            if bond_rank > 0:
+                gl_text_name(self.font, color_1, cgls(100, width), cgls(200, width), cgls(650, height), cgls(750, height), "1", 1, .945)
+            if bond_rank > 1:
+                gl_text_name(self.font, color_2, cgls(244, width), cgls(344, width), cgls(650, height), cgls(750, height), "2", 1, .945)
+            if bond_rank > 2:
+                gl_text_name(self.font, color_3, cgls(388, width), cgls(488, width), cgls(650, height), cgls(750, height), "3", 1, .945)
+            if bond_rank > 3:
+                gl_text_name(self.font, color_4, cgls(532, width), cgls(632, width), cgls(650, height), cgls(750, height), "4", 1, .945)
+            if bond_rank > 4:
+                gl_text_name(self.font, color_5, cgls(676, width), cgls(776, width), cgls(650, height), cgls(750, height), "5", 1, .945)
+            if bond_rank > 5:
+                gl_text_name(self.font, color_6, cgls(820, width), cgls(920, width), cgls(650, height), cgls(750, height), "6", 1, .945)
+            if bond_rank > 6:
+                gl_text_name(self.font, color_7, cgls(964, width), cgls(1064, width), cgls(650, height), cgls(750, height), "7", 1, .945)
+            if bond_rank > 7:
+                gl_text_name(self.font, color_8, cgls(1108, width), cgls(1208, width), cgls(650, height), cgls(750, height), "8", 1, .945)
+            if bond_rank > 8:
+                gl_text_name(self.font, color_9, cgls(1252, width), cgls(1352, width), cgls(650, height), cgls(750, height), "9", 1, .945)
+            if bond_rank > 9:
+                gl_text_name(self.font, color_10, cgls(1396, width), cgls(1496, width), cgls(650, height), cgls(750, height), "10", 1, .945)
+            if r_bond_rank > 0:
+                gl_text_name(self.font, color_r1, cgls(820, width), cgls(920, width), cgls(525, height), cgls(625, height), "1", 1, .94)
+            if r_bond_rank > 1:
+                gl_text_name(self.font, color_r2, cgls(964, width), cgls(1064, width), cgls(525, height), cgls(625, height), "2", 1, .94)
+            if r_bond_rank > 2:
+                gl_text_name(self.font, color_r3, cgls(1108, width), cgls(1208, width), cgls(525, height), cgls(625, height), "3", 1, .94)
+            if r_bond_rank > 3:
+                gl_text_name(self.font, color_r4, cgls(1252, width), cgls(1352, width), cgls(525, height), cgls(625, height), "4", 1, .94)
+            if r_bond_rank > 4:
+                gl_text_name(self.font, color_r5, cgls(1396, width), cgls(1496, width), cgls(525, height), cgls(625, height), "5", 1, .94)
+
+            gl_text_name(self.font, "PINK", cgls(width/2+400, width), cgls(width/2-400, width), cgls(height-600, height), cgls(height-650, height), "RANK " + str(bond_rank), 1, 1.14)
+            gl_text_name(self.font, "BLACK", cgls(width/2-200, width), cgls(width/2-400, width), cgls(height-550, height), cgls(height-600, height), char_left_name, 1, 1.12)
+            gl_text_name(self.font, "BLACK", cgls(width/2+400, width), cgls(width/2+200, width), cgls(height-550, height), cgls(height-600, height), char_right_name, 1, 1.12)
+            gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1200, width), cgls(width-400, width), cgls(height-650, height), -.999999, description, .95, 2.15, self.level)
+
+            # handle events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if back_rect.collidepoint(event.pos):
+                        return
                     
 
             pygame.display.flip()
@@ -1568,6 +1746,7 @@ class MainGame():
         self.characters[0].set_pictures_mc(self.mc_for_save[0])
         self.character_names = self.data[24]
         self.npc_names = self.data[25]
+        self.dialog = dia.Dialog(self.mc_for_save[1])
 
     def set_char_lists(self):
         c = self.characters

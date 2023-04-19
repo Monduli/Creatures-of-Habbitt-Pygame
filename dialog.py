@@ -314,4 +314,44 @@ class Dialog():
             if state == "FINISHED":
                 return self.recruit_keeper
             elif state == "DEAD":
-                return self.intro_cave_loss    
+                return self.intro_cave_loss   
+
+    def get_dialog_description(self, name1, name2, mc_name, active_rank, r_active_rank):
+        if name1 == mc_name or name2 == mc_name:
+            if name1 == "N. Steen" or name2 == "N. Steen":
+                dialog = [
+                    "N. Steen has shown you the ropes on how to communicate via the inn. He hopes that your relationship with him and the rest of the animals here can fluorish under this system.",
+                    "MC BEAR Rank 2",
+                    "MC BEAR Rank 3",
+                    "MC BEAR Rank 4",
+                    "MC BEAR Rank 5",
+                    "MC BEAR Rank 6",
+                    "MC BEAR Rank 7",
+                    "MC BEAR Rank 8",
+                    "MC BEAR Rank 9",
+                    "MC BEAR Rank 10",
+                    "MC BEAR ROM Rank 1",
+                    "MC BEAR ROM Rank 2",
+                    "MC BEAR ROM Rank 3",
+                    "MC BEAR ROM Rank 4",
+                    "MC BEAR ROM Rank 5"
+                ]
+            if name1 == "Henrietta" or name2 == "Henrietta":
+                dialog = [
+                    "Henrietta has confided in you her concerns about her husband's wellbeing. You decided to go rescue him from his own devices.",
+                    "MC HENRIETTA Rank 2",
+                    "MC HENRIETTA Rank 3",
+                    "MC HENRIETTA Rank 4",
+                    "MC HENRIETTA Rank 5",
+                    "MC HENRIETTA Rank 6",
+                    "MC HENRIETTA Rank 7",
+                    "MC HENRIETTA Rank 8",
+                    "MC HENRIETTA Rank 9",
+                    "MC HENRIETTA Rank 10",
+                    "MC HENRIETTA ROM Rank 1",
+                    "MC HENRIETTA ROM Rank 2",
+                    "MC HENRIETTAR ROM Rank 3",
+                    "MC HENRIETTA ROM Rank 4",
+                    "MC HENRIETTA ROM Rank 5"
+                ]
+        return dialog[active_rank]

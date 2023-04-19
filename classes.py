@@ -36,6 +36,8 @@ class Character:
         self.recruited = False
         self.num = 0
         self.bonds_to_next = [100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000]
+        self.rom_bond_rank = 0
+        self.romanced = False
 
         # bonds list:
         # [0] - Main Character (M/F)
@@ -150,6 +152,15 @@ class Character:
     
     def get_level(self):
         return self.level
+    
+    def get_romanced(self):
+        return self.romanced
+    
+    def get_rom_bond_rank(self, rom):
+        if rom == True:
+            return self.rom_bond_rank
+        else:
+            return 0
 
     def set_hp(self, value):
         self.hp = value
