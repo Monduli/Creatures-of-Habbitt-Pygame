@@ -506,6 +506,7 @@ class MatchGame(object):
                     self.p_text = "Everyone leveled up!"
                 elif len(leveled_up) > 0:
                     for x in range(len(leveled_up)):
+                        character = leveled_up[x]
                         if x == len(leveled_up) - 1:
                             lup_string += "and " + character + " leveled up!"
                         elif len(leveled_up) > 2:
