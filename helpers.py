@@ -671,64 +671,64 @@ def add_char(char):
         rayna = Rayna([15, 10, 10, 10, 10, 10])
         return rayna
     
-def which_num_party_member_bonds(m_n, mc_name):
-    # bonds list:
-        # [0] - Main Character (M/F)
-        # [1] - Bear N. Steen (M)
-        # [2] - Radish Rabbit (F)
-        # [3] - Gil Grapefart (M)
-        # [4] - Lam'baste Lamb (F)
-        # [5] - Sunny Spider (F)
-        # [6] - Oscar Lion (M)
-        # [7] - Hans Horse (M)
-        # [8] - Sidney Shark (F)
-        # [9] - None
-        # [10] - Hollow
-        # [11] - Henrietta
-        # [12] - Grilla
-        # [13] - Dane
-        # [14] - Rayna
-        # [15] - None
-        # [16] - None
-        # [17] - None
-        # [18] - None
-        # [19] - None
-        # [20] - None
-        # [21] - None
-    if m_n == mc_name:
-        return 0
-    if m_n == "N. Steen":
-        return 1
-    if m_n == "Radish":
-        return 2
-    if m_n == "Grapefart":
-        return 3
-    if m_n == "Lam'baste":
-        return 4
-    if m_n == "Sunny":
-        return 5
-    if m_n == "Oscar":
-        return 6
-    if m_n == "Hans":
-        return 7
-    if m_n == "Sidney":
-        return 8
-    if m_n == "TBH":
-        return 9
-    if m_n == "Hollow":
-        return 10
-    if m_n == "Henrietta":
-        return 11
-    if m_n == "Grilla":
-        return 12
-    if m_n == "Dane":
-        return 13
-    if m_n == "Rayna":
-        return 14
-    if m_n == "TBH":
-        return 15
-    if m_n == "TBH":
-        return 16
+def which_num_party_member(m_n, mc_name):
+        # bonds list:
+            # [0] - Main Character (M/F)
+            # [1] - Bear N. Steen (M)
+            # [2] - Radish Rabbit (F)
+            # [3] - Gil Grapefart (M)
+            # [4] - Lam'baste Lamb (F)
+            # [5] - Sunny Spider (F)
+            # [6] - Oscar Lion (M)
+            # [7] - Hans Horse (M)
+            # [8] - Sidney Shark (F)
+            # [9] - None
+            # [10] - Hollow
+            # [11] - Henrietta
+            # [12] - Grilla
+            # [13] - Dane
+            # [14] - Rayna
+            # [15] - None
+            # [16] - None
+            # [17] - None
+            # [18] - None
+            # [19] - None
+            # [20] - None
+            # [21] - None
+        if m_n == mc_name:
+            return 0
+        if m_n == "N. Steen":
+            return 1
+        if m_n == "Radish":
+            return 2
+        if m_n == "Grapefart":
+            return 3
+        if m_n == "Lam'baste":
+            return 4
+        if m_n == "Sunny":
+            return 5
+        if m_n == "Oscar":
+            return 6
+        if m_n == "Hans":
+            return 7
+        if m_n == "Sidney":
+            return 8
+        if m_n == "TBH":
+            return 9
+        if m_n == "Hollow":
+            return 10
+        if m_n == "Henrietta":
+            return 11
+        if m_n == "Grilla":
+            return 12
+        if m_n == "Dane":
+            return 13
+        if m_n == "Rayna":
+            return 14
+        if m_n == "TBH":
+            return 15
+        if m_n == "TBH":
+            return 16
 
 if __name__ == "__main__":
     print("This is the helper file. Do not run this directly.")

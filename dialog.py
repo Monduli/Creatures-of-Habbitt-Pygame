@@ -274,6 +274,67 @@ class Dialog():
             [None, "He smiles at you and waddles away."],
             [None, "To Town"]
             ]]
+        
+        self.mc_bear_bond_dialog = [
+            # Rank 1
+            [
+            [
+            [p, "So he just wanted me to ring this bell, huh?"],
+            [None, "You ring the bell in the inn. Like magic, Bear wanders in and sits down at a table. He beckons you to come over, which you do."],
+            ["N. Steen", "Hmm? Oh, your highness."],
+            [None, "He looks around as if he wasn't expecting you to walk up."],
+            ["N. Steen", "Is there anything I can do for you?"],
+            [p, "Well, you did say you wanted me to test out the inn system to see how it works."],
+            ["N. Steen", "Ah! Yes, that I did, that I did. Do you find it to your liking?"],
+            [p, "I suppose I do. It certainly got you in here fast."],
+            ["N. Steen", "Like I said, it's magic. You hear a little jingle in your head and that way you know you should come over here."],
+            [p, "A jingle? Is it pleasant?"],
+            ["N. Steen", "Um... well, that's really in the eye of the beholder, I think. Here, let me ring the bell for you."],
+            [None, "He walks up to the bell at the counter and rings it..."],
+            [None, "Deep in your mind, you hear something. It's hard to make out, but it sounds like... bees?"],
+            [None, "You instinctively swat at your ear trying to get the noise to go away, but it just disappears after some time."],
+            [p, "Bees? Really?!"],
+            ["N. Steen", "Ah, yes. So, the noise you hear is relevant to who rings the bell looking for you."],
+            ["N. Steen", "As I am a bear, you hear bees, as bees like honey, and this bell's creation must be some kind of sick joke."],
+            [p, "What, you don't like honey or something?"],
+            ["N. Steen", "Not especially. But I do not choose the 'ringtone' of the bell. It's some kind of magic that I don't quite understand."],
+            [p, "Well, you are quite... martial. I wouldn't really expect you to understand magic."],
+            ["N. Steen", "What is that supposed to mean? Where I come from, we must study all topics to achieve some sort of understanding in our work."],
+            [p, "Where exactly is it that you're from?"],
+            ["N. Steen", "Now, now, that is not important. I'm from Habbitt now. My past is something we can explore in the future, perhaps, but not now."],
+            [None, "Bear's response is abrupt and leaves you wondering what he's hiding."],
+            [p, "Well, as long as you aren't here to kill me, you're an improvement from the last creature I worked with."],
+            ["N. Steen", "Killing you is not in my best interests. You are much more valuable to all of us alive."],
+            [p, "Lovely, just what I want to hear."],
+            ["N. Steen", "So you're acclimatizing well to your new digs?"],
+            [p, "My new what? I haven't really been around here for long enough to have an answer to that."],
+            ["N. Steen", "Ah, well. It will come in time. Now, if you'll excuse me, I need to go back to building."],
+            [None, "Bear acts like he's tipping a hat to you, despite the fact that his helmet doesn't really come off. He waddles back out of the inn."],
+            [None, "END INN DIALOG"]
+            ]],
+            # Rank 2
+            [[[None, "END INN DIALOG"]]],
+            # Rank 3
+            [[[None, "END INN DIALOG"]]],
+            # Rank 4
+            [[[None, "END INN DIALOG"]]],
+            # Rank 5
+            [[[None, "END INN DIALOG"]]],
+            # Rank 6
+            [[[None, "END INN DIALOG"]]],
+            # Rank 7
+            [[[None, "END INN DIALOG"]]],
+            # Rank 8
+            [[[None, "END INN DIALOG"]]],
+            # Rank 9
+            [[[None, "END INN DIALOG"]]],
+            # Rank 10
+            [[[None, "END INN DIALOG"]]]
+        ]
+
+        self.mc_henrietta_bond_dialog = [[[None, "END INN DIALOG"]]]
+
+        self.bear_henrietta_bond_dialog = [[[None, "END INN DIALOG"]]]
 
         self.intro_skip_to_town = [[
             [None, "[Character creation]"]
@@ -308,6 +369,9 @@ class Dialog():
                 return self.intro_skip_to_town
             case "to_town":
                 return self.to_town
+            case "mc_bear_rank_1":
+                return self.mc_bear_bond_dialog[1]
+                
 
     def process_state(self, dungeon, state):
         if dungeon == "cave":
@@ -319,8 +383,8 @@ class Dialog():
     def get_dialog_description(self, name1, name2, mc_name, active_rank, r_active_rank):
         if name1 == mc_name or name2 == mc_name:
             if name1 == "N. Steen" or name2 == "N. Steen":
-                dialog = [
-                    "N. Steen has shown you the ropes on how to communicate via the inn. He hopes that your relationship with him and the rest of the animals here can fluorish under this system.",
+                descriptions = [
+                    "N. Steen has shown you the ropes on how to communicate via the inn. You also learned that he has a past he won't share with you, and he dislikes honey, unlike other bears (according to him).",
                     "MC BEAR Rank 2",
                     "MC BEAR Rank 3",
                     "MC BEAR Rank 4",
@@ -337,7 +401,7 @@ class Dialog():
                     "MC BEAR ROM Rank 5"
                 ]
             if name1 == "Henrietta" or name2 == "Henrietta":
-                dialog = [
+                descriptions = [
                     "Henrietta has confided in you her concerns about her husband's wellbeing. You decided to go rescue him from his own... devices.",
                     "MC HENRIETTA Rank 2",
                     "MC HENRIETTA Rank 3",
@@ -351,6 +415,6 @@ class Dialog():
                     None, None, None, None, None
                 ]
         if active_rank != None:
-            return dialog[active_rank]
+            return descriptions[active_rank]
         else:
-            return dialog[r_active_rank]
+            return descriptions[r_active_rank]

@@ -38,9 +38,7 @@ class Character:
         self.bonds_to_next = [100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 10000000000, 100000000000]
         self.rom_bond_rank = 0
         self.romanced = False
-        self.mc_conversations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.bear_conversations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.henrietta_conversations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.conversation_completeness = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0] for x in range(22)]
 
         # bonds list:
         # [0] - Main Character (M/F)
@@ -301,52 +299,7 @@ class Character:
         self.calculate_stats()
 
     def add_support_points(self, target, points, mcname):
-        if target == mcname:
-            p = 0
-        elif target == "N. Steen":
-            p = 1
-        elif target == "Radish":
-            p = 2
-        elif target == "Grapefart":
-            p = 3
-        elif target == "Lam'baste":
-            p = 4
-        elif target == "Sunny":
-            p = 5
-        elif target == "Victor":
-            p = 6
-        elif target == "Donkey":
-            p = 7
-        elif target == "Sidney":
-            p = 8
-        elif target == "9":
-            p = 9
-        elif target == "Hollow":
-            p = 10
-        elif target == "Henrietta":
-            p = 11
-        elif target == "Grilla":
-            p = 12
-        elif target == "Dane":
-            p = 13
-        elif target == "Rayna":
-            p = 14
-        elif target == "15":
-            p = 15
-        elif target == "16":
-            p = 16
-        elif target == "17":
-            p = 17
-        elif target == "18":
-            p = 18
-        elif target == "19":
-            p = 19
-        elif target == "N. Stain":
-            p = 20
-        elif target == "Juliette":
-            p = 21
-        else:
-            p = 0
+        p = self.which_num_party_member_bonds(target, mcname)
         
         self.bonds[p][1] += points
         
@@ -379,19 +332,72 @@ class Character:
         else:
             return False
         
+    def which_num_party_member_bonds(self, m_n, mc_name):
+        # bonds list:
+            # [0] - Main Character (M/F)
+            # [1] - Bear N. Steen (M)
+            # [2] - Radish Rabbit (F)
+            # [3] - Gil Grapefart (M)
+            # [4] - Lam'baste Lamb (F)
+            # [5] - Sunny Spider (F)
+            # [6] - Oscar Lion (M)
+            # [7] - Hans Horse (M)
+            # [8] - Sidney Shark (F)
+            # [9] - None
+            # [10] - Hollow
+            # [11] - Henrietta
+            # [12] - Grilla
+            # [13] - Dane
+            # [14] - Rayna
+            # [15] - None
+            # [16] - None
+            # [17] - None
+            # [18] - None
+            # [19] - None
+            # [20] - None
+            # [21] - None
+        if m_n == mc_name:
+            return 0
+        if m_n == "N. Steen":
+            return 1
+        if m_n == "Radish":
+            return 2
+        if m_n == "Grapefart":
+            return 3
+        if m_n == "Lam'baste":
+            return 4
+        if m_n == "Sunny":
+            return 5
+        if m_n == "Oscar":
+            return 6
+        if m_n == "Hans":
+            return 7
+        if m_n == "Sidney":
+            return 8
+        if m_n == "TBH":
+            return 9
+        if m_n == "Hollow":
+            return 10
+        if m_n == "Henrietta":
+            return 11
+        if m_n == "Grilla":
+            return 12
+        if m_n == "Dane":
+            return 13
+        if m_n == "Rayna":
+            return 14
+        if m_n == "TBH":
+            return 15
+        if m_n == "TBH":
+            return 16
+        
     def get_conversation_completeness(self, name, mc_name):
-        if name == mc_name:
-            return self.mc_conversations
-        if name == "N. Steen":
-            return self.bear_conversations
-        elif name == "Radish":
-            return self.bear_conversations
-        elif name == "Grapefart":
-            return self.bear_conversations
-        elif name == "Lambaste":
-            return self.bear_conversations
-        elif name == "Henrietta":
-            return self.henrietta_conversations
+        p = self.which_num_party_member_bonds(name, mc_name)
+        return self.conversation_completeness[p]
+    
+    def set_conversation_completeness(self, name, mc_name, rank):
+        p = self.which_num_party_member_bonds(name, mc_name)
+        self.conversation_completeness[p][rank-1] = 1
 
 class MainCharacter(Character):
     def __init__(self, stats, poss_image=None, name=None) -> None:

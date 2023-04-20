@@ -32,6 +32,7 @@ class MainGame():
         self.save_object = None
         self.color_passive = "BLACK" 
         self.color_active = "RED"
+        self.user_text = None
         self.clock = pygame.time.Clock()
         pygame.mixer.init()
         self.boosted = 0
@@ -151,7 +152,7 @@ class MainGame():
 
         pygame.display.flip()
 
-    def in_dialog(self, skip=False, progress=1):
+    def in_dialog(self, first=False, skip=False, progress=1, rank=False):
 
         #### SETUP ####
         speed = [3, 0]
@@ -160,8 +161,9 @@ class MainGame():
         if self.background == None:
             self.background = retrieve_background("cave")
 
-        self.user_text = [[[None, "[Character creation]"]
-        ], "intro_3_quick"]
+        if first == True:
+            self.user_text = [[[None, "[Character creation]"]
+            ], "intro_3_quick"]
 
         self.advance = 0
 
@@ -172,13 +174,14 @@ class MainGame():
 
         self.slots = [0, 0, 0]
 
-        curr_text = self.user_text[0][self.advance][1]
-        if curr_text in ["inn"]:
-            choice = self.inn_menu()
+        if first == True:
+            curr_text = self.user_text[0][self.advance][1]
+            if curr_text in ["inn"]:
+                choice = self.inn_menu()
 
         if skip != False:
-            self.dialog = dia.Dialog("Player")
             if skip == "To Town":
+                self.dialog = dia.Dialog("Dogdude")
                 self.user_text = self.dialog.intro_skip_to_town
             elif skip == "Load":
                 self.user_text = self.dialog.to_town
@@ -189,6 +192,9 @@ class MainGame():
             self.pick_dialog()            
             self.screen.fill(black)
             self.i = blit_bg(self.i, self.background, self.background_move)
+
+            if self.user_text[0][self.advance][1] == "END INN DIALOG":
+                return
             
             if self.move_to_crawl == 1:
                 self.fade_over = 0
@@ -397,9 +403,6 @@ class MainGame():
             # create and add Henrietta as we will rescue her before returning to town the first time
             self.npc_names = ["Henrietta", None, None, None, None, None, None, None, None, None]
             henrietta = Henrietta([15, 10, 10, 10, 10, 10])
-            henrietta.set_name("Henrietta")
-            henrietta.set_portrait("hippo_port_100.png")
-            henrietta.set_recruited(True)
             self.npc_characters = [henrietta, None, None, None, None, None, None, None, None, None]
             self.characters[11] = henrietta
         
@@ -732,7 +735,7 @@ class MainGame():
             blit_image((width, height), width-200, height/2-(height/8)-50, image3, 1,1,1)
 
             # get current rank for selected pair
-            num = which_num_party_member_bonds(char_right.get_name(), self.main_character.get_name())
+            num = char_right.which_num_party_member_bonds(char_right.get_name(), self.main_character.get_name())
             bond_rank = char_left.get_bond_rank(num)
             r_bond_rank = 0
 
@@ -899,14 +902,23 @@ class MainGame():
                 color_r5 = self.color_active
                 r_active_rank = 5
 
-            complete = char_left.get_conversation_completeness(char_right.get_name(), self.main_character.get_name())
+            
             if active_rank != None or r_active_rank != None:
-                if complete[active_rank] == 1:
+                complete = char_left.get_conversation_completeness(char_right.get_name(), self.main_character.get_name())
+                current_completeness = complete[active_rank]
+                if current_completeness == 1:
                     description = self.dialog.get_dialog_description(char_left.get_name(), char_right.get_name(), self.main_character.get_name(), active_rank, r_active_rank)
                 else:
                     description = char_right.get_name() + " would like to speak with you."
+                previous_complete = True
+                if active_rank > 0:
+                    before = complete[active_rank-1]
+                    if before == 0:
+                        previous_completed = False
             else:
                 description = "Please select a rank to view."
+
+            
 
             # Name of current party member
             char_left_name = char_left.get_name()
@@ -974,6 +986,27 @@ class MainGame():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if current_completeness == 0 and previous_complete:
+                        if opt1_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 1)
+                        if opt2_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 2)
+                        if opt3_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 3)
+                        if opt4_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 4)
+                        if opt5_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 5)
+                        if opt6_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 6)
+                        if opt7_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 7)
+                        if opt8_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 8)
+                        if opt9_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 9)
+                        if opt10_rect.collidepoint(event.pos):
+                            self.handle_inn_dialog(char_left, char_right, 10)
                     if back_rect.collidepoint(event.pos):
                         return
                     
@@ -1380,7 +1413,7 @@ class MainGame():
                 if member != char_name:
                     if member != None:
                         # retrieve which number party member we're talking about
-                        party_member_num = which_num_party_member_bonds(member, self.main_character.get_name())
+                        party_member_num = which_num_party_member(member, self.main_character.get_name())
 
                         # calculate how many points are required to rank up
                         rank = char.get_bond_rank(party_member_num)
@@ -1662,12 +1695,12 @@ class MainGame():
             if option == "new_game":
                 self.progress = 1
                 self.main_menu_fade("Start_quick")
-                self.in_dialog()
+                self.in_dialog(True)
             elif option == "dialog skip":
                 self.name_global = "Dan"
                 self.progress = 2
                 self.main_menu_fade("Habbitt")
-                self.in_dialog("To Town", 0)
+                self.in_dialog(False, "To Town", 0)
             elif option == "load":
                 #check if load file exists
                 if os.path.isfile("save.txt"):
@@ -1678,7 +1711,7 @@ class MainGame():
                     #place player in location associated with progress (usually town)
                     self.distribute_data()
                     self.main_menu_fade("Habbitt")
-                    self.in_dialog("Load", self.progress)
+                    self.in_dialog(False, "Load", self.progress)
                 else:
                     print("Save file does not exist.")
             elif option == "exit":
@@ -1750,12 +1783,34 @@ class MainGame():
         self.characters[0].set_pictures_mc(self.mc_for_save[0])
         self.character_names = self.data[24]
         self.npc_names = self.data[25]
+        print(self.mc_for_save[1])
         self.dialog = dia.Dialog(self.mc_for_save[1])
 
     def set_char_lists(self):
         c = self.characters
         self.rom_characters = [c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10]]
         self.npc_characters = [c[11],c[12],c[13],c[14],c[15],c[16],c[17],c[18],c[19],c[20],c[21]]
+
+    def handle_inn_dialog(self, left, right, rank):
+        if left.get_name() == self.main_character.get_name():
+            if right.get_name() == "N. Steen":
+                self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
+            elif right.get_name() == "Henrietta":
+                self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
+        if left.get_name() == "N. Steen":
+            if right.get_name() == self.main_character.get_name():
+                self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
+            elif right.get_name() == "Henrietta":
+                self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
+        if left.get_name() == "Henrietta":
+            if right.get_name() == self.main_character.get_name():
+                self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
+            elif right.get_name() == "N. Steen":
+                self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
+        print(self.user_text)
+        self.in_dialog(False, False, self.progress)
+        left.set_conversation_completeness(right.get_name(), self.main_character.get_name(), rank)
+        right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)
 
 if __name__ == "__main__":
     MainGame().controller()
