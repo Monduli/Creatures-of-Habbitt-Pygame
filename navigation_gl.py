@@ -403,6 +403,7 @@ class MainGame():
             # create and add Henrietta as we will rescue her before returning to town the first time
             self.npc_names = ["Henrietta", None, None, None, None, None, None, None, None, None]
             henrietta = Henrietta([15, 10, 10, 10, 10, 10])
+            henrietta.set_recruited(1)
             self.npc_characters = [henrietta, None, None, None, None, None, None, None, None, None]
             self.characters[11] = henrietta
         
@@ -525,7 +526,7 @@ class MainGame():
 
     def save_game(self):
         """
-        Saves game using Pickle module (TODO: Currently crashes the game)
+        Saves game using Pickle module
         Input: None
         Returns: user_text for save game
         """
@@ -540,7 +541,8 @@ class MainGame():
             data[x] = [
                 c.get_hp(), c.get_physical_guard(), c.get_magical_guard(), c.get_physical_attack(), 
                 c.get_magic_attack(), c.get_quickness(), c.get_heartiness(), c.get_healing(),
-                c.get_chutzpah(), c.get_willpower(), c.get_xp(), c.get_bonds(), c.get_recruited(), c.get_level()
+                c.get_chutzpah(), c.get_willpower(), c.get_xp(), c.get_bonds(), c.get_recruited(), c.get_level(),
+                c.get_all_conv_comp()
             ]
         party_save = []
         for x in range(0, len(self.party)):
@@ -902,7 +904,8 @@ class MainGame():
                 color_r5 = self.color_active
                 r_active_rank = 5
 
-            
+            current_completeness = None
+            previous_complete = True
             if active_rank != None or r_active_rank != None:
                 complete = char_left.get_conversation_completeness(char_right.get_name(), self.main_character.get_name())
                 current_completeness = complete[active_rank]
@@ -910,15 +913,13 @@ class MainGame():
                     description = self.dialog.get_dialog_description(char_left.get_name(), char_right.get_name(), self.main_character.get_name(), active_rank, r_active_rank)
                 else:
                     description = char_right.get_name() + " would like to speak with you."
-                previous_complete = True
+                
                 if active_rank > 0:
                     before = complete[active_rank-1]
                     if before == 0:
                         previous_completed = False
             else:
                 description = "Please select a rank to view."
-
-            
 
             # Name of current party member
             char_left_name = char_left.get_name()
@@ -1764,6 +1765,7 @@ class MainGame():
                 c.set_bonds(self.data[x][11])
                 c.set_recruited(self.data[x][12])
                 c.set_level(self.data[x][13]) 
+                c.set_all_conv_comp(self.data[x][14])
         self.main_character = self.characters[0]
         self.party[0] = self.characters[self.data[22][0]] 
         if self.data[22][1] != None:

@@ -395,9 +395,15 @@ class Character:
         p = self.which_num_party_member_bonds(name, mc_name)
         return self.conversation_completeness[p]
     
+    def get_all_conv_comp(self):
+        return self.conversation_completeness
+    
     def set_conversation_completeness(self, name, mc_name, rank):
         p = self.which_num_party_member_bonds(name, mc_name)
         self.conversation_completeness[p][rank-1] = 1
+
+    def set_all_conv_comp(self, comp):
+        self.conversation_completeness = comp
 
 class MainCharacter(Character):
     def __init__(self, stats, poss_image=None, name=None) -> None:

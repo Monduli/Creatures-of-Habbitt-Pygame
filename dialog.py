@@ -277,8 +277,7 @@ class Dialog():
         
         self.mc_bear_bond_dialog = [
             # Rank 1
-            [
-            [
+            [[
             [p, "So he just wanted me to ring this bell, huh?"],
             [None, "You ring the bell in the inn. Like magic, Bear wanders in and sits down at a table. He beckons you to come over, which you do."],
             ["N. Steen", "Hmm? Oh, your highness."],
@@ -332,10 +331,91 @@ class Dialog():
             [[[None, "END INN DIALOG"]]]
         ]
 
-        self.mc_henrietta_bond_dialog = [[[None, "END INN DIALOG"]]]
+        self.mc_henrietta_bond_dialog = [
+            [[
+            [None, "Henrietta dialog 1."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 2."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 3."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 4."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 5."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 6."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 7."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 8."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 9."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Henrietta dialog 10."],
+            [None, "END INN DIALOG"]
+            ]]
+            ]
 
-        self.bear_henrietta_bond_dialog = [[[None, "END INN DIALOG"]]]
-
+        self.bear_henrietta_bond_dialog = [
+            [[
+            [None, "Bear + Henrietta dialog 1."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 2."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 3."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 4."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 5."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 6."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 7."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 8."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 9."],
+            [None, "END INN DIALOG"]
+            ]],
+            [[
+            [None, "Bear + Henrietta dialog 10."],
+            [None, "END INN DIALOG"]
+            ]],
+            ]
         self.intro_skip_to_town = [[
             [None, "[Character creation]"]
         ], "to_town"]
@@ -412,6 +492,21 @@ class Dialog():
                     "MC HENRIETTA Rank 8",
                     "MC HENRIETTA Rank 9",
                     "MC HENRIETTA Rank 10",
+                    None, None, None, None, None
+                ]
+        elif name1 == "N. Steen" or name2 == "N. Steen":
+            if name1 == "Henrietta" or name2 == "Henrietta":
+                descriptions = [
+                    "N. Steen has shown you the ropes on how to communicate via the inn. You also learned that he has a past he won't share with you, and he dislikes honey, unlike other bears (according to him).",
+                    "BEAR HENRIETTA Rank 2",
+                    "BEAR HENRIETTA Rank 3",
+                    "BEAR HENRIETTA Rank 4",
+                    "BEAR HENRIETTA Rank 5",
+                    "BEAR HENRIETTA Rank 6",
+                    "BEAR HENRIETTA Rank 7",
+                    "BEAR HENRIETTA Rank 8",
+                    "BEAR HENRIETTA Rank 9",
+                    "BEAR HENRIETTA Rank 10",
                     None, None, None, None, None
                 ]
         if active_rank != None:
