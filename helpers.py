@@ -415,6 +415,13 @@ def blit_image(display_wh, x, y, img, r, g, b):
     # disable blending
     glDisable(GL_BLEND)
 
+def blits_images(blit_sequence, display_wh):
+    for z in blit_sequence:
+        x = z[1].left
+        y = z[1].bottom
+        blit_image(display_wh, x, y, z[0], 1,1,1)
+    return blit_sequence
+
 def rect_ogl(color, left, right, bot, top, debug=0):
         shape_color(color)
         vertices = np.array([

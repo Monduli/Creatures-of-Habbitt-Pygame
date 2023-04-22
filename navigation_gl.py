@@ -1081,11 +1081,11 @@ class MainGame():
                     if dungeon_1_rect.collidepoint(event.pos):
                         return self.load_dungeon("cave")
                     if dungeon_2_rect.collidepoint(event.pos) and self.progress > 1:
-                        return self.load_dungeon("Temple")
+                        return self.load_dungeon("temple")
                     if dungeon_3_rect.collidepoint(event.pos) and self.progress > 2:
-                        return self.load_dungeon("Grasslands")
+                        return self.load_dungeon("grasslands")
                     if dungeon_4_rect.collidepoint(event.pos) and self.progress > 3:
-                        return self.load_dungeon("Forest")
+                        return self.load_dungeon("forest")
                     if leave_rect.collidepoint(event.pos):
                         return "LEFT"
 
@@ -1627,7 +1627,7 @@ class MainGame():
             self.clock.tick(60)
 
     def load_dungeon(self, dungeon):
-        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), "cave", True)
+        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), dungeon, True)
         self.counter_x = 1600
         self.main_menu_fade("Habbitt", False)
         return state

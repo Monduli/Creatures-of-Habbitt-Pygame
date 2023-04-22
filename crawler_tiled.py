@@ -5,9 +5,37 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import match
 import dungeon_layouts as dl
+from pytmx.util_pygame import load_pygame
 
 size = width, height = 1600, 900
 FPS = 60
+
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, pos, surf, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_rect(topleft = pos)
+
+class TileGroup(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+
+    def draw_gl(self, display_wh, surface):
+        sprites = self.sprites()
+        if sprites != None:
+            if hasattr(surface, "blits"):
+                self.spritedict.update(
+                    zip(sprites, blits_images(((spr.image, spr.rect) for spr in sprites), display_wh))
+                )
+            else:
+                for spr in sprites:
+                    self.spritedict[spr] = blit_image(display_wh, spr.rect.left, spr.rect.top, spr.image, 1,1,1)
+            self.lostsprites = []
+            dirty = self.lostsprites
+
+            return dirty
+        else:
+            return "Empty"
 
 class Creature():
     def __init__(self, display, x, y, image, animation_frames):
@@ -510,6 +538,8 @@ class Crawler():
         #glTranslatef(0.0,0.0,-10.0)
 
         self.blit_bg_camera(dungeon_rooms[current_room][0], False)
+        screen.fill('black')
+        sprite_group.draw_gl(size, screen)
         if dungeon_enemies[current_room][1] == None:
             self.player.draw()
         elif self.player.y < self.enemy.y:
@@ -818,7 +848,25 @@ if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
-    party = boost_party()
+    party = fill_party()
+    party = boost_party(party)
     dungeon = "cave"
+
+    # Tile Code
+    tmx_data = load_pygame("data/tmx/cave1.tmx")
+    sprite_group = TileGroup()
+
+    for layer in tmx_data.layers:
+        if hasattr(layer, 'data'):
+            for x, y, surf in layer.tiles():
+                pos = (x * 16, y * 16)
+                Tile(pos=pos, surf=surf, groups=sprite_group)
+
+    for obj in tmx_data.objects:
+        pos = obj.x, obj.y
+        if obj.image:
+            Tile(pos = pos, surf = obj.image, groups = sprite_group)
+
+    # Start game
     state = Crawler(screen).play(party, get_dungeon(dungeon), dungeon)
     print("Your final result was: " + state)
