@@ -6,36 +6,12 @@ from OpenGL.GLU import *
 import match
 import dungeon_layouts as dl
 from pytmx.util_pygame import load_pygame
+import sys
+from os import path
+import tiled_functions as tf
 
 size = width, height = 1600, 900
 FPS = 60
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, surf, groups):
-        super().__init__(groups)
-        self.image = surf
-        self.rect = self.image.get_rect(topleft = pos)
-
-class TileGroup(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-
-    def draw_gl(self, display_wh, surface):
-        sprites = self.sprites()
-        if sprites != None:
-            if hasattr(surface, "blits"):
-                self.spritedict.update(
-                    zip(sprites, blits_images(((spr.image, spr.rect) for spr in sprites), display_wh))
-                )
-            else:
-                for spr in sprites:
-                    self.spritedict[spr] = blit_image(display_wh, spr.rect.left, spr.rect.top, spr.image, 1,1,1)
-            self.lostsprites = []
-            dirty = self.lostsprites
-
-            return dirty
-        else:
-            return "Empty"
 
 class Creature():
     def __init__(self, display, x, y, image, animation_frames):
@@ -135,6 +111,7 @@ class Crawler():
         self.in_combat.set_volume(0)
         self.oo_combat.play(-1)
         self.in_combat.play(-1)
+        self.camera(1280, 720)
 
     def start_player(self):
         character = self.party[0]
@@ -144,6 +121,7 @@ class Crawler():
             image = pygame.transform.scale(image,(90, 160))
             animation_frames_player.append(image)
         self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon(), animation_frames_player)
+        self.camera = tf.Camera(self.map.width, self.map.height)
 
     def start_enemy(self):
         goblin_frames = [get_portrait("Goblin_Stand")]
@@ -170,7 +148,15 @@ class Crawler():
         pygame.quit()
         sys.exit()
 
+    def load_data(self):
+        self.game_folder = path.dirname(__file__)
+        self.map_folder = path.join(self.game_folder, 'data/tmx')
+        self.map = tf.TiledMap(path.join(self.map_folder, 'cave1.tmx'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+
     def play(self, party, dungeon, prefix, fade_in=False):
+        self.load_data()
         d = dl.get_dungeon_layout(prefix)
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
@@ -212,10 +198,6 @@ class Crawler():
 
         while True:
             enemy_port_name = dungeon_enemies[current_room][1]
-            left_door = pygame.Rect(447, 388, 50, 90)
-            top_door = pygame.Rect(650, 750, 150, 50)
-            right_door = pygame.Rect(1050, 430, 50, 90)
-            south_door = pygame.Rect(650, 100, 150, 50)
             
             now = pygame.time.get_ticks()
 
@@ -303,22 +285,22 @@ class Crawler():
                 in_play = 1
                 self.into_combat_transfer = 1  
 
-            if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
-                self.fade_dir = "fade_left"
-                direction = "left"
-                self.transfer = 1
-            if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][2] != None:
-                self.fade_dir = "fade_up"
-                direction = "up"
-                self.transfer = 1
-            if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][3] != None:
-                self.fade_dir = "fade_right"
-                direction = "right"
-                self.transfer = 1
-            if south_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][4] != None:
-                self.fade_dir = "fade_down"
-                direction = "down"
-                self.transfer = 1
+            # if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
+            #     self.fade_dir = "fade_left"
+            #     direction = "left"
+            #     self.transfer = 1
+            # if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][2] != None:
+            #     self.fade_dir = "fade_up"
+            #     direction = "up"
+            #     self.transfer = 1
+            # if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][3] != None:
+            #     self.fade_dir = "fade_right"
+            #     direction = "right"
+            #     self.transfer = 1
+            # if south_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][4] != None:
+            #     self.fade_dir = "fade_down"
+            #     direction = "down"
+            #     self.transfer = 1
 
             if self.transfer == 2:
                 if direction == "left":
@@ -432,12 +414,12 @@ class Crawler():
                     if event.button == 1:
                         pos = pygame.mouse.get_pos()
                         print(pos)
-                        if left_door.collidepoint(pos):
-                           print("Clicked on Left Door")
-                        if right_door.collidepoint(pos):
-                           print("Clicked on Right Door")
-                        if top_door.collidepoint(pos):
-                           print("Clicked on Top Door")
+                        # if left_door.collidepoint(pos):
+                        #    print("Clicked on Left Door")
+                        # if right_door.collidepoint(pos):
+                        #    print("Clicked on Right Door")
+                        # if top_door.collidepoint(pos):
+                        #    print("Clicked on Top Door")
                         tot = 0
                         for x in self.party:
                             if x != None:
@@ -465,7 +447,7 @@ class Crawler():
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
-                if (keys[pygame.K_UP] or keys[pygame.K_w]) and self.player.y < 750:
+                if (keys[pygame.K_UP] or keys[pygame.K_w]):
                     if self.speed_x != 0 and self.speed_y < 0:
                         self.speed_y = 0
                     if self.speed_y < 0:
@@ -474,7 +456,7 @@ class Crawler():
                         if self.speed_y < 10:
                             self.speed_y += 1
                     self.player.y += self.speed_y
-                if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.player.x > 485:
+                if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
                     if self.speed_y != 0 and self.speed_x > 0:
                         self.speed_x = 0
                     if self.speed_x == 1:
@@ -485,7 +467,7 @@ class Crawler():
                         if self.speed_x > -10:
                             self.speed_x -= 1
                     self.player.x += self.speed_x
-                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.player.x < 1055:
+                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
                     if self.speed_y != 0 and self.speed_x < 0:
                         self.speed_x = 0
                     if self.speed_x == -1:
@@ -496,7 +478,7 @@ class Crawler():
                         if self.speed_x < 10:
                             self.speed_x += 1
                     self.player.x += self.speed_x
-                if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.player.y > 143:
+                if (keys[pygame.K_DOWN] or keys[pygame.K_s]):
                     if self.speed_x != 0 and self.speed_y > 0:
                         self.speed_y = 0
                     if self.speed_y > 0:
@@ -537,9 +519,11 @@ class Crawler():
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
-        self.blit_bg_camera(dungeon_rooms[current_room][0], False)
-        screen.fill('black')
-        sprite_group.draw_gl(size, screen)
+        #self.blit_bg_camera(dungeon_rooms[current_room][0], False)
+        new_rect = self.camera.apply_rect(self.map_rect)
+        #blit_image(size, new_rect.x, new_rect.y, self.map_img, 1,1,1)
+        self.player.rect = self.camera.apply(self.player)
+        self.enemy.rect = self.camera.apply(self.enemy)
         if dungeon_enemies[current_room][1] == None:
             self.player.draw()
         elif self.player.y < self.enemy.y:
@@ -553,29 +537,18 @@ class Crawler():
         nums = [[width-400, width-310, width-220, width-130],[height-100]]
 
         glBegin(GL_QUADS)
-
-        #partyport_1 = rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][0]+90, width), top, bot)
-        #partyport_2 = rect_ogl("BLACK", cgls(nums[0][1], width), cgls(nums[0][1]+90, width), top, bot)
-        #partyport_3 = rect_ogl("BLACK", cgls(nums[0][2], width), cgls(nums[0][2]+90, width), top, bot)
-        #partyport_4 = rect_ogl("BLACK", cgls(nums[0][3], width), cgls(nums[0][3]+90, width), top, bot)
-        
         # "party text"
         rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
-        
-        # rectangle for "right door"
-        #rect_ogl("BLACK", cgls(1150, width), cgls(1100, width), cgls(430, height), cgls(530, height))
-        
+
         # if the stats box is expanded:
         if self.expand != 4:
             
             # draw the stats box
             rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
 
-        #left, right, bottom, top = 500,400,380,480
-        #rect_ogl("BLACK", cgls(width-left, width),cgls(width-right, width),cgls(height-bottom, height),cgls(height-top, height))
-
         glEnd()
         
+        # party member portrait rects (for clicking)
         self.party_ports = []
         port1_rect = pygame.Rect(nums[0][0],height-850,90,90)
         self.party_ports.append(port1_rect)
@@ -589,6 +562,7 @@ class Crawler():
             port4_rect = pygame.Rect(nums[0][3],height-850,90,90)
             self.party_ports.append(port4_rect)
 
+        # party member portrait pics
         shape_color("BLACK")
         if party[0] != None:    
             blit_image([width, height], width-400,height-100, party[0].get_portrait().convert_alpha(), 1, 1, 1)
@@ -666,13 +640,13 @@ class Crawler():
         if self.fade_dir == "fade_done":
             self.transfer = 0
 
+        self.camera.update(self.player)
         pygame.display.flip()
 
         return
     
     def blit_bg_camera(self, bg="cave.png", move=True):
         background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
-        background = pygame.transform.scale(background,(1600,900))
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
     def write_details_gl(self, party_member, nums, party):
@@ -750,16 +724,6 @@ class Crawler():
                 counter_x = 0
                 counter_y = 0
         return "not done"
-    
-    def scoot(self, counter_x):
-        transfer = 1
-        while transfer == 1:
-            blit_image([width, height], width+counter_x, 0, self.fade_image, 1, 1, 1)
-            print(counter_x)
-            counter_x += 1
-            pygame.display.flip()
-            if counter_x >= 1600:
-                transfer = 0
 
     def crawler_fade_out(self, counter_x, counter_y):
         self.fade_image = pygame.transform.scale(self.fade_image,(12800 - counter_x,7200 - counter_y))
@@ -851,21 +815,6 @@ if __name__ == '__main__':
     party = fill_party()
     party = boost_party(party)
     dungeon = "cave"
-
-    # Tile Code
-    tmx_data = load_pygame("data/tmx/cave1.tmx")
-    sprite_group = TileGroup()
-
-    for layer in tmx_data.layers:
-        if hasattr(layer, 'data'):
-            for x, y, surf in layer.tiles():
-                pos = (x * 16, y * 16)
-                Tile(pos=pos, surf=surf, groups=sprite_group)
-
-    for obj in tmx_data.objects:
-        pos = obj.x, obj.y
-        if obj.image:
-            Tile(pos = pos, surf = obj.image, groups = sprite_group)
 
     # Start game
     state = Crawler(screen).play(party, get_dungeon(dungeon), dungeon)

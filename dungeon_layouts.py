@@ -11,7 +11,7 @@ def get_dungeon_layout(dungeon_name):
         return [cave, cave_enemies]
 
 cave = [
-            ["testroom.png", 1, 2, 1, None], 
+            ["testroombig.png", 1, 2, 1, None], 
             ["testroom2.png", 0, 3, 0, None],
             ["testroom3.png", None, None, None, 0], 
             ["testroom4.png", None, "END", None, 2]
