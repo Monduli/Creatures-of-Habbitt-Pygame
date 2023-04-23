@@ -92,6 +92,7 @@ class Crawler():
         self.transfer_complete = 0
 
         self.enemy_set = 0
+        self.texID = None
 
     def start(self, prefix):
         goblin_frames = [get_portrait("Goblin_Stand")]
@@ -161,6 +162,8 @@ class Crawler():
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
 
+        self.texID = glGenTextures(1)
+
         accel_x, accel_y = 0, 0
 
         chase = 1
@@ -195,7 +198,8 @@ class Crawler():
         current_room = 0
         
         self.fade_image = pygame.transform.scale(self.fade_image,(1600,900))
-
+        self.gl_show_map()
+        
         while True:
             enemy_port_name = dungeon_enemies[current_room][1]
             
@@ -302,48 +306,48 @@ class Crawler():
             #     direction = "down"
             #     self.transfer = 1
 
-            if self.transfer == 2:
-                if direction == "left":
-                    if dungeon_rooms[current_room][1] == "END":
-                        self.oo_combat.stop()
-                        self.in_combat.stop()
-                        print("Dungeon Completed!")
-                        return "FINISHED"
-                    current_room = dungeon_rooms[current_room][1]
-                    self.player.x = 1000
-                    self.player.y = height/2
-                if direction == "up":
-                    if dungeon_rooms[current_room][2] == "END":
-                        self.oo_combat.stop()
-                        self.in_combat.stop()
-                        print("Dungeon Completed!")
-                        return "FINISHED"
-                    current_room = dungeon_rooms[current_room][2]
-                    self.player.y = 170
-                    self.player.x = width/2 - 50
-                if direction == "right":
-                    if dungeon_rooms[current_room][3] == "END":
-                        self.oo_combat.stop()
-                        self.in_combat.stop()
-                        print("Dungeon Completed!")
-                        return "FINISHED"
-                    current_room = dungeon_rooms[current_room][3]
-                    self.player.x = 500
-                    self.player.y = height/2
-                if direction == "down":
-                    if dungeon_rooms[current_room][4] == "END":
-                        self.oo_combat.stop()
-                        self.in_combat.stop()
-                        print("Dungeon Completed!")
-                        return "FINISHED"
-                    current_room = dungeon_rooms[current_room][4]
-                    self.player.y = 700
-                    self.player.x = width/2 - 50
-                if dungeon_enemies[current_room][1] != None:
-                    self.enemy.set_image(dungeon_enemies[current_room][1])
-                self.enemy_set = 0
-                self.enemy.can_chase = 1
-                self.transfer = 3
+            # if self.transfer == 2:
+            #     if direction == "left":
+            #         if dungeon_rooms[current_room][1] == "END":
+            #             self.oo_combat.stop()
+            #             self.in_combat.stop()
+            #             print("Dungeon Completed!")
+            #             return "FINISHED"
+            #         current_room = dungeon_rooms[current_room][1]
+            #         self.player.x = 1000
+            #         self.player.y = height/2
+            #     if direction == "up":
+            #         if dungeon_rooms[current_room][2] == "END":
+            #             self.oo_combat.stop()
+            #             self.in_combat.stop()
+            #             print("Dungeon Completed!")
+            #             return "FINISHED"
+            #         current_room = dungeon_rooms[current_room][2]
+            #         self.player.y = 170
+            #         self.player.x = width/2 - 50
+            #     if direction == "right":
+            #         if dungeon_rooms[current_room][3] == "END":
+            #             self.oo_combat.stop()
+            #             self.in_combat.stop()
+            #             print("Dungeon Completed!")
+            #             return "FINISHED"
+            #         current_room = dungeon_rooms[current_room][3]
+            #         self.player.x = 500
+            #         self.player.y = height/2
+            #     if direction == "down":
+            #         if dungeon_rooms[current_room][4] == "END":
+            #             self.oo_combat.stop()
+            #             self.in_combat.stop()
+            #             print("Dungeon Completed!")
+            #             return "FINISHED"
+            #         current_room = dungeon_rooms[current_room][4]
+            #         self.player.y = 700
+            #         self.player.x = width/2 - 50
+            #     if dungeon_enemies[current_room][1] != None:
+            #         self.enemy.set_image(dungeon_enemies[current_room][1])
+            #     self.enemy_set = 0
+            #     self.enemy.can_chase = 1
+            #     self.transfer = 3
 
 
             if self.into_combat_transfer == 1:
@@ -520,8 +524,8 @@ class Crawler():
         #glTranslatef(0.0,0.0,-10.0)
 
         #self.blit_bg_camera(dungeon_rooms[current_room][0], False)
-        new_rect = self.camera.apply_rect(self.map_rect)
-        #blit_image(size, new_rect.x, new_rect.y, self.map_img, 1,1,1)
+        #self.map_rect = self.camera.apply_rect(self.map_rect)
+        blit_image(size, 0, 0, self.map_img, 1,1,1)
         self.player.rect = self.camera.apply(self.player)
         self.enemy.rect = self.camera.apply(self.enemy)
         if dungeon_enemies[current_room][1] == None:
@@ -532,6 +536,8 @@ class Crawler():
         else:
             self.player.draw()
             self.enemy.draw()
+
+        # Draw Party Info START
         top = cgls(height-100, height)
         bot = cgls(height-10, height)
         nums = [[width-400, width-310, width-220, width-130],[height-100]]
@@ -584,6 +590,9 @@ class Crawler():
 
         gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
 
+        # Draw Party Text END
+
+        # Handle Fades
         if self.into_combat_transfer == 1:
             blit_image([width, height], width-self.counter_x, 0, self.fade_image, 1, 1, 1)
             print(self.counter_x)
@@ -808,10 +817,50 @@ class Crawler():
             self.counter_y = 0
             return True
 
+    def gl_show_map(self):
+        glViewport(0, 0, screen.get_width(), screen.get_height())
+        glDepthRange(0, 1)
+        glMatrixMode(GL_PROJECTION)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        glShadeModel(GL_SMOOTH)
+        glClearColor(0.0, 0.0, 0.0, 0.0)
+        glClearDepth(1.0)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_LIGHTING)
+        glDepthFunc(GL_LEQUAL)
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+        glEnable(GL_BLEND)
+        glClear(GL_COLOR_BUFFER_BIT)
+        glLoadIdentity()
+        glDisable(GL_LIGHTING)
+        glEnable(GL_TEXTURE_2D)
+        rgb_surface = pygame.image.tostring( self.map_img, 'RGB')
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+        surface_rect = self.map_img.get_rect()
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 
+                     surface_rect.width, surface_rect.height, 0, GL_RGB, 
+                     GL_UNSIGNED_BYTE, rgb_surface)
+        glGenerateMipmap(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, 0)
+        glBindTexture(GL_TEXTURE_2D, self.texID)
+        glBegin(GL_QUADS)
+        glTexCoord2f(0, 0); glVertex2f(-1, 1)
+        glTexCoord2f(0, 1); glVertex2f(-1, -1)
+        glTexCoord2f(1, 1); glVertex2f(1, -1)
+        glTexCoord2f(1, 0); glVertex2f(1, 1)
+        glEnd()
+        glDisable(GL_TEXTURE_2D)
+
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
+    
     party = fill_party()
     party = boost_party(party)
     dungeon = "cave"
