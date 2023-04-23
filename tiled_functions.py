@@ -14,6 +14,7 @@ class TiledMap:
         self.tmxdata = tm
 
     def render(self, surface):
+        surface.fill('black')
         ti = self.tmxdata.get_tile_image_by_gid
         for layer in self.tmxdata.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
@@ -22,9 +23,6 @@ class TiledMap:
                     if tile:
                         surface.blit(tile, (x*self.tmxdata.tilewidth, 
                                             y*self.tmxdata.tileheight))
-                        blit_image(size, x*self.tmxdata.tilewidth, 
-                                            y*self.tmxdata.tileheight,
-                                            tile, 1,1,1)
                         
     def make_map(self):
         temp_surface = pygame.Surface((self.width, self.height))
