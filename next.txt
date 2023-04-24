@@ -6,6 +6,9 @@ Remake dungeons
     Use tiled to make template dungeons
     Replace tiles in tiled with Ally's tilesets when she makes them 
 
+    New 4/24
+        Tilemap renders, but it flickers
+
 Implement boss fight (generic)
     Allow navigation_gl.py to call match.py with boss context
     Allow for dialog during boss fights
