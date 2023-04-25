@@ -525,7 +525,7 @@ class Crawler():
 
         #self.blit_bg_camera(dungeon_rooms[current_room][0], False)
         #self.map_rect = self.camera.apply_rect(self.map_rect)
-        blit_image(size, 0, 0, self.map_img, 1,1,1)
+        #blit_image(size, 0, 0, self.map_img, 1,1,1)
         self.player.rect = self.camera.apply(self.player)
         self.enemy.rect = self.camera.apply(self.enemy)
         if dungeon_enemies[current_room][1] == None:

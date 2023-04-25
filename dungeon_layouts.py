@@ -11,7 +11,7 @@ def get_dungeon_layout(dungeon_name):
         return [cave, cave_enemies]
 
 cave = [
-            ["testroombig.png", 1, 2, 1, None], 
+            ["testroom.png", 1, 2, 1, None], 
             ["testroom2.png", 0, 3, 0, None],
             ["testroom3.png", None, None, None, 0], 
             ["testroom4.png", None, "END", None, 2]
@@ -27,7 +27,7 @@ cave_enemies = [
     #enemy portrait for dungeon
     "Goblin_Stand"
     ],[
-    [Enemy("Bazongle", 20000, 5, 5, 5, 5, 100),],
+    [Enemy("Bazongle", 20000, 100, 100, 100, 100, 100),],
     "Bazongle_Stand"
     ],[
     [None], None

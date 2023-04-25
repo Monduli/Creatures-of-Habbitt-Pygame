@@ -377,7 +377,7 @@ class MatchGame(object):
         self.enemy_turns = turn_order(self.enemy)
 
         # The index of the current party member.
-        party_current = 0
+        self.party_current = 0
 
         # The index of the current turn enemy.
         self.enemy_current = 0
@@ -399,7 +399,7 @@ class MatchGame(object):
         text_timer = pygame.time.get_ticks()
 
         # The current active party member (object).
-        self.player_active = party_turns[party_current][0]
+        self.player_active = party_turns[self.party_current][0]
 
         # Set text to whose turn it is
         if self.player_active != None:
@@ -418,16 +418,6 @@ class MatchGame(object):
         hold = 0
         reset = 0
         turn = 0
-
-        #self.event = threading.Event()
-        #enemy_thread = threading.Thread(target=self.enemy_thread, args=())
-        #enemy_thread.start()
-
-        #player_thread = threading.Thread(target=self.thread_process_action, args=())
-        #player_thread.start()
-
-        #draw_thread = threading.Thread(target=self.draw_gl_scene, args=())
-        #draw_thread.start()
 
         now = "skip"
         self.debug = 0
@@ -448,6 +438,8 @@ class MatchGame(object):
         in_curr_match_timer = 0
         check = None
 
+        return_rect = pygame.Rect(width-400, height-50, 400, 50)
+
         while matches:
             if len(self.board.find_matches()) > 0:
                 self.board.randomize()
@@ -455,12 +447,12 @@ class MatchGame(object):
                 matches = False
                 curr_match = []
 
-        curr_character = party_current
+        curr_character = self.party_current
 
         while True:
-            if curr_character != party_current:
+            if curr_character != self.party_current:
                 print("Character swapped")
-                curr_character = party_current
+                curr_character = self.party_current
             if check != self.p_text:
                 print(self.party_text)
                 check = self.p_text
@@ -524,11 +516,11 @@ class MatchGame(object):
                 self.counter_x = 0
                 self.state = "WAITING 2"
 
-            self.draw_gl_scene(party_current)
+            self.draw_gl_scene()
 
             if self.return_to_crawl == 1:
                 return "WIN"
-            #return_rect = self.draw(self.party, self.enemy, self.player_active, self.p_text, self.e_text, self.flash_red)
+            
             if self.debug == 1:
                 print("DRAW: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
@@ -550,16 +542,9 @@ class MatchGame(object):
                     #self.event.set()
                     self.quit()
 
-                ## TODO: Current problems with drag matching:
-                # - Swaps are not very visible and the board doesn't update smoothly FIX ANIMATIONS
-                #
-                # Fixed - Sometimes after swapping you can drag and drop random gems
-                # FIXED! - Gems are dropped onto xy coords of mouse not where original gem was
-                # Fixed - When gem is "swapped", original gem does swap with something, but it's not the correct gem
-                ##
                 elif event.type == pygame.MOUSEBUTTONDOWN and not self.board.busy() and self.state == "PLAY":
-                    #if return_rect.collidepoint(event.pos):
-                    #    return "RAN"
+                    if return_rect.collidepoint(event.pos):
+                        return
                     if event.button == 1:
                        pos = pygame.mouse.get_pos()
                        for cell in self.board.board:            
@@ -676,11 +661,11 @@ class MatchGame(object):
                     if (pygame.time.get_ticks() - character_swap_timer > 1 and time_to_swap == 1) or self.removed != 0:
                         if self.debug == 1:
                             print("Changing party member")
-                        if party_current+1 < len(party_turns):
-                            party_current += 1
+                        if self.party_current+1 < len(party_turns):
+                            self.party_current += 1
                         else:
-                            party_current = 0
-                        self.player_active = self.party_turns[party_current][0]
+                            self.party_current = 0
+                        self.player_active = self.party_turns[self.party_current][0]
                         self.party_text = ["It is " + self.player_active.get_name() + "'s turn."]
                         curr_match = []
                         character_swap_timer = None
@@ -688,9 +673,12 @@ class MatchGame(object):
                         self.removed = 0
 
                 if now - timer > 5000:
-                    flash = self.enemy_attack(self.enemy, self.player_active, self.enemy_active)
+                    flash = self.enemy_attack(self.enemy, self.player_active, self.enemy_active, party_turns)
                     if flash != 0:
-                        self.flash_red = self.party.index(self.player_active)
+                        if self.player_active in self.party:
+                            self.flash_red = self.party.index(self.player_active)
+                        else:
+                            self.flash_red = None
                     timer = now
                     self.e_text = self.enemy_text[0]
         
@@ -742,7 +730,7 @@ class MatchGame(object):
                 if pygame.time.get_ticks() - text_timer > 2000:
                     if len(self.party_text) == 1:
                         if self.party_text[0][0:5] != "It is" and len(self.party_text) > 1:
-                            self.party_text = ["It is " + party_turns[party_current][0].get_name() + "'s turn."]
+                            self.party_text = ["It is " + party_turns[self.party_current][0].get_name() + "'s turn."]
 
             if self.timing == 1:
                 print("TICK START: " + str(self.debug_timer - pygame.time.get_ticks()))
@@ -794,7 +782,7 @@ class MatchGame(object):
                     if x+1 < 90:
                         to_print.append(self.board.board[x].shape)
 
-    def draw_gl_scene(self, party_current, xp=None, update_text=None):
+    def draw_gl_scene(self, xp=None, update_text=None):
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
@@ -806,19 +794,19 @@ class MatchGame(object):
         color_0, color_1, color_2, color_3 = color_black, color_black, color_black, color_black
 
         # draw highlight rectangles
-        if self.party_turns[party_current][0] == self.party[0]:
+        if self.party_turns[self.party_current][0] == self.party[0]:
             color_0 = "BLUE"
         else: color_0 = color_black
         if len(self.party) > 1:
-            if self.party_turns[party_current][0] == self.party[1]:
+            if self.party_turns[self.party_current][0] == self.party[1]:
                 color_1 = "BLUE"
             else: color_1 = color_black
         if len(self.party) > 2:
-            if self.party_turns[party_current][0] == self.party[2]:
+            if self.party_turns[self.party_current][0] == self.party[2]:
                 color_2 = "BLUE"
             else: color_2 = color_black
         if len(self.party) > 3:
-            if self.party_turns[party_current][0] == self.party[3]:
+            if self.party_turns[self.party_current][0] == self.party[3]:
                 color_3 = "BLUE"
             else: color_3 = color_black
 
@@ -1016,6 +1004,14 @@ class MatchGame(object):
         elif action == "pink":
             return self.pink_support(player_active, party)
             # should debuff the enemy
+        if enemy_active.get_chp() <= 0:
+            enemy_active.set_chp(0)
+            update_text = enemy_active.get_name() + " has fallen!"
+            self.party_text.append(update_text)
+            enemy_turns = find_and_remove_from_turn(enemy_turns, enemy_active)
+            enemy.remove(enemy_active)
+            if len(enemy) == 0:
+                return "WIN"
         return update_text
           
     def red_attack(self, player_active, enemy_active, enemy, enemy_turns):
@@ -1027,13 +1023,6 @@ class MatchGame(object):
         enemy_active.set_chp(enemy_active.get_chp() - dmg)
         update_text = player_active.get_name() + " physically attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
         self.party_text.append(update_text)
-        if enemy_active.get_chp() <= 0:
-            update_text = enemy_active.get_name() + " has fallen!"
-            self.party_text.append(update_text)
-            enemy_turns = find_and_remove_from_turn(enemy_turns, enemy_active)
-            enemy.remove(enemy_active)
-            if len(enemy) == 0:
-                return "WIN"
             
     def pink_support(self, player_active, party):
         sup_num = 10 * player_active.get_chutzpah()
@@ -1073,18 +1062,6 @@ class MatchGame(object):
         enemy_active.set_chp(enemy_active.get_chp() - dmg)
         update_text = player_active.get_name() + " magically attacked " + enemy_active.get_name() + " for " + str(dmg) + " damage!"
         self.party_text.append(update_text)
-        if enemy_active.get_chp() <= 0:
-            update_text = enemy_active.get_name() + " has fallen!"
-            self.enemy_text.append(update_text)
-            self.enemy_turns = find_and_remove_from_turn(self.enemy_turns, enemy_active)
-            enemy.remove(enemy_active)
-            if self.debug == 1:
-                print(self.enemy_turns)
-                print(enemy)
-            if len(enemy) == 0:
-                update_text = player_active.get_name() + "'s party is victorious!"
-                self.party_text.append(update_text)
-                return "WIN"
             
     def green_heal(self, player_active, party):
         heal = player_active.get_healing()
@@ -1110,7 +1087,7 @@ class MatchGame(object):
             update_text = player_active.get_name() + " healed for " + str(heal) + " points."
         self.party_text.append(update_text)
 
-    def enemy_attack(self, enemy, player_active, enemy_active):
+    def enemy_attack(self, enemy, player_active, enemy_active, party_turns):
         # enemy goes
         party = self.party
         e_attack = enemy_active.get_attack()
@@ -1124,11 +1101,17 @@ class MatchGame(object):
         target.set_chp(target.get_chp() - (dmg))
         enemy_text = attacker.get_name() + " attacked " + target.get_name() + " for " + str(dmg) + " damage!"
         self.enemy_text.append(enemy_text)
-        if target.get_chp() == 0:
+        if target.get_chp() <= 0:
+            target.set_chp(0)
             update_text = target.get_name() + " has fallen!"
             self.party_text.append(update_text)
             self.party.remove(target)
             self.removed = target
+            if self.party_current+1 < len(party_turns):
+                self.party_current += 1
+            else:
+                self.party_current = 0
+            self.player_active = self.party_turns[self.party_current][0]
         for member in party:
             if member.get_chp() <= 0:
                 continue
@@ -1147,39 +1130,6 @@ class MatchGame(object):
             now = pygame.time.get_ticks()
             if now - last > (seconds * 300):
                 ahead = 1
-
-    def enemy_thread(self):
-        timer = pygame.time.get_ticks()
-        while True:
-            if self.event.is_set():
-                break
-            now = pygame.time.get_ticks()
-            if now - timer > TIME:
-                print("Running enemy_thread")
-                enemy_active = self.enemy_turns[self.enemy_current][0]
-                target = self.player_active
-                while target.get_chp() == 0:
-                    i = party.index(target)
-                    if i+1 < len(party):
-                        target = party[i+1]
-                    else:
-                        target = party[0]
-                self.state = self.enemy_attack(party, self.enemy, target, enemy_active)
-                flash_red = party.index(target)
-                if self.state == "DEAD":
-                    self.draw(party, self.enemy, self.player_active, "Your party dead!", "Your party was wiped out...", flash_red)
-                    self.pyg_wait(5)
-                    return "DEAD"
-                
-                timer = pygame.time.get_ticks()
-                if self.enemy_current+1 < len(self.enemy_turns)-1:
-                    self.enemy_current += 1
-                else:
-                    self.enemy_current = 0
-
-                self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
-                print("Enemy thread finished running.")
-
     
     def process_fade(self):
         go = 1
