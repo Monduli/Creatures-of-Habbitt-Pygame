@@ -171,7 +171,7 @@ class Crawler():
         self.party = party
         enemy_port_name = dungeon_rooms[0][1]
         self.start_player()
-        self.start_audio(prefix)
+        #self.start_audio(prefix)
         self.start_enemy()
 
         player_rect = self.player.get_rect()
@@ -198,8 +198,7 @@ class Crawler():
         current_room = 0
         
         self.fade_image = pygame.transform.scale(self.fade_image,(1600,900))
-        self.gl_show_map()
-        
+
         while True:
             enemy_port_name = dungeon_enemies[current_room][1]
             
@@ -371,6 +370,7 @@ class Crawler():
                 self.move_to_match = 0
                 in_play = 0
 
+            
             self.draw_gl_scene(dungeon_rooms, current_room, party, dungeon_enemies)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
 
@@ -443,6 +443,8 @@ class Crawler():
                                     break
                                 else:
                                     self.expand = 4
+
+            
 
     def draw(self):
         pass
@@ -523,9 +525,10 @@ class Crawler():
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
 
-        #self.blit_bg_camera(dungeon_rooms[current_room][0], False)
+        self.blit_bg_camera(dungeon_rooms[current_room][0], False)
         #self.map_rect = self.camera.apply_rect(self.map_rect)
         #blit_image(size, 0, 0, self.map_img, 1,1,1)
+        
         self.player.rect = self.camera.apply(self.player)
         self.enemy.rect = self.camera.apply(self.enemy)
         if dungeon_enemies[current_room][1] == None:
@@ -544,7 +547,7 @@ class Crawler():
 
         glBegin(GL_QUADS)
         # "party text"
-        rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
+        #rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
 
         # if the stats box is expanded:
         if self.expand != 4:
@@ -651,7 +654,6 @@ class Crawler():
 
         self.camera.update(self.player)
         pygame.display.flip()
-
         return
     
     def blit_bg_camera(self, bg="cave.png", move=True):
@@ -818,22 +820,6 @@ class Crawler():
             return True
 
     def gl_show_map(self):
-        glViewport(0, 0, screen.get_width(), screen.get_height())
-        glDepthRange(0, 1)
-        glMatrixMode(GL_PROJECTION)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-        glShadeModel(GL_SMOOTH)
-        glClearColor(0.0, 0.0, 0.0, 0.0)
-        glClearDepth(1.0)
-        glDisable(GL_DEPTH_TEST)
-        glDisable(GL_LIGHTING)
-        glDepthFunc(GL_LEQUAL)
-        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
-        glEnable(GL_BLEND)
-        glClear(GL_COLOR_BUFFER_BIT)
-        glLoadIdentity()
-        glDisable(GL_LIGHTING)
         glEnable(GL_TEXTURE_2D)
         rgb_surface = pygame.image.tostring( self.map_img, 'RGB')
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -854,13 +840,26 @@ class Crawler():
         glTexCoord2f(1, 1); glVertex2f(1, -1)
         glTexCoord2f(1, 0); glVertex2f(1, 1)
         glEnd()
-        glDisable(GL_TEXTURE_2D)
 
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
     
+    glViewport(0, 0, screen.get_width(), screen.get_height())
+    glDepthRange(0, 1)
+    glMatrixMode(GL_PROJECTION)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    glShadeModel(GL_SMOOTH)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)
+    glDisable(GL_DEPTH_TEST)
+    glDisable(GL_LIGHTING)
+    glDepthFunc(GL_LEQUAL)
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+    glEnable(GL_BLEND)
+    glClear(GL_COLOR_BUFFER_BIT)
     party = fill_party()
     party = boost_party(party)
     dungeon = "cave"
