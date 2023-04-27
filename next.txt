@@ -8,6 +8,8 @@ Remake dungeons
 
     New 4/24
         Tilemap renders, but it flickers
+    New 4/26
+        Given up for now, will come back later and try to understand OpenGL better
 
 Implement boss fight (generic)
     Allow navigation_gl.py to call match.py with boss context
