@@ -275,6 +275,10 @@ class Dialog():
             [None, "To Town"]
             ]]
         
+        ################
+        # BOND DIALOGS #
+        ################
+        
         self.mc_bear_bond_dialog = [
             # Rank 1
             [[
@@ -333,7 +337,39 @@ class Dialog():
 
         self.mc_henrietta_bond_dialog = [
             [[
-            [None, "Henrietta dialog 1."],
+            [p, "Ringing the bell for Henrietta, then..."],
+            ["Henrietta", "Excuse me, your highness?"],
+            [p, "Huh? What?"],
+            ["Henrietta", "I couldn't help but overhear, given that I'm standing right next to you."],
+            ["Henrietta", "Were you about to ring the bell to summon me?"],
+            [p, "Um... yes. Yes, I was."],
+            ["Henrietta", "You do realize I've been standing next to you this whole time right? The bell is at the counter and this is my inn."],
+            [p, "Then why are you an option on the directory?"],
+            ["Henrietta", "That bear insisted upon it. He said, 'if you are ever out of the inn, we need a means to contact you! Huh huh huh!'"],
+            [p, "Yeah, that sounds like him."],
+            [None, "You ring the bell for Henrietta. In your head, you hear some kind of muddy squishy sound."],
+            ["Henrietta", "For the sake of the life giver! I can't believe you just rang that despite the conversation we're having here."],
+            [None, "She waddles around the bar and out in front of you. She lets out a loud sigh."],
+            ["Henrietta", "... You rang?"],
+            [p, "Yeah, hi, I called you. I was hoping you would pick up."],
+            ["Henrietta", "Get on with it..."],
+            [p, "Touchy, huh? I take it you don't like the muddy squishy ringtone you have on here either."],
+            ["Henrietta", "Can we please talk about the reason you called me over here?"],
+            [p, "You said you were going to give me more information about your missing husband."],
+            ["Henrietta", "Yes, well, he's not so much missing as he is absent from his duties as the inn's chef and cook."],
+            ["Henrietta", "You see, he has a garage to the east of here a ways. It's actually pretty close to town."],
+            [p, "A garage? What's that?"],
+            ["Henrietta", "It's a large metal facility where he builds his robots."],
+            [p, "Robots? Building? I thought he was a chef."],
+            ["Henrietta", "He likes machines, like ovens and grills, but also mechanical parts. He built our cooking system in the inn himself."],
+            [p, "Impressive. And what do you do here?"],
+            ["Henrietta", "What sort of question is that? I run the inn. I also clean all of the rooms, including where you're staying."],
+            [p, "Oh, I see."],
+            ["Henrietta", "Bear is already aware of the location of the garage. Just tell him you want to 'Venture Out' and he will take you there."],
+            [p, "Alright. Anything else I should know?"],
+            ["Henrietta", "My husband is somewhat... eccentric. He also considers himself quite the musician. Be aware that he might ask strange things of you when you find him."],
+            [p, "Yeah, that's definitely not concerning at all. Alright, we'll go find him. See you later."],
+            [None, "Henrietta waddles back behind the counter and goes back to polishing a cup, as innkeepers do."]
             [None, "END INN DIALOG"]
             ]],
             [[
@@ -416,6 +452,10 @@ class Dialog():
             [None, "END INN DIALOG"]
             ]],
             ]
+        
+        #########
+        # SKIPS #
+        #########
         self.intro_skip_to_town = [[
             [None, "[Character creation]"]
         ], "to_town"]
