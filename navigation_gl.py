@@ -534,6 +534,7 @@ class MainGame():
             file = open('save.txt', 'x')
             file.close()
         file = open('save.txt', 'wb')
+        # create data array that will be filled with character information
         data = [[] for x in range(26)]
         data[0] = [self.progress]
         for x in range(1, 22):
