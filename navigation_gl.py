@@ -273,10 +273,12 @@ class MainGame():
         if self.slots != [0,0,0] and self.debug == 1:
             print(self.slots)    
 
+        # LEFT
         if self.slots[0] != 0:
             character = retrieve_character(self.slots[0], self.characters)
             blit_image((width, height), width-1500, 100, character, 1,1,1)
 
+        # MIDDLE
         if self.slots[1] != 0:
             character = retrieve_character(self.slots[1], self.characters)
             if self.slots[1] == "N. Steen" or self.slots[1] == "Mysterious Bear":
@@ -290,9 +292,12 @@ class MainGame():
             else:
                 blit_image((width, height), width/2-150, 100, character, 1,1,1)
 
+        # RIGHT
         if self.slots[2] != 0:
             character = retrieve_character(self.slots[2], self.characters)
-            if self.slots[2] == "N. Steen" or self.slots[2] == "Mysterious Bear" or self.slots[2] == "Henrietta":
+            if self.slots[2] == "N. Steen" or self.slots[2] == "Mysterious Bear":
+                blit_image((width, height), width - (width/2/2)-350, -75, character, 1,1,1)
+            elif self.slots[2] == "Henrietta":
                 blit_image((width, height), width - (width/2/2)-350, -75, character, 1,1,1)
             elif self.slots[2] == "Guard":
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
