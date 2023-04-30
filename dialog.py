@@ -369,7 +369,7 @@ class Dialog():
             [p, "Alright. Anything else I should know?"],
             ["Henrietta", "My husband is somewhat... eccentric. He also considers himself quite the musician. Be aware that he might ask strange things of you when you find him."],
             [p, "Yeah, that's definitely not concerning at all. Alright, we'll go find him. See you later."],
-            [None, "Henrietta waddles back behind the counter and goes back to polishing a cup, as innkeepers do."]
+            [None, "Henrietta waddles back behind the counter and goes back to polishing a cup, as innkeepers do."],
             [None, "END INN DIALOG"]
             ]],
             [[
