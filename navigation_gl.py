@@ -298,7 +298,7 @@ class MainGame():
             if self.slots[2] == "N. Steen" or self.slots[2] == "Mysterious Bear":
                 blit_image((width, height), width - (width/2/2)-350, -75, character, 1,1,1)
             elif self.slots[2] == "Henrietta":
-                blit_image((width, height), width - (width/2/2)-350, -75, character, 1,1,1)
+                blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
             elif self.slots[2] == "Guard":
                 blit_image((width, height), width - (width/2/2)-300, 100, character, 1,1,1)
             elif self.slots[2] == "Vizier":
