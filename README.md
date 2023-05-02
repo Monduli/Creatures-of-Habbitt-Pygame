@@ -45,8 +45,12 @@ Overhaul. Found that it was impossible to keep the game running smoothly using j
   
 =======  
   
-STAT PRIORITIES:  
-Fighter - STR, CON, DEX, WIS, CHA, INT  
-Paladin - CHA, STR, CON, DEX, WIS, INT  
-Wizard - INT, CON, DEX, WIS, CHA, STR  
-Ranger - DEX, WIS, CON, STR, CHA, INT  
+5/2/2023
+Significant progress since last update. Features:
+- Dungeon crawling gameplay. Run into enemies and it takes you into a match 3 battle. Taking any party member works and leveling up is implemented. No abilities yet.
+- Dialog completely in OpenGL. In fact, whole game is in OpenGL now.
+- Inn dialog functions, only MCxBear and MCxHenrietta, both rank 1, are implemented, but system is set up for 10 ranks per and 5 romance ranks for relevant characters
+- Menu options for Smithy and Haberdasher implemented, though the actual systems are not.
+- Intro complete (not proofread though), from MC being kicked out to Bear taking them in and going through the first dungeon, recruiting Henrietta and leaving off for free roam.
+- Classes overhauled. Each character has their own class while MC will be able to swap classes. Maybe future where other party members can as well.
+
