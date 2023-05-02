@@ -54,3 +54,11 @@ Significant progress since last update. Features:
 - Intro complete (not proofread though), from MC being kicked out to Bear taking them in and going through the first dungeon, recruiting Henrietta and leaving off for free roam.
 - Classes overhauled. Each character has their own class while MC will be able to swap classes. Maybe future where other party members can as well.
 
+TO-DO:
+- Smithy and Haberdasher. Both involve using enemy drops to craft better equipment, so both basically use the same system.
+- Enemy drops that are relevant to Smithy/Haberdasher crafting requirements
+- Crawler cannot use tilesets and is currently restricted to tiny rooms. Attempted to fix, but did not take.
+- Less than half of the characters are implemented. Create classes for the remaining ones that I have assets for.
+- Voice acting system. Don't need actual voice clips yet, but need to framework to insert them.
+- More story once all the frameworks are in place.
+- Ranch. Need to speak to Ally about this
