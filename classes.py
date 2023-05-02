@@ -341,10 +341,10 @@ class Character:
             # [4] - Lam'baste Lamb (F)
             # [5] - Sunny Spider (F)
             # [6] - Oscar Lion (M)
-            # [7] - Hans Horse (M)
+            # [7] - Donkey Hote (M)
             # [8] - Sidney Shark (F)
-            # [9] - None
-            # [10] - Hollow
+            # [9] - Hollow (M)
+            # [10] - Giver of Life
             # [11] - Henrietta
             # [12] - Grilla
             # [13] - Dane
@@ -353,8 +353,8 @@ class Character:
             # [16] - None
             # [17] - None
             # [18] - None
-            # [19] - None
-            # [20] - None
+            # [19] - Ward N. Stain
+            # [20] - Julie
             # [21] - None
         if m_n == mc_name:
             return 0
@@ -430,6 +430,18 @@ class MainCharacter(Character):
         self.set_portrait_dialog(poss_image + "_portrait")
         self.set_stats_picture(poss_image + "_port_stats")
 
+class Cleric(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "APOTHECARY"
+        self.stat_spread = ["heal", "phys", "magic", "heart", "quick", "chutz"]
+        self.fill_xp_array()
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["heal", "phys", "magic", "heart", "quick", "chutz"], stats)
+        self.calculate_stats()
+
 class Martial(Character):
     def __init__(self, stats) -> None:
         super().__init__()
@@ -501,17 +513,52 @@ class Grapefart(Character):
         Character.distribute_stats(self, ["quick", "heal", "chutz", "phys", "heart", "magic"], stats)
         self.calculate_stats()
 
-class Cleric(Character):
+class Lambaste(Character):
     def __init__(self, stats) -> None:
         super().__init__()
         self.spread(stats)
-        self.role = "APOTHECARY"
-        self.set_portrait("cinna_portrait_100.png")
-        self.stat_spread = ["heal", "phys", "magic", "heart", "quick", "chutz"]
+        self.role = "Crystalogist"
+        self.set_portrait("lambaste_portrait_100.png")
+        self.stat_spread = ["heal", "magic", "chutz", "phys", "heart", "quick"]
         self.fill_xp_array()
+        self.set_stats_picture("lambaste_port_stats")
+        self.set_name("Lam'baste")
+        self.num = 4
 
     def spread(self, stats):
-        Character.distribute_stats(self, ["heal", "phys", "magic", "heart", "quick", "chutz"], stats)
+        Character.distribute_stats(self, ["heal", "magic", "chutz", "phys", "heart", "quick"], stats)
+        self.calculate_stats()
+
+class SunnySpider(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "Silkweaver"
+        self.set_portrait("sunny_portrait_100.png")
+        self.stat_spread = ["quick", "heart", "chutz", "magic", "heal", "phys"]
+        self.fill_xp_array()
+        self.set_stats_picture("sunny_port_stats")
+        self.set_name("Sunny")
+        self.num = 5
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["quick", "heart", "chutz", "phys", "heal", "magic"], stats)
+        self.calculate_stats()
+        
+class Hollow(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.role = "Reaper"
+        self.set_portrait("hollow_portrait_100.png")
+        self.stat_spread = ["phys", "quick", "heart", "magic", "heal", "chutz"]
+        self.fill_xp_array()
+        self.set_stats_picture("hollow_port_stats")
+        self.set_name("Hollow")
+        self.num = 9
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["phys", "quick", "heart", "magic", "heal", "chutz"], stats)
         self.calculate_stats()
 
 class Henrietta(Character):
@@ -561,6 +608,32 @@ class Rayna(Character):
     def spread(self, stats):
         Character.distribute_stats(self, ["magic", "chutz", "phys", "heal", "quick", "heart"], stats)
         self.calculate_stats()
+
+class WardNStain(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        self.spread(stats)
+        self.set_portrait("ward_portrait_100.png")
+        self.set_dialog_picture("ward.png")
+        self.set_portrait_dungeon("ward")
+        self.set_portrait_dialog("ward_portrait")
+        self.set_stats_picture("ward_port_stats")
+        self.role = "BEAR KING"
+        self.stat_spread = ["phys", "heart", "chutz", "quick", "heal", "magic"]
+        self.fill_xp_array()
+        self.num = 1
+        self.set_name("N. Stain")
+        self.set_portrait_dungeon("ward")
+        self.recruited = True
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["phys", "heart", "chutz", "quick", "heal", "magic"], stats)
+        self.calculate_stats()
+
+    def set_dialog_picture(self, value):
+        image = pygame.image.load("images/" + value).convert_alpha()
+        image = pygame.transform.scale(image, (700, 1021))
+        self.dialog_picture = image
 
 class BlankCharacter(Character):
     def __init__(self, stats) -> None:
