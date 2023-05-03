@@ -14,7 +14,7 @@ cave = [
             ["testroom.png", 1, 2, 1, None], 
             ["testroom2.png", 0, 3, 0, None],
             ["testroom3.png", None, None, None, 0], 
-            ["testroom4.png", None, "END", None, 2]
+            ["testroom4.png", None, "END", None, 1]
             ]
 
 cave_enemies = [

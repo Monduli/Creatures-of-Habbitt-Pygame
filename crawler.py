@@ -228,20 +228,24 @@ class Crawler():
                         self.enemy.y += accel_y
 
             
-            if enemy_port_name == "Goblin_Stand" and now - move_timer > 100:
+            if enemy_port_name == "Goblin_Stand" and now - move_timer > 10:
                 if self.enemy.can_chase:
                     if now - charge_timer < 10000:
                         choice = random.randint(0, 11)
                         if choice == 0 or choice == 5:
-                            accel_x += 5
+                            accel_x += 1
+                            accel_y -= 1
                         elif choice == 1 or choice == 6:
-                            accel_x += -5
+                            accel_x += -1
+                            accel_y -= -1
                         elif choice == 2 or choice == 7:
                             accel_x = 0
                         elif choice == 3 or choice == 8:
-                            accel_y += 5
+                            accel_y += 1
+                            accel_x -= 1
                         elif choice == 4 or choice == 9:
-                            accel_y += -5
+                            accel_y += -1
+                            accel_x -= -1
                         elif choice == 10 or choice == 11:
                             accel_y = 0
                         if 485 < self.enemy.x + accel_x < 1055:

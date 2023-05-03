@@ -979,6 +979,7 @@ class MatchGame(object):
                         [topLeft, topRight, bottomRight, bottomLeft], 3)
      """   
     def process_action(self, item, party, enemy, player_active, enemy_active, turns, enemy_turns):
+        print(enemy_active, enemy_active.get_chp())
         action = item
         update_text = None
         if enemy_active not in enemy:
@@ -988,21 +989,21 @@ class MatchGame(object):
                 enemy_active = enemy[0]
         if action == "red":
             # do physical damage
-            return self.red_attack(player_active, enemy_active, enemy, enemy_turns)
+            self.red_attack(player_active, enemy_active, enemy, enemy_turns)
         elif action == "purple":
             # deal magic damage
-            return self.purple_attack(player_active, enemy_active, enemy)
+            self.purple_attack(player_active, enemy_active, enemy)
         elif action == "green":
             # heal active party member
-            return self.green_heal(player_active, party)
+            self.green_heal(player_active, party)
         elif action == "orange":
-            return self.orange_buff(player_active, party)
+            self.orange_buff(player_active, party)
             # should grant support points
         elif action == "blue":
-            return self.blue_debuff(player_active, enemy)
+            self.blue_debuff(player_active, enemy)
             # should buff the user
         elif action == "pink":
-            return self.pink_support(player_active, party)
+            self.pink_support(player_active, party)
             # should debuff the enemy
         if enemy_active.get_chp() <= 0:
             enemy_active.set_chp(0)

@@ -62,3 +62,9 @@ TO-DO:
 - Voice acting system. Don't need actual voice clips yet, but need to framework to insert them.
 - More story once all the frameworks are in place.
 - Ranch. Need to speak to Ally about this
+
+5/3/2023
+Fixed match.py not working since player attacks would return instead of checking for dead enemies.
+
+TO-DO:
+- Enemy rect for collision is not positionally correct w/ the image being shown
