@@ -201,17 +201,25 @@ def fill_party():
 def boost_party(party):
     #mc.boost(9998, mc.stat_spread)
     for char in party:
-        char.boost(9998, char.stat_spread)
+        level = char.get_level()
+        to_boost = 9999 - level
+        char.boost(to_boost, char.stat_spread)
     return party
 
 def add_all_characters(party, rom_characters, character_names, npc_characters, npc_names, characters):
-    radish = Radish([15, 10, 10, 5, 5, 0])
-    grapefart = Grapefart([15, 10, 10, 5, 5, 0])
-    dane = Dane([15, 10, 10, 10, 10, 10])
-    rayna = Rayna([15, 10, 10, 10, 10, 10])
+    radish = Radish("S")
+    grapefart = Grapefart("S")
+    lambaste = Lambaste("S")
+    sunny = SunnySpider("S")
+    hollow = Hollow("S")
+    dane = Dane("S")
+    rayna = Rayna("S")
 
     radish.set_recruited(True)
     grapefart.set_recruited(True)
+    lambaste.set_recruited(True)
+    sunny.set_recruited(True)
+    hollow.set_recruited(True)
     dane.set_recruited(True)
     rayna.set_recruited(True)
 
@@ -220,8 +228,14 @@ def add_all_characters(party, rom_characters, character_names, npc_characters, n
 
     rom_characters[2] = party[2]
     rom_characters[3] = party[3]
+    rom_characters[4] = lambaste
+    rom_characters[5] = sunny
+    rom_characters[9] = hollow
     character_names[2] = "Radish"
     character_names[3] = "Grapefart"
+    character_names[4] = "Lam'baste"
+    character_names[5] = "Sunny"
+    character_names[10] = "Hollow"
 
     # generate 2 npc characters, add to npc and name lists
     npc_characters[2] = dane
@@ -231,6 +245,9 @@ def add_all_characters(party, rom_characters, character_names, npc_characters, n
 
     characters[2] = radish
     characters[3] = grapefart
+    characters[4] = lambaste
+    characters[5] = sunny
+    characters[9] = hollow
     characters[13] = dane
     characters[14] = rayna
 

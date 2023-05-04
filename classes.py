@@ -281,6 +281,7 @@ class Character:
                    " CHUTZ: " + str(self.chutzpah))
     
     def level_up(self, spread):
+        print("Leveling up " + self.name)
         self.level += 1
         temp = [random.randint(2, 3), random.randint(1, 2), random.randint(1, 2), random.randint(0, 1), random.randint(0, 1), random.randint(0, 1)]
         for i in range(6):
@@ -323,6 +324,7 @@ class Character:
             y+=1
     
     def has_xp_to_level_up(self):
+        print(self.level)
         if self.level < 9999:
             if self.xp >= self.xp_tiers[self.level-1]:
                 self.level_up(self.stat_spread)
@@ -408,6 +410,8 @@ class Character:
 class MainCharacter(Character):
     def __init__(self, stats, poss_image=None, name=None) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "LEADER"
         self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
@@ -433,6 +437,8 @@ class MainCharacter(Character):
 class Cleric(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "APOTHECARY"
         self.stat_spread = ["heal", "phys", "magic", "heart", "quick", "chutz"]
@@ -445,6 +451,8 @@ class Cleric(Character):
 class Martial(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "MARTIAL ADEPT"
         self.stat_spread = ["phys", "heart", "quick", "heal", "chutz", "magic"]
@@ -457,6 +465,8 @@ class Martial(Character):
 class BearNSteen(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.set_portrait("bear_portrait_100.png")
         self.set_dialog_picture("bear.png")
@@ -483,6 +493,8 @@ class BearNSteen(Character):
 class Radish(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "BOOKKEEPER"
         self.set_portrait("rabbit_portrait_100.png")
@@ -500,6 +512,8 @@ class Radish(Character):
 class Grapefart(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "MERCHANT"
         self.set_portrait("grapefart_portrait_100.png")
@@ -516,6 +530,8 @@ class Grapefart(Character):
 class Lambaste(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "Crystalogist"
         self.set_portrait("lambaste_portrait_100.png")
@@ -532,6 +548,8 @@ class Lambaste(Character):
 class SunnySpider(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "Silkweaver"
         self.set_portrait("sunny_portrait_100.png")
@@ -548,6 +566,8 @@ class SunnySpider(Character):
 class Hollow(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "Reaper"
         self.set_portrait("hollow_portrait_100.png")
@@ -564,6 +584,8 @@ class Hollow(Character):
 class Henrietta(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "INNKEEPER"
         self.set_portrait("hippo_port_100.png")
@@ -580,6 +602,8 @@ class Henrietta(Character):
 class Dane(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "DETECTIVE"
         self.set_portrait("dane_port_100.png")
@@ -596,6 +620,8 @@ class Dane(Character):
 class Rayna(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "HABERDASHER"
         self.set_portrait("rayna_port_100.png")
@@ -612,6 +638,8 @@ class Rayna(Character):
 class WardNStain(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.set_portrait("ward_portrait_100.png")
         self.set_dialog_picture("ward.png")
@@ -638,6 +666,8 @@ class WardNStain(Character):
 class BlankCharacter(Character):
     def __init__(self, stats) -> None:
         super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
         self.spread(stats)
         self.role = "NONE"
         self.set_portrait("blank.png")
