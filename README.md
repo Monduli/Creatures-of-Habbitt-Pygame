@@ -68,3 +68,13 @@ Fixed match.py not working since player attacks would return instead of checking
 
 TO-DO:
 - Enemy rect for collision is not positionally correct w/ the image being shown
+
+5/4/2023
+Added Lam'baste, Sunny, and Hollow as playable characters.
+
+TO-DO:
+For the new additions:
+Stats pictures are not aligned. Dialog pictures are not implemented.
+
+5/5/2023
+Retroactively updated yesterday's additions to this document
