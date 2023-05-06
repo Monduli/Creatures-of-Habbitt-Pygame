@@ -1,3 +1,5 @@
+Multiple save slots
+
 Implement difficulty options in the Options menu
     Smooth, Groovy, Bodacious, Chaos
 
