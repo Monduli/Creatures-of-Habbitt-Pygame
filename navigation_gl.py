@@ -717,7 +717,7 @@ class MainGame():
             image1 = party_member_pics[current_member_left]
             if char_name_left in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
-            elif char_name_left in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
+            elif char_name_left in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart", "Lam'baste", "Sunny", "Hollow"]:
                 blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
@@ -730,7 +730,7 @@ class MainGame():
             image2 = party_member_pics[current_member_right]
             if char_name_right in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-630, height/2/2-50, image2, 1,1,1)
-            elif char_name_right in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
+            elif char_name_right in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart", "Lam'baste", "Sunny", "Hollow"]:
                 blit_image((width, height), width-590, height/2/2-50, image2, 1,1,1)
             else:    
                 blit_image((width, height), width-540, height/2/2-50, image2, 1,1,1)
@@ -918,7 +918,7 @@ class MainGame():
                 if current_completeness == 1:
                     description = self.dialog.get_dialog_description(char_left.get_name(), char_right.get_name(), self.main_character.get_name(), active_rank, r_active_rank)
                 else:
-                    description = char_right.get_name() + " would like to speak with you."
+                    description = "A conversation is brewing..."
                 
                 if active_rank > 0:
                     before = complete[active_rank-1]
@@ -935,7 +935,7 @@ class MainGame():
             image1 = char_left.get_stats_picture()
             if char_left_name in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1650, height/2/2-350, image1, 1,1,1)
-            elif char_left_name in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
+            elif char_left_name in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart", "Lam'baste", "Sunny", "Hollow"]:
                 blit_image((width, height), width-1600, height/2/2-300, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)
@@ -944,7 +944,7 @@ class MainGame():
             image2 = char_right.get_stats_picture()
             if char_right_name in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-450, height/2/2-350, image2, 1,1,1)
-            elif char_right_name in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart"]:
+            elif char_right_name in ["Dane", "Rayna", self.main_character.get_name(), "Radish", "Grapefart", "Lam'baste", "Sunny", "Hollow"]:
                 blit_image((width, height), width-400, height/2/2-300, image2, 1,1,1)
             else:    
                 blit_image((width, height), width-540, height/2/2-50, image2, 1,1,1)
@@ -1059,23 +1059,23 @@ class MainGame():
             # assign maps to buttons based on page
             # process map checks if you have the progress assigned and otherwise returns ???
             if page == 1:
-                dungeon_1 = "Cave"
-                dungeon_2 = self.process_map(1, "Temple")
-                dungeon_3 = self.process_map(2, "Grassland")
-                dungeon_4 = self.process_map(3, "Forest")
-                dungeon_5 = self.process_map(4, "Lava")
-                dungeon_6 = self.process_map(5, "Ice")
-                dungeon_7 = self.process_map(6, "Sea")
+                dungeon_1 = "Habbitt Cave"
+                dungeon_2 = self.process_map(1, "Grilla's Garage")
+                dungeon_3 = self.process_map(2, "Kahuna Sands")
+                dungeon_4 = self.process_map(3, "Windmill Plains")
+                dungeon_5 = self.process_map(4, "Reaper's Mount")
+                dungeon_6 = self.process_map(5, "Lake of Life")
+                dungeon_7 = self.process_map(6, "Sharp Sea Academy")
                 dungeon_8 = self.process_map(7, "Cosmos")
-            else:
-                dungeon_1 = "Error"
-                dungeon_2 = "Error"
-                dungeon_3 = "Error"
-                dungeon_4 = "Error"
-                dungeon_5 = "Error"
-                dungeon_6 = "Error"
-                dungeon_7 = "Error"
-                dungeon_8 = "Error"
+            elif page == 2:
+                dungeon_1 = self.process_map(8, "")
+                dungeon_2 = self.process_map(9, "Grilla's Garage")
+                dungeon_3 = self.process_map(10, "Kahuna Sands")
+                dungeon_4 = self.process_map(11, "Windmill Plains")
+                dungeon_5 = self.process_map(12, "Reaper's Mount")
+                dungeon_6 = self.process_map(13, "Lake of Life")
+                dungeon_7 = self.process_map(14, "Sharp Sea Academy")
+                dungeon_8 = self.process_map(15, "Cosmos")
 
             # add dungeons to an array
             dungeons = [dungeon_1, dungeon_2, dungeon_3, dungeon_4, dungeon_5, dungeon_6, dungeon_7, dungeon_8]
@@ -1087,7 +1087,7 @@ class MainGame():
                     if dungeon_1_rect.collidepoint(event.pos):
                         return self.load_dungeon("cave")
                     if dungeon_2_rect.collidepoint(event.pos) and self.progress > 1:
-                        return self.load_dungeon("temple")
+                        return self.load_dungeon("garage")
                     if dungeon_3_rect.collidepoint(event.pos) and self.progress > 2:
                         return self.load_dungeon("grasslands")
                     if dungeon_4_rect.collidepoint(event.pos) and self.progress > 3:
@@ -1332,7 +1332,7 @@ class MainGame():
             image1 = party_member_pics[current_member]
             if char_name in ["Henrietta", "N. Steen"]:
                 blit_image((width, height), width-1470, height/2/2-50, image1, 1,1,1)
-            elif char_name in ["Dane", "Rayna", "Radish", "Grapefart", self.main_character.get_name()]:
+            elif char_name in ["Dane", "Rayna", "Radish", "Grapefart", self.main_character.get_name(), "Lambaste", "Sunny", "Hollow"]:
                 blit_image((width, height), width-1430, height/2/2-50, image1, 1,1,1)
             else:    
                 blit_image((width, height), width-1380, height/2/2-50, image1, 1,1,1)

@@ -78,3 +78,5 @@ Stats pictures are not aligned. Dialog pictures are not implemented.
 
 5/5/2023
 Retroactively updated yesterday's additions to this document
+
+5/6/2023

@@ -47,11 +47,11 @@ class Character:
         # [3] - Gil Grapefart (M)
         # [4] - Lam'baste Lamb (F)
         # [5] - Sunny Spider (F)
-        # [6] - Victor (M)
+        # [6] - Oscar Le Ohn (M)
         # [7] - Donkey Hote (M)
         # [8] - Sidney Shark (F)
-        # [9] - Romance NPC 9
-        # [10] - Hollow
+        # [9] - Hollow
+        # [10] - Giver of Life
         # [11] - Henrietta
         # [12] - Grilla
         # [13] - Dane
@@ -281,7 +281,6 @@ class Character:
                    " CHUTZ: " + str(self.chutzpah))
     
     def level_up(self, spread):
-        print("Leveling up " + self.name)
         self.level += 1
         temp = [random.randint(2, 3), random.randint(1, 2), random.randint(1, 2), random.randint(0, 1), random.randint(0, 1), random.randint(0, 1)]
         for i in range(6):
