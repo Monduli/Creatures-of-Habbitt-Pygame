@@ -350,13 +350,13 @@ class Character:
             # [12] - Grilla
             # [13] - Dane
             # [14] - Rayna
-            # [15] - None
+            # [15] - Rancher NPC
             # [16] - None
             # [17] - None
             # [18] - None
-            # [19] - Ward N. Stain
-            # [20] - Julie
-            # [21] - None
+            # [19] - None
+            # [20] - Ward N. Stain
+            # [21] - Julie
         if m_n == mc_name:
             return 0
         if m_n == "N. Steen":
