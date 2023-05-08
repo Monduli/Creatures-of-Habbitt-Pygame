@@ -375,9 +375,9 @@ class Character:
             return 7
         if m_n == "Sidney":
             return 8
-        if m_n == "TBH":
-            return 9
         if m_n == "Hollow":
+            return 9
+        if m_n == "Giver":
             return 10
         if m_n == "Henrietta":
             return 11
@@ -391,7 +391,18 @@ class Character:
             return 15
         if m_n == "TBH":
             return 16
-        
+        if m_n == "TBH":
+            return 17
+        if m_n == "TBH":
+            return 18
+        if m_n == "TBH":
+            return 19
+        if m_n == "N. Stain":
+            return 20
+        if m_n == "Julie":
+            return 21
+
+
     def get_conversation_completeness(self, name, mc_name):
         p = self.which_num_party_member_bonds(name, mc_name)
         return self.conversation_completeness[p]
