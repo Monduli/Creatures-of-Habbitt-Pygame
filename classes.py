@@ -345,7 +345,7 @@ class Character:
             # [7] - Donkey Hote (M)
             # [8] - Sidney Shark (F)
             # [9] - Hollow (M)
-            # [10] - Giver of Life
+            # [10] - Giver of Life (F)
             # [11] - Henrietta
             # [12] - Grilla
             # [13] - Dane
@@ -401,7 +401,8 @@ class Character:
             return 20
         if m_n == "Julie":
             return 21
-
+        else:
+            raise NotFoundException(m_n)
 
     def get_conversation_completeness(self, name, mc_name):
         p = self.which_num_party_member_bonds(name, mc_name)
@@ -727,3 +728,9 @@ class Enemy():
     
     def set_chp(self, value):
         self.chp = value
+
+class NotFoundException(Exception):
+    def __init__(self, name):
+        self.name = name
+        self.message = name + " not a valid character name."
+        super().__init__(self.message)

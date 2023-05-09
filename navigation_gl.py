@@ -1056,26 +1056,36 @@ class MainGame():
             colors = ["BLACK" for x in range(0,8)]
             color_c1, color_c2, color_c3, color_c4, color_c5, color_c6, color_c7, color_c8, color_next, color_leave = colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7], self.color_passive, self.color_passive
 
+            self.progress = 100
             # assign maps to buttons based on page
             # process map checks if you have the progress assigned and otherwise returns ???
             if page == 1:
                 dungeon_1 = "Habbitt Cave"
                 dungeon_2 = self.process_map(1, "Grilla's Garage")
-                dungeon_3 = self.process_map(2, "Kahuna Sands")
-                dungeon_4 = self.process_map(3, "Windmill Plains")
-                dungeon_5 = self.process_map(4, "Reaper's Mount")
-                dungeon_6 = self.process_map(5, "Lake of Life")
-                dungeon_7 = self.process_map(6, "Sharp Sea Academy")
-                dungeon_8 = self.process_map(7, "Cosmos")
+                dungeon_3 = self.process_map(2, "Tantamount Tower")
+                dungeon_4 = self.process_map(3, "Auspicious Abode")
+                dungeon_5 = self.process_map(4, "Pristine Pasture")
+                dungeon_6 = self.process_map(5, "Kahuna Sands")
+                dungeon_7 = self.process_map(6, "Mall Mountain")
+                dungeon_8 = self.process_map(7, "Haunted Home")
             elif page == 2:
-                dungeon_1 = self.process_map(8, "")
-                dungeon_2 = self.process_map(9, "Grilla's Garage")
-                dungeon_3 = self.process_map(10, "Kahuna Sands")
-                dungeon_4 = self.process_map(11, "Windmill Plains")
-                dungeon_5 = self.process_map(12, "Reaper's Mount")
-                dungeon_6 = self.process_map(13, "Lake of Life")
-                dungeon_7 = self.process_map(14, "Sharp Sea Academy")
-                dungeon_8 = self.process_map(15, "Cosmos")
+                dungeon_1 = self.process_map(8, "???")
+                dungeon_2 = self.process_map(9, "Windmill Wilds")
+                dungeon_3 = self.process_map(10, "???")
+                dungeon_4 = self.process_map(11, "Sea Sharp Shark School")
+                dungeon_5 = self.process_map(12, "???")
+                dungeon_6 = self.process_map(13, "Reaper's Respite")
+                dungeon_7 = self.process_map(14, "Ursine Utopia")
+                dungeon_8 = self.process_map(15, "Lake of Life")
+            elif page == 3:
+                dungeon_1 = self.process_map(16, "Homea")
+                dungeon_2 = self.process_map(17, "St. Stephonia")
+                dungeon_3 = self.process_map(18, "Tower of Torment")
+                dungeon_4 = self.process_map(19, "Acrimonious Abyss")
+                dungeon_5 = self.process_map(20, "Bonus")
+                dungeon_6 = self.process_map(21, "Bonus")
+                dungeon_7 = self.process_map(22, "Bonus")
+                dungeon_8 = self.process_map(23, "Bonus")
 
             # add dungeons to an array
             dungeons = [dungeon_1, dungeon_2, dungeon_3, dungeon_4, dungeon_5, dungeon_6, dungeon_7, dungeon_8]
@@ -1085,13 +1095,36 @@ class MainGame():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if dungeon_1_rect.collidepoint(event.pos):
-                        return self.load_dungeon("cave")
-                    if dungeon_2_rect.collidepoint(event.pos) and self.progress > 1:
-                        return self.load_dungeon("garage")
-                    if dungeon_3_rect.collidepoint(event.pos) and self.progress > 2:
-                        return self.load_dungeon("grasslands")
-                    if dungeon_4_rect.collidepoint(event.pos) and self.progress > 3:
-                        return self.load_dungeon("forest")
+                        if page == 1:
+                            return self.load_dungeon("cave")
+                    if dungeon_2_rect.collidepoint(event.pos):
+                        if self.progress > 1 and page == 1:
+                            return self.load_dungeon("garage")
+                    if dungeon_3_rect.collidepoint(event.pos): 
+                        if self.progress > 2 and page == 1:
+                            return self.load_dungeon("None")
+                    if dungeon_4_rect.collidepoint(event.pos):
+                        if self.progress > 3 and page == 1:
+                            return self.load_dungeon("forest")
+                    if dungeon_5_rect.collidepoint(event.pos):
+                        if self.progress > 4 and page == 1:
+                            return self.load_dungeon("forest")
+                    if dungeon_6_rect.collidepoint(event.pos):
+                        if self.progress > 5 and page == 1:
+                            return self.load_dungeon("forest")
+                    if dungeon_7_rect.collidepoint(event.pos):
+                        if self.progress > 6 and page == 1:
+                            return self.load_dungeon("forest")
+                    if dungeon_8_rect.collidepoint(event.pos):
+                        if self.progress > 7 and page == 1:
+                            return self.load_dungeon("forest")
+                    if next_rect.collidepoint(event.pos):
+                        if page == 1:
+                            page = 2
+                        elif page == 2:
+                            page = 3
+                        elif page == 3:
+                            page = 1
                     if leave_rect.collidepoint(event.pos):
                         return "LEFT"
 
@@ -1112,7 +1145,7 @@ class MainGame():
                 color_c7 = self.color_active
             if dungeon_8_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 7:
                 color_c8 = self.color_active
-            if next_rect.collidepoint(pygame.mouse.get_pos()) and self.progress > 7:
+            if next_rect.collidepoint(pygame.mouse.get_pos()):
                 color_next = self.color_active
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
                 color_leave = self.color_active
@@ -1123,8 +1156,8 @@ class MainGame():
             # create visual buttons and text
             gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), dungeons[0], 1,  bulk_adjust_y)
             gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), dungeons[1], 1,  bulk_adjust_y)
-            gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), dungeons[2], 1,  bulk_adjust_y+.01)
-            gl_text_name(self.font, color_c4, cgls(width-750, width), cgls(width-50, width), cgls(height-450, height), cgls(height-500, height), dungeons[3], 1,  bulk_adjust_y+.01)
+            gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), dungeons[2], 1,  bulk_adjust_y+.02)
+            gl_text_name(self.font, color_c4, cgls(width-750, width), cgls(width-50, width), cgls(height-450, height), cgls(height-500, height), dungeons[3], 1,  bulk_adjust_y+.02)
             gl_text_name(self.font, color_c5, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), dungeons[4], 1, 1.115)
             gl_text_name(self.font, color_c6, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), dungeons[5], 1, 1.115)
             gl_text_name(self.font, color_c7, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), dungeons[6], 1, 1.17)
