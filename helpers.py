@@ -552,7 +552,7 @@ def drawTextWrap_internal(rect_color, font, surface, text, color, x, y, x_adjust
             i = text.rfind(" ", 0, i) + 1
 
         # render the line and blit it to the surface
-        textSurface = font.render(text[:i], True, (255, 255, 255, 0), rect_color)
+        textSurface = font.render(text[:i], True, (255, 255, 255, 0))
         textData = pygame.image.tostring(textSurface, "RGBA", True)
         text_rect = textSurface.get_rect()
         
@@ -612,7 +612,7 @@ def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjus
             i = text.rfind(" ", 0, i) + 1
 
         # render the line and blit it to the surface
-        textSurface = font.render(text[:i], True, (255, 255, 255, 0), rect_color)
+        textSurface = font.render(text[:i], True, (255, 255, 255, 0))
         textData = pygame.image.tostring(textSurface, "RGBA", True)
         text_rect = textSurface.get_rect()
         

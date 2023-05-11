@@ -1198,7 +1198,7 @@ class MainGame():
                             colors = ["GREEN" for x in range(0,8)]
                         elif self.difficulty == "Bodacious":
                             self.difficulty = "Chaos"
-                            colors = ["PINK" for x in range(0,8)]
+                            colors = ["RED" for x in range(0,8)]
                         elif self.difficulty == "Chaos":
                             self.difficulty = "Smooth"
                             colors = ["BLACK" for x in range(0,8)]
@@ -1232,16 +1232,21 @@ class MainGame():
             # handy variable for text position adjustments (y)
             bulk_adjust_y = 1.07
 
+            if self.difficulty == "Bodacious" or self.difficulty == "Chaos":
+                black_text = True
+            else:
+                black_text = False
+
             # create visual buttons and text
             gl_text_name(self.font, color_diff, cgls(width-750, width), cgls(width-50, width), cgls(height-150, height), cgls(height-100, height), "Difficulty: " + self.difficulty, 1, .98)
-            gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), dungeons[0], 1,  bulk_adjust_y)
-            gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), dungeons[1], 1,  bulk_adjust_y)
-            gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), dungeons[2], 1,  bulk_adjust_y+.02)
-            gl_text_name(self.font, color_c4, cgls(width-750, width), cgls(width-50, width), cgls(height-450, height), cgls(height-500, height), dungeons[3], 1,  bulk_adjust_y+.02)
-            gl_text_name(self.font, color_c5, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), dungeons[4], 1, 1.115)
-            gl_text_name(self.font, color_c6, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), dungeons[5], 1, 1.115)
-            gl_text_name(self.font, color_c7, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), dungeons[6], 1, 1.17)
-            gl_text_name(self.font, color_c8, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), dungeons[7], 1, 1.17)
+            gl_text_name(self.font, color_c1, cgls(width-1550, width), cgls(width-850, width), cgls(height-350, height), cgls(height-400, height), dungeons[0], 1,  bulk_adjust_y, black_text)
+            gl_text_name(self.font, color_c2, cgls(width-750, width), cgls(width-50, width), cgls(height-350, height), cgls(height-400, height), dungeons[1], 1,  bulk_adjust_y, black_text)
+            gl_text_name(self.font, color_c3, cgls(width-1550, width), cgls(width-850, width), cgls(height-450, height), cgls(height-500, height), dungeons[2], 1,  bulk_adjust_y+.02, black_text)
+            gl_text_name(self.font, color_c4, cgls(width-750, width), cgls(width-50, width), cgls(height-450, height), cgls(height-500, height), dungeons[3], 1,  bulk_adjust_y+.02, black_text)
+            gl_text_name(self.font, color_c5, cgls(width-1550, width), cgls(width-850, width), cgls(height-550, height), cgls(height-600, height), dungeons[4], 1, 1.115, black_text)
+            gl_text_name(self.font, color_c6, cgls(width-750, width), cgls(width-50, width), cgls(height-550, height), cgls(height-600, height), dungeons[5], 1, 1.115, black_text)
+            gl_text_name(self.font, color_c7, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), dungeons[6], 1, 1.17, black_text)
+            gl_text_name(self.font, color_c8, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), dungeons[7], 1, 1.17, black_text)
             gl_text_name(self.font, color_next, cgls(width-1550, width), cgls(width-850, width), cgls(height-750, height), cgls(height-800, height), "Next", 1, 1.31)
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), "Leave", 1, 1.31)
 
@@ -1947,6 +1952,7 @@ class MainGame():
         right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)
 
 if __name__ == "__main__":
+    print("Creatures of Habbitt Version Alpha 1")
     MainGame().controller()
 
 
