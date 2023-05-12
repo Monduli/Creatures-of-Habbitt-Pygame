@@ -63,3 +63,22 @@ Characters and their dungeons (need lore and proper names)
         Hollow has lost his dominant arm (left) covers it with his cloak
         Someone can give him shit about it if they are ambidextrous
     Candy Caniche, Fox Vizier - Starting Town Keep 
+
+Progress List:
+0 - Just started game
+    Objective - Complete Habbitt Cave (will not be visible as Habbitt is inaccessible at 0 progress)
+
+1 - Completed Habbitt Cave, recruited Henrietta
+    Objective - Raise Henrietta to support rank 1, talk via the Inn
+
+2 - Talked to Henrietta via the Inn
+    Objective - Go to Grilla Garage and recruit Grilla
+
+3 - Completed Grilla's Garage, recruited Grilla
+    Objective - Raise Grilla to support rank 1, talk via the Inn
+    
+4 - Talked to Grilla via the Inn   
+    Objective - Locate the detective in the desert area
+
+5 - Completed Desert/Temple, rescued Dane and Rayna
+    Objective - Raise Dane to support rank 1, talk via the Inn
