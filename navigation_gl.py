@@ -421,6 +421,7 @@ class MainGame():
         elif self.user_text[0][self.advance][1] in ["Please select a destination.", "[Returning to town.]", "To Town"]:
             self.village_choices()
             self.slots = [0, 0, 0]
+            self.user_text
 
         # end inn dialog
         elif self.user_text[0][self.advance][1] == "[You leave him to his devices.]" or self.user_text[0][self.advance][1] == "[You leave her to her devices.]":
@@ -1052,13 +1053,13 @@ class MainGame():
         difficulty_rect = pygame.Rect(width-750,height-800,700,50)
 
         progress_reqs = [
-            0,  # Habbitt Cave (Default) 
-            2,  # Grilla Garage (Complete Cave, Talk to Henrietta)
-            4,  # Tantamount Tower (Complete Garage, Go into Town)
-            6,  # Auspicious Abode (Complete Tower, ???)
-            8,  # Desert/Temple ()
-            10, # Pasture ()
-            12, # Mall Mountain (Lam'baste)
+            0,  # Habbitt Cave 
+            2,  # Grilla Garage 
+            4,  # Tantamount Tower 
+            6,  # Auspicious Abode 
+            8,  # Desert/Temple 
+            10, # Pasture 
+            12, # Mall Mountain
             14, # Haunted Home
             16, # ???
             18, # Windmill Wilds
@@ -1077,7 +1078,16 @@ class MainGame():
             44,  # Bonus
             46  # Bonus
         ]
-        colors = ["BLACK" for x in range(0,8)]
+
+        d = self.difficulty
+        if d == "Smooth":
+            colors = ["BLACK" for x in range(0,8)]
+        elif d == "Groovy":
+            colors = ["BLUE" for x in range(0,8)]
+        elif d == "Bodacious":
+            colors = ["GREEN" for x in range(0,8)]
+        elif d == "Chaos":
+            colors = ["PINK" for x in range(0,8)]
 
         while True:
             # fill screen to cover up previous elements and assign black to all the buttons
@@ -1198,7 +1208,7 @@ class MainGame():
                             colors = ["GREEN" for x in range(0,8)]
                         elif self.difficulty == "Bodacious":
                             self.difficulty = "Chaos"
-                            colors = ["RED" for x in range(0,8)]
+                            colors = ["PINK" for x in range(0,8)]
                         elif self.difficulty == "Chaos":
                             self.difficulty = "Smooth"
                             colors = ["BLACK" for x in range(0,8)]

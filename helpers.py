@@ -477,9 +477,9 @@ def shape_color(color):
         elif color == "PINK":
             glColor3f(c_c(227), c_c(28), c_c(121))
         elif color == "WHITE":
-            glColor3f(255.0, 255.0, 255.0)
+            glColor3f(1, 1, 1)
         elif color == "GRAY":
-            glColor3f(47.0, 79.0, 79.0)
+            glColor3f(c_c(47), c_c(79), c_c(79))
         else:
             Exception("Wrong format")
 
@@ -487,14 +487,36 @@ def c_c(c):
     # color conversion for rgb format
     return c/255
 
+def rev_c_c(c):
+    return c*255
+
+def retrieve_color(color_name):
+    if color_name == "BLUE":
+        return (0.0, 0.0, rev_c_c(1.0))
+    elif color_name == "RED":
+        return (rev_c_c(1.0), 0.0, 0.0)
+    elif color_name == "GREEN":
+        return (0.0, rev_c_c(1.0), 0.0)
+    elif color_name == "BLACK":
+        return (0.0, 0.0, 0.0)
+    elif color_name == "PINK":
+        return (227, 28, 121)
+    elif color_name == "WHITE":
+        return (255, 255, 255)
+    elif color_name == "GRAY":
+        return (47, 79, 79)
+    else:
+        Exception("Wrong format")
 
 def gl_text(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust):
+    color = retrieve_color(rect_color)
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
-    drawText_gl_internal(rect_color, font, left, bot, text, x_adjust, y_adjust)
+    _drawText_gl(color, font, left, bot, text, x_adjust, y_adjust)
 
 def gl_text_name(font, rect_color, right, left, bot, top, text, x_adjust, y_adjust, black_text=False):
+    color = retrieve_color(rect_color)
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
@@ -502,17 +524,18 @@ def gl_text_name(font, rect_color, right, left, bot, top, text, x_adjust, y_adju
         text_color = (0,0,0, 255) 
     else:
         text_color = (255, 255, 255, 255)
-    drawText_gl_internal(rect_color, font, left - ((left-right)/2), bot, text, x_adjust, y_adjust, text_color, True)
+    _drawText_gl(color, font, left - ((left-right)/2), bot, text, x_adjust, y_adjust, text_color, True)
 
 def gl_text_wrap(font, display, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
+    color = retrieve_color(rect_color)
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
     rect_width = abs(reverse_cgls(right, width) - reverse_cgls(left, width))
     rect_height = abs(reverse_cgls(bot, height) - reverse_cgls(top, height))
-    drawTextWrap_internal(rect_color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
+    _drawTextWrap(color, font, display, text, rect_color, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
 
-def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, text_color=(255, 255, 255, 255), center=False):                                                
+def _drawText_gl(rect_color, font, x, y, text, x_adjust, y_adjust, text_color=(255, 255, 255, 255), center=False):                                                
     textSurface = font.render(text, True, text_color, rect_color)
     textData = pygame.image.tostring(textSurface, "RGBA", True)
     if center == True:
@@ -523,9 +546,7 @@ def drawText_gl_internal(rect_color, font, x, y, text, x_adjust, y_adjust, text_
     glWindowPos2d(new_x, new_y)
     glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
-def drawTextWrap_internal(rect_color, font, surface, text, color, x, y, x_adjust, y_adjust, level, r_w, r_h, bkg=None, aa=False, center=False):
-    if rect_color == "PINK":
-        rect_color = (227, 28, 121)
+def _drawTextWrap(rect_color, font, surface, text, color, x, y, x_adjust, y_adjust, level, r_w, r_h, bkg=None, aa=False, center=False):
     rect = pygame.Rect(x, y, r_w, r_h)
     y = rect.top
     lineSpacing = 0
@@ -552,7 +573,7 @@ def drawTextWrap_internal(rect_color, font, surface, text, color, x, y, x_adjust
             i = text.rfind(" ", 0, i) + 1
 
         # render the line and blit it to the surface
-        textSurface = font.render(text[:i], True, (255, 255, 255, 0))
+        textSurface = font.render(text[:i], True, (255, 255, 255, 0), rect_color)
         textData = pygame.image.tostring(textSurface, "RGBA", True)
         text_rect = textSurface.get_rect()
         
@@ -575,14 +596,15 @@ def drawTextWrap_internal(rect_color, font, surface, text, color, x, y, x_adjust
     return text
 
 def gl_text_wrap_dialog(font, rect_color, left, right, bot, top, text, x_adjust, y_adjust, level):
+    color = retrieve_color(rect_color)
     glBegin(GL_QUADS)
     rect_ogl(rect_color, left, right, bot, top)
     glEnd()
     rect_width = reverse_cgls(right, width) - reverse_cgls(left, width)
     rect_height = reverse_cgls(bot, height) - reverse_cgls(top, height)
-    drawTextWrap_dialog_internal(rect_color, font, text, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
+    _drawTextWrap_dialog(color, font, text, left, top, x_adjust, y_adjust, level, rect_width, rect_height)
 
-def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjust, level, rect_width, rect_height, bkg=None, aa=False, center=False):
+def _drawTextWrap_dialog(rect_color, font, text, x, y, x_adjust, y_adjust, level, rect_width, rect_height, bkg=None, aa=False, center=False):
     rect = pygame.Rect(x,y,rect_width,rect_height)
     y = rect.top
     lineSpacing = 0
@@ -612,7 +634,7 @@ def drawTextWrap_dialog_internal(rect_color, font, text, x, y, x_adjust, y_adjus
             i = text.rfind(" ", 0, i) + 1
 
         # render the line and blit it to the surface
-        textSurface = font.render(text[:i], True, (255, 255, 255, 0))
+        textSurface = font.render(text[:i], True, (255, 255, 255, 0), rect_color)
         textData = pygame.image.tostring(textSurface, "RGBA", True)
         text_rect = textSurface.get_rect()
         
