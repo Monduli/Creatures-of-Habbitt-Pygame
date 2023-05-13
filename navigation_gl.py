@@ -1102,12 +1102,12 @@ class MainGame():
             if page == 1:
                 dungeon_1 = "Habbitt Cave"
                 dungeon_2 = self.process_map(progress_reqs[1], "Grilla's Garage")
-                dungeon_3 = self.process_map(progress_reqs[2], "Tantamount Tower")
-                dungeon_4 = self.process_map(progress_reqs[3], "Auspicious Abode")
-                dungeon_5 = self.process_map(progress_reqs[4], "Pristine Pasture")
-                dungeon_6 = self.process_map(progress_reqs[5], "Kahuna Sands")
-                dungeon_7 = self.process_map(progress_reqs[6], "Mall Mountain")
-                dungeon_8 = self.process_map(progress_reqs[7], "Haunted Home")
+                dungeon_3 = self.process_map(progress_reqs[2], "Kahuna Sands")
+                dungeon_4 = self.process_map(progress_reqs[3], "Tantamount Tower")
+                dungeon_5 = self.process_map(progress_reqs[4], "Auspicious Abode")
+                dungeon_6 = self.process_map(progress_reqs[5], "Mall Mountain")
+                dungeon_7 = self.process_map(progress_reqs[6], "Haunted Home")
+                dungeon_8 = self.process_map(progress_reqs[7], "Pristine Pasture")
             elif page == 2:
                 dungeon_1 = self.process_map(progress_reqs[8], "???")
                 dungeon_2 = self.process_map(progress_reqs[9], "Windmill Wilds")
