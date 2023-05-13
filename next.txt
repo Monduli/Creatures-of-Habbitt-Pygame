@@ -41,28 +41,31 @@ System for voice acting
         Volume (set in options menu, can be a private variable)
 
 Characters and their dungeons (need lore and proper names)
-    Henrietta - Cave
+    Henrietta - Habbitt Cave
     Grilla - Grilla Garage
-    Radish - Mage Tower
-    Grapefart - City of Gold
+    Radish - Tantamount Tower
+    Grapefart - Auspicious Abode
         Romance route - realizes he isn't romantic but marries the mc for tax benefits because they're the person he can stand to be around
-    Dane + Rayna - Desert Temple (Dane before, Rayna after)
-    Lam'baste - Overgrown Restaurant
-    Sunny - Old Manor (daytime)
+    Dane + Rayna - Kahuna Sands (Dane before, Rayna after) 
+    Lam'baste - Mall Mountain
+    Sunny - Haunted Home (daytime)
     Rancher NPC - Pristine Pasture
-    Victor (TBA) - 
     Boss NPC 1 - 
-    Donkey Hote - Tilting at Windmills (Don Quixote)
+    Donkey Hote - Windmill Wilds
     Boss NPC 2 - 
-    Sidney - Something Underwater?
+    Sidney - Sea Sharp Shark School
     Boss NPC 3 - 
     Wolf Rom NPC 9 - 
-    Giver of Life - Lake of Creation 
-    Ward N. Steen / Juliette - Ward's Keep
-    Hollow - Volcano (Reaper's Respite?)
+    Giver of Life - Lake of Life
+    Ward N. Steen / Juliette - Ursine Utopia
+    Hollow - Reaper's Respite
         Hollow has lost his dominant arm (left) covers it with his cloak
         Someone can give him shit about it if they are ambidextrous
-    Candy Caniche, Fox Vizier - Starting Town Keep 
+    Candy Caniche, Fox Vizier - Homea
+    Saint Shepard - St. Stephonia
+    Big Bad (TBA) - Tower of Torment
+    Extra - Acrimonious Abyss
+    [4x Bonus Dungeon]
 
 Progress List:
 0 - Just started game
