@@ -12,33 +12,75 @@ SIZE = width, height = 1600, 900
 class MainGame():
     def __init__(self):
         pygame.init()
+
+        # keeps track of where you are in the storyline
         self.progress = 1
+
+        # difficulty
+        # smooth, groovy, bodacious, chaos
         self.difficulty = "Smooth"
+
+        # position in dialog
         self.advance = 0
+
+        #
         self.exit_next = 0
+
+        # whether the background scrolls
         self.background_move = True
+
+        # the screen for the game, using OPENGL
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
+        
+        # your party members, starts with none but is filled after character creation
         self.party = [None, None, None, None]
+
+        # fade 
         self.counter_x = 0
         self.counter_y = 0
         self.fade_image = pygame.image.load("images/black_pass.png").convert_alpha()
-        self.i = 0
-        self.font = pygame.font.Font("font/VCR.001.ttf", 32)
-        self.level = 0
-        self.debug = 0
-        self.nsteen = BearNSteen([15, 10, 10, 5, 5, 0])
-        self.move_to_crawl = 0
         self.fade_over = 0
+
+        # position of background
+        self.i = 0
+
+        # font
+        self.font = pygame.font.Font("font/VCR.001.ttf", 32)
+
+        # level for tracking wordwrap
+        self.level = 0
+
+        # whether debug mode is on or not
+        # (provides print statements that describe what is going on)
+        self.debug = 0
+
+        # nsteen's character is generated here
+        self.nsteen = BearNSteen([15, 10, 10, 5, 5, 0])
+
+        # whether to transition to dungeon crawling
+        self.move_to_crawl = 0
+        
+        # the object that is written to save.txt
         self.save_object = None
+
+        # colors for buttons
         self.color_passive = "BLACK" 
         self.color_active = "RED"
+
+        # the text being shown in dialog
         self.user_text = None
+
+        # pygame clock to keep track of frames
         self.clock = pygame.time.Clock()
+
+        # music initialization
         pygame.mixer.init()
         self.boosted = 0
         self.music = pygame.mixer.Channel(5)
         self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
+
+        # character objects
         self.characters = [
             # Main Character
             MainCharacter([10,10,10,10,10,10]),
