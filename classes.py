@@ -573,6 +573,60 @@ class SunnySpider(Character):
     def spread(self, stats):
         Character.distribute_stats(self, ["quick", "heart", "chutz", "phys", "heal", "magic"], stats)
         self.calculate_stats()
+
+class Victor(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
+        self.spread(stats)
+        self.role = "Aristocrat"
+        self.set_portrait("victor_portrait_100.png")
+        self.stat_spread = ["heal", "magic", "chutz", "phys", "heart", "quick"]
+        self.fill_xp_array()
+        self.set_stats_picture("victor_port_stats")
+        self.set_name("Victor")
+        self.num = 6
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["heal", "magic", "chutz", "phys", "heart", "quick"], stats)
+        self.calculate_stats()
+
+class DonkeyHote(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
+        self.spread(stats)
+        self.role = "Philosopher"
+        self.set_portrait("donkeyhote_portrait_100.png")
+        self.stat_spread = ["heal", "magic", "chutz", "phys", "heart", "quick"]
+        self.fill_xp_array()
+        self.set_stats_picture("donkeyhote_port_stats")
+        self.set_name("Donkey Hote")
+        self.num = 7
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["heal", "magic", "chutz", "phys", "heart", "quick"], stats)
+        self.calculate_stats()
+
+class Sidney(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
+        self.spread(stats)
+        self.role = "Athlete"
+        self.set_portrait("sidney_portrait_100.png")
+        self.stat_spread = ["heal", "magic", "chutz", "phys", "heart", "quick"]
+        self.fill_xp_array()
+        self.set_stats_picture("sidney_port_stats")
+        self.set_name("Sidney")
+        self.num = 8
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["heal", "magic", "chutz", "phys", "heart", "quick"], stats)
+        self.calculate_stats()
         
 class Hollow(Character):
     def __init__(self, stats) -> None:
@@ -587,6 +641,24 @@ class Hollow(Character):
         self.set_stats_picture("hollow_port_stats")
         self.set_name("Hollow")
         self.num = 9
+
+    def spread(self, stats):
+        Character.distribute_stats(self, ["phys", "quick", "heart", "magic", "heal", "chutz"], stats)
+        self.calculate_stats()
+
+class Jivan(Character):
+    def __init__(self, stats) -> None:
+        super().__init__()
+        if stats == "S":
+            stats = [15, 10, 10, 5, 5, 0]
+        self.spread(stats)
+        self.role = "Giver of Life"
+        self.set_portrait("jivan_portrait_100.png")
+        self.stat_spread = ["phys", "quick", "heart", "magic", "heal", "chutz"]
+        self.fill_xp_array()
+        self.set_stats_picture("jivan_port_stats")
+        self.set_name("Jivan")
+        self.num = 10
 
     def spread(self, stats):
         Character.distribute_stats(self, ["phys", "quick", "heart", "magic", "heal", "chutz"], stats)
