@@ -306,7 +306,7 @@ class Character:
         if self.bonds[p][1] >= self.bonds_to_next[self.bonds[p][0]]:
             self.bonds[p][1] = 0
             self.bonds[p][0] += 1
-            print("Bond has ranked up to rank " + str(self.bonds[p][0]))
+            print(self.name + "'s bond with " + target + " has ranked up to rank " + str(self.bonds[p][0]))
 
     def boost(self, target, spread):
         for x in range(0, target):
@@ -323,7 +323,6 @@ class Character:
             y+=1
     
     def has_xp_to_level_up(self):
-        print(self.level)
         if self.level < 9999:
             if self.xp >= self.xp_tiers[self.level-1]:
                 self.level_up(self.stat_spread)

@@ -146,7 +146,7 @@ class Board(object):
     def busy(self):
         if self.wait > 0 and not (self.refill or self.matches):
             if self.wait == 1:
-                print("Wait diminished")
+                self.printdb("Wait diminished")
             self.wait -= 1
             return True
         return self.refill or self.matches
@@ -365,8 +365,7 @@ class MatchGame(object):
 
         self.party = party
         # The list of enemies in this particular dungeon.
-        if self.debug == 1:
-            print(enemies)
+        self.printdb(enemies)
         self.enemy = enemies.copy()
 
         # The turn order for the party.
@@ -451,10 +450,10 @@ class MatchGame(object):
 
         while True:
             if curr_character != self.party_current:
-                print("Character swapped")
+                self.printdb("Character swapped")
                 curr_character = self.party_current
             if check != self.p_text:
-                print(self.party_text)
+                self.printdb(self.party_text)
                 check = self.p_text
             party_turns = turn_order(self.party)
             next_turn = 0
@@ -462,14 +461,13 @@ class MatchGame(object):
                 self.enemy_active = self.enemy[0]
                 self.e_text = "It is " + self.enemy_active.get_name() + "'s turn."
             if self.debug == 1:
-                print("START: " + str(self.debug_timer - pygame.time.get_ticks()))
+                self.printdb("START: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
-            if self.debug == 1:
-                print("Debug: Starting new loop.")
+                self.printdb("Debug: Starting new loop.")
             if now != "skip":
                 before = pygame.time.get_ticks() - now
                 if turn > 1 and before > 1000 and self.debug==1:
-                    print("Loop time: " + str(before))
+                    self.printdb("Loop time: " + str(before))
             now = pygame.time.get_ticks()
             self.debug = 0
 
@@ -481,7 +479,7 @@ class MatchGame(object):
                 self.p_text = self.party_text[0]
                 xp = 0
                 for foe in enemies:
-                    print(foe.get_xp())
+                    self.printdb(foe.get_xp())
                     xp += foe.get_xp()
                 xp_string = "Your party receives XP experience points!"
                 replaced_xp = xp_string.replace("XP", str(xp))
@@ -522,14 +520,14 @@ class MatchGame(object):
                 return "WIN"
             
             if self.debug == 1:
-                print("DRAW: " + str(self.debug_timer - pygame.time.get_ticks()))
+                self.printdb("DRAW: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
             self.flash_red = False
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
             self.swap_time += dt
 
             if self.debug == 1:
-                print("EVENTS: " + str(self.debug_timer - pygame.time.get_ticks()))
+                self.printdb("EVENTS: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
 
             if self.timing == 1:
@@ -549,9 +547,8 @@ class MatchGame(object):
                        pos = pygame.mouse.get_pos()
                        for cell in self.board.board:            
                             if cell.rect.collidepoint(pos):
-                                if self.debug == 1:
-                                    print("Mouse pos: " + str(pos))
-                                    print("Rect location: " + str(cell.rect))
+                                self.printdb("Mouse pos: " + str(pos))
+                                self.printdb("Rect location: " + str(cell.rect))
                                 cell_dragging = True
                                 cell_to_drag = cell
                                 store_x = cell.x
@@ -564,7 +561,7 @@ class MatchGame(object):
                                 possible_matches = get_possible_matches(cell_i)
 
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    # print("cell_dragging: " + str(cell_dragging))
+                    # self.printdb("cell_dragging: " + str(cell_dragging))
                     if event.button == 1: 
                         pos = pygame.mouse.get_pos()
                         if cell_dragging == True: 
@@ -574,26 +571,23 @@ class MatchGame(object):
                                     cell = self.board.board[i] 
                                     cell_x = cell.x
                                     cell_y = cell.y
-                                    if self.debug == 1:
-                                        print(str(cell_x) + " < " + str(pos[0]) + " < " + str(cell_x+100))
-                                        print(str(cell_y) + " < " + str(pos[1]) + " < " + str(cell_y+100))
-                                        print(cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100)
+                                    self.printdb(str(cell_x) + " < " + str(pos[0]) + " < " + str(cell_x+100))
+                                    self.printdb(str(cell_y) + " < " + str(pos[1]) + " < " + str(cell_y+100))
+                                    self.printdb(cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100)
                                     if cell_x < pos[0] < cell_x+100 and cell_y < pos[1] < cell_y+100:
                                         # check if in x,y of picked up cell (can't just put tokens wherever)
-                                        if self.debug == 1:
-                                            print("Colliding with rect at " + str(pos))
+                                        self.printdb("Colliding with rect at " + str(pos))
                                         new_i = cell.get_i()
                                         if new_i in possible_matches:
                                             if self.timing == 1:
                                                 debug_timing("MATCH_TIMER BEGIN", match_timer)
                                                 match_timer = pygame.time.get_ticks()
                                             # check if occupied square is a match
-                                            if self.debug == 1:
-                                                print("Cell is in possible matchable x/y coords")
+                                            self.printdb("Cell is in possible matchable x/y coords")
                                             self.swap(new_i, cell_i)
                                             if len(self.board.find_matches()) > 0:
                                                 if self.timing == 1:
-                                                    print("MATCH FOUND: " + str(self.debug_timer - pygame.time.get_ticks()))
+                                                    self.printdb("MATCH FOUND: " + str(self.debug_timer - pygame.time.get_ticks()))
                                                     self.debug_timer = pygame.time.get_ticks()
                                                 cell_dragging = False
                                                 cell_to_drag.x = cell.x
@@ -630,15 +624,14 @@ class MatchGame(object):
                     cell_to_drag.y = mouse_y + offset_y
             
             if curr_match != [] and self.debug == 1:
-                print(curr_match)
+                self.printdb(curr_match)
             # If any matches are made by the player  
             # TODO: Make it not change party members in the middle of a combo 
             if self.state == "PLAY":   
                 while len(curr_match) > 0:
                     character_swap_timing = 1
                     for item in curr_match:
-                        if self.debug == 1:
-                            print("Debug: curr_match: " + curr_match[0])
+                        self.printdb("Debug: curr_match: " + curr_match[0])
                         if len(self.party_text) > 1:
                             self.party_text.remove(self.party_text[0])
                         in_curr_match_timer = pygame.time.get_ticks()
@@ -659,8 +652,7 @@ class MatchGame(object):
                 # if matches have been made previously and the board isn't processing them
                 if character_swap_timer != None and self.board.wait == 0:
                     if (pygame.time.get_ticks() - character_swap_timer > 1 and time_to_swap == 1) or self.removed != 0:
-                        if self.debug == 1:
-                            print("Changing party member")
+                        self.printdb("Changing party member")
                         if self.party_current+1 < len(party_turns):
                             self.party_current += 1
                         else:
@@ -683,15 +675,14 @@ class MatchGame(object):
                     self.e_text = self.enemy_text[0]
         
                 # update the box text with what's going on
-                if self.debug == 1:
-                    print("Debug: Updating textboxes")
+                self.printdb("Debug: Updating textboxes")
                 if len(self.party_text) > 0: 
                     self.p_text = self.party_text[0]
                 else:
                     self.p_text = ""
             
                 if self.debug == 1:
-                    print("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
+                    self.printdb("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
                     self.debug_timer = pygame.time.get_ticks()
                 if now - text_timer > 1000:
                     if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
@@ -710,8 +701,7 @@ class MatchGame(object):
                         text_timer = pygame.time.get_ticks()
                         hold = 0
 
-                if self.debug == 1:
-                    print("Debug: Checking for 'It is'")
+                self.printdb("Debug: Checking for 'It is'")
                 if len(self.party_text) > 0:
                     if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
                         self.party_text.remove(self.party_text[0])
@@ -724,7 +714,7 @@ class MatchGame(object):
                         text_timer = pygame.time.get_ticks()
 
                 if self.debug == 1:
-                    print("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))
+                    self.printdb("IT IS: " + str(self.debug_timer - pygame.time.get_ticks()))
                     self.debug_timer = pygame.time.get_ticks()
 
                 if pygame.time.get_ticks() - text_timer > 2000:
@@ -733,18 +723,17 @@ class MatchGame(object):
                             self.party_text = ["It is " + party_turns[self.party_current][0].get_name() + "'s turn."]
 
             if self.timing == 1:
-                print("TICK START: " + str(self.debug_timer - pygame.time.get_ticks()))
+                self.printdb("TICK START: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
 
             self.board.tick(dt, self.display)
 
-            if self.debug == 1:
-                print("Debug: Tick complete.")
+            self.printdb("Debug: Tick complete.")
 
             turn += 1
 
             if self.timing == 1:
-                print("TICK END: " + str(self.debug_timer - pygame.time.get_ticks()))
+                self.printdb("TICK END: " + str(self.debug_timer - pygame.time.get_ticks()))
                 self.debug_timer = pygame.time.get_ticks()
     
     def input(self, key):
@@ -777,7 +766,7 @@ class MatchGame(object):
                 if len(to_print) < 10:
                     to_print.append(self.board.board[x].shape)
                 elif len(to_print) >= 10 or x+1 >= 89:
-                    print(to_print)
+                    self.printdb(to_print)
                     to_print = []
                     if x+1 < 90:
                         to_print.append(self.board.board[x].shape)
@@ -979,7 +968,7 @@ class MatchGame(object):
                         [topLeft, topRight, bottomRight, bottomLeft], 3)
      """   
     def process_action(self, item, party, enemy, player_active, enemy_active, turns, enemy_turns):
-        print(enemy_active, enemy_active.get_chp())
+        self.printdb(enemy_active, enemy_active.get_chp())
         action = item
         update_text = None
         if enemy_active not in enemy:
@@ -1135,7 +1124,7 @@ class MatchGame(object):
     def process_fade(self):
         go = 1
         while go == 1:
-            print("Fading in")
+            self.printdb("Fading in")
             self.counter_x += 256
             self.counter_y += 144
             self.crawler_fade_in()
@@ -1170,7 +1159,12 @@ class MatchGame(object):
         if self.talking_timer % 200 == 0:
             pass
 
+    def printdb(self, string):
+        if self.debug == 1:
+            print(string)
+
 if __name__ == '__main__':
+    print("Running match game in debug mode.")
     pygame.init()
     pygame.mixer.init()
     screen = pygame.display.set_mode((width, height),

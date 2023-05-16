@@ -158,7 +158,7 @@ class Crawler():
 
     def play(self, party, dungeon, prefix, fade_in=False):
         self.load_data()
-        d = dl.get_dungeon_layout(prefix)
+        d = dl.get_dungeon_layout(prefix + "tiled")
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
 
@@ -526,8 +526,8 @@ class Crawler():
         #glTranslatef(0.0,0.0,-10.0)
 
         self.blit_bg_camera(dungeon_rooms[current_room][0], False)
-        #self.map_rect = self.camera.apply_rect(self.map_rect)
-        #blit_image(size, 0, 0, self.map_img, 1,1,1)
+        self.map_rect = self.camera.apply_rect(self.map_rect)
+        blit_image(size, 0, 0, self.map_img, 1,1,1)
         
         self.player.rect = self.camera.apply(self.player)
         self.enemy.rect = self.camera.apply(self.enemy)

@@ -9,9 +9,18 @@ from helpers import *
 def get_dungeon_layout(dungeon_name):
     if dungeon_name == "cave":
         return [cave, cave_enemies]
+    if dungeon_name == "cavetiled":
+        return [cavetiled, cave_enemies]
 
 cave = [
             ["testroom.png", 1, 2, 1, None], 
+            ["testroom2.png", 0, 3, 0, None],
+            ["testroom3.png", None, None, None, 0], 
+            ["testroom4.png", None, "END", None, 1]
+            ]
+
+cavetiled = [
+            ["cave1.png", 1, 2, 1, None], 
             ["testroom2.png", 0, 3, 0, None],
             ["testroom3.png", None, None, None, 0], 
             ["testroom4.png", None, "END", None, 1]

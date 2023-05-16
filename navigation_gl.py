@@ -367,7 +367,8 @@ class MainGame():
 
     def fade_out(self):
         blit_image([width, height], width-self.counter_x, 0, pygame.image.load("images/black_pass.png").convert_alpha(), 1, 1, 1)
-        print(self.counter_x)
+        if self.debug == 1:
+            print(self.counter_x)
         if self.counter_x < 200:
             self.counter_x += 50
         elif self.counter_x < 500:
@@ -1825,7 +1826,8 @@ class MainGame():
         fade_out = 1
         while fade_out != 0:
             if fade_out == 1:
-                print("Fading out | counter_x == " + str(counter_x) + " | counter_y == " + str(counter_y))
+                if self.debug == 1:
+                    print("Fading out | counter_x == " + str(counter_x) + " | counter_y == " + str(counter_y))
                 counter_x += 256
                 counter_y += 144
                 circle_fade_out(self.screen, counter_x, counter_y, fade_image)
@@ -1834,7 +1836,8 @@ class MainGame():
                     counter_x = 0
                     counter_y = 0
             elif fade_out == 2:
-                print("Fading in")
+                if self.debug == 1:
+                    print("Fading in")
                 counter_x += 256
                 counter_y += 144
                 circle_fade_in(self.screen, counter_x, counter_y, fade_image)
@@ -1934,8 +1937,9 @@ class MainGame():
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
     def distribute_data(self):
-        print(len(self.data))
-        print(self.data)
+        if self.debug == 1:
+            print(len(self.data))
+            print(self.data)
         self.progress = self.data[0][0]
         for x in range(1, 22):
             c = self.characters[x-1]
@@ -1974,7 +1978,8 @@ class MainGame():
         self.characters[0].set_pictures_mc(self.mc_for_save[0])
         self.character_names = self.data[24]
         self.npc_names = self.data[25]
-        print(self.mc_for_save[1])
+        if self.debug == 1:
+            print(self.mc_for_save[1])
         self.dialog = dia.Dialog(self.mc_for_save[1])
 
     def set_char_lists(self):
@@ -1998,7 +2003,8 @@ class MainGame():
                 self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
             elif right.get_name() == "N. Steen":
                 self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
-        print(self.user_text)
+        if self.debug == 1:
+            print(self.user_text)
         self.in_dialog(False, False, self.progress)
         left.set_conversation_completeness(right.get_name(), self.main_character.get_name(), rank)
         right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)

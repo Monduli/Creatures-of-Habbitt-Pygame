@@ -13,6 +13,9 @@ Remake dungeons
     New 4/26
         Given up for now, will come back later and try to understand OpenGL better
 
+Smithing System
+    Use items dropped in dungeons to make better weapons / armor
+
 Implement boss fight (generic)
     Allow navigation_gl.py to call match.py with boss context
     Allow for dialog during boss fights
@@ -39,6 +42,10 @@ System for voice acting
         Length of voice line
         Presence or absence of existing voice line
         Volume (set in options menu, can be a private variable)
+
+Cooking?
+    Through Grilla, combine ingredients dropped in dungeons to make food to buff party
+    Can use the same system as smithing, just with food 
 
 Characters and their dungeons (need lore and proper names)
     Henrietta - Habbitt Cave
