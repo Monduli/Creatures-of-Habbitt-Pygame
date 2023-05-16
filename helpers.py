@@ -377,19 +377,23 @@ def debug_timing(message, timer):
     print(message + ": " + str(timer - pygame.time.get_ticks()))
     return pygame.time.get_ticks()
 
-bitmap_tex = None
+def set_texID(id):
+    global texID
+    texID = id
+
+texID = None
 def blit_image(display_wh, x, y, img, r, g, b):
-    global bitmap_tex
 
     # get texture data
     w,h = img.get_size()
     raw_data = img.get_buffer().raw
     data = np.fromstring(raw_data, np.uint8)
 
+    global texID
     # create texture object
-    if bitmap_tex == None:
-      bitmap_tex = glGenTextures(1)
-    glBindTexture(GL_TEXTURE_2D, bitmap_tex)
+    if texID == None:
+      texID = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, texID)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,w,h,0,GL_BGRA,GL_UNSIGNED_BYTE,data)
@@ -401,7 +405,7 @@ def blit_image(display_wh, x, y, img, r, g, b):
     glOrtho(0, display_wh[0], 0, display_wh[1], -1, 1)
     glMatrixMode(GL_MODELVIEW)
     glPushMatrix()
-    glLoadIdentity()
+    #glLoadIdentity()
 
     # enable blending
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

@@ -12,6 +12,7 @@ import tiled_functions as tf
 
 size = width, height = 1600, 900
 FPS = 60
+texID = glGenTextures(1)
 
 class Creature():
     def __init__(self, display, x, y, image, animation_frames):
@@ -161,6 +162,7 @@ class Crawler():
         d = dl.get_dungeon_layout(prefix + "tiled")
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
+        self.draw_map = 1
 
         self.texID = glGenTextures(1)
 
@@ -524,10 +526,24 @@ class Crawler():
     def draw_gl_scene(self, dungeon_rooms, current_room, party, dungeon_enemies):
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
+        global texID
+        set_texID(texID)
 
-        self.blit_bg_camera(dungeon_rooms[current_room][0], False)
+        #self.blit_bg_camera(dungeon_rooms[current_room][0], False)
+        glClear(GL_COLOR_BUFFER_BIT)
+        glLoadIdentity()
+        glDisable(GL_LIGHTING)
+        glEnable(GL_TEXTURE_2D)
         self.map_rect = self.camera.apply_rect(self.map_rect)
-        blit_image(size, 0, 0, self.map_img, 1,1,1)
+        self.surfaceToTexture( self.map_img )
+        glBindTexture(GL_TEXTURE_2D, texID)
+        glBegin(GL_QUADS)
+        glTexCoord2f(0, 0); glVertex2f(-1, 1)
+        glTexCoord2f(0, 1); glVertex2f(-1, -1)
+        glTexCoord2f(1, 1); glVertex2f(1, -1)
+        glTexCoord2f(1, 0); glVertex2f(1, 1)
+        glEnd()
+        self.draw_map = 0
         
         self.player.rect = self.camera.apply(self.player)
         self.enemy.rect = self.camera.apply(self.enemy)
@@ -551,7 +567,6 @@ class Crawler():
 
         # if the stats box is expanded:
         if self.expand != 4:
-            
             # draw the stats box
             rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
 
@@ -840,6 +855,19 @@ class Crawler():
         glTexCoord2f(1, 1); glVertex2f(1, -1)
         glTexCoord2f(1, 0); glVertex2f(1, 1)
         glEnd()
+
+    def surfaceToTexture(self, pygame_surface ):
+        global texID
+        rgb_surface = pygame.image.tostring( pygame_surface, 'RGB')
+        glBindTexture(GL_TEXTURE_2D, texID)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+        surface_rect = pygame_surface.get_rect()
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, surface_rect.width, surface_rect.height, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb_surface)
+        glGenerateMipmap(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, 0)
 
 if __name__ == '__main__':
     pygame.init()
