@@ -537,6 +537,7 @@ class MainGame():
                 self.user_text = [[[None, "Added party members."], [None, "[Returning to town.]"]]]
                 self.advance = 0
                 self.boosted = 1
+                self.progress = 46
 
         # No blacksmith to run yet
         if choice == "blacksmith":
@@ -557,7 +558,7 @@ class MainGame():
 
         # save game (TODO: Broken)
         elif choice == "save":
-            self.user_text = self.save_game()
+            self.user_text = self.load_save_choices("SAVE")
             self.advance = 0
 
         # Open dungeons menu and process result
@@ -574,16 +575,16 @@ class MainGame():
                     self.user_text = [[[None, "[Returning to town.]"]]]
                 self.advance = 0
 
-    def save_game(self):
+    def save_game(self, filename):
         """
         Saves game using Pickle module
         Input: None
         Returns: user_text for save game
         """
-        if not os.path.isfile("save.txt"):
-            file = open('save.txt', 'x')
+        if not os.path.isfile(filename):
+            file = open(filename, 'x')
             file.close()
-        file = open('save.txt', 'wb')
+        file = open(filename, 'wb')
         # create data array that will be filled with character information
         data = [[] for x in range(26)]
         data[0] = [self.progress]
@@ -1890,25 +1891,154 @@ class MainGame():
                 self.main_menu_fade("Start_quick")
                 self.in_dialog(True)
             elif option == "dialog skip":
-                self.name_global = "Dan"
+                self.name_global = "Dogdude"
                 self.progress = 2
                 self.main_menu_fade("Habbitt")
                 self.in_dialog(False, "To Town", 0)
             elif option == "load":
                 #check if load file exists
-                if os.path.isfile("save.txt"):
-                    #load file
-                    file = open('save.txt', 'rb')
-                    self.data = pickle.load(file)
-                    file.close()
-                    #place player in location associated with progress (usually town)
-                    self.distribute_data()
-                    self.main_menu_fade("Habbitt")
-                    self.in_dialog(False, "Load", self.progress)
+                if os.path.isfile("save.txt") or os.path.isfile("save2.txt") or os.path.isfile("save3.txt"):
+                    self.load_save_choices("LOAD")
                 else:
                     print("Save file does not exist.")
             elif option == "exit":
                 sys.exit()
+
+    def load_save_choices(self, mode):
+        #### SETUP ####
+        black = 0, 0, 0
+        speed = [3, 0]
+
+        self.background, self.background_move = self.determine_background("villageinnnight", None, False)
+
+        load1_rect = pygame.Rect(width-1200,height-800,800,150)
+        load2_rect = pygame.Rect(width-1200,height-550,800,150)
+        load3_rect = pygame.Rect(width-1200,height-300,800,150)
+        back_rect = pygame.Rect(width-900,height-100,200,50)
+
+        while True:
+            self.screen.fill(black)
+            color_load1, color_load2, color_load3, color_back = self.color_passive, self.color_passive, self.color_passive, self.color_passive
+
+            for event in pygame.event.get():                  
+                if event.type == pygame.QUIT: sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if mode == "LOAD":
+                        if load1_rect.collidepoint(event.pos) and os.path.isfile('save.txt'):
+                            return self.load_file('save.txt')
+                        if load2_rect.collidepoint(event.pos) and os.path.isfile('save2.txt'):
+                            return self.load_file('save2.txt')
+                        if load3_rect.collidepoint(event.pos) and os.path.isfile("save3.txt"):
+                            return self.load_file('save3.txt')
+                        if back_rect.collidepoint(event.pos):
+                            return
+                    if mode == "SAVE":
+                        if load1_rect.collidepoint(event.pos):
+                            return self.save_game('save.txt')
+                        if load2_rect.collidepoint(event.pos):
+                            return self.save_game('save2.txt')
+                        if load3_rect.collidepoint(event.pos):
+                            return self.save_game('save3.txt')
+                        if back_rect.collidepoint(event.pos):
+                            return [[[None, "Your data has NOT been saved."], [None, "[Returning to town.]"]]]
+
+            if load1_rect.collidepoint(pygame.mouse.get_pos()):
+                color_load1 = self.color_active
+            if load2_rect.collidepoint(pygame.mouse.get_pos()):
+                color_load2 = self.color_active
+            if load3_rect.collidepoint(pygame.mouse.get_pos()):
+                color_load3 = self.color_active
+            if back_rect.collidepoint(pygame.mouse.get_pos()):
+                color_back = self.color_active
+
+            if not os.path.isfile("save.txt"):
+                color_load = "GRAY"
+
+            if os.path.isfile('save.txt'):
+                file1 = open('save.txt', 'rb')
+                self.save1 = pickle.load(file1)
+            if os.path.isfile('save2.txt'):
+                file2 = open('save2.txt', 'rb')
+                self.save2 = pickle.load(file2)
+            if os.path.isfile('save3.txt'):
+                file3 = open('save3.txt', 'rb')
+                self.save3 = pickle.load(file3)
+
+            self.gl_draw_load_save_screen("LOAD", self.color_passive, color_load1, color_load2, color_load3, color_back)
+            self.clock.tick(60)
+
+    def load_file(self, filename):
+        #load file
+        file = open(filename, 'rb')
+        self.data = pickle.load(file)
+        file.close()
+        #place player in location associated with progress (usually town)
+        self.distribute_data()
+        self.main_menu_fade("Habbitt")
+        self.in_dialog(False, "Load", self.progress)
+
+    def gl_draw_load_save_screen(self, mode, black, load1c, load2c, load3c, backc):
+        self.i = blit_bg(self.i, self.background, self.background_move)
+
+        # Squares
+        glBegin(GL_QUADS)
+        rect_ogl(load1c, cgls(width-1200, width), cgls(width-400, width), cgls(height-250, height), cgls(height-100, height))
+        rect_ogl(load2c, cgls(width-1200, width), cgls(width-400, width), cgls(height-500, height), cgls(height-350, height))
+        rect_ogl(load3c, cgls(width-1200, width), cgls(width-400, width), cgls(height-750, height), cgls(height-600, height))
+        glEnd()
+
+        # data to display
+        if os.path.isfile('save.txt'):
+            save = self.save1
+            name = save[23][1]
+            level = save[1][13]
+            progress = save[0][0]
+            progress_percent = str(round(int(progress) / 46*100, 2)) + "%"
+        if os.path.isfile('save2.txt'):
+            save = self.save2
+            name2 = save[23][1]
+            level2 = save[1][13]
+            progress = save[0][0]
+            progress_percent2 = str(round(int(progress) / 46*100, 2)) + "%"
+        if os.path.isfile('save3.txt'):
+            save = self.save3
+            name3 = save[23][1]
+            level3 = save[1][13]
+            progress = save[0][0]
+            progress_percent3 = str(round(int(progress) / 46*100, 2)) + "%"
+
+        y_adjust = .985
+        y_adjust2 = y_adjust - .005
+        y_adjust3 = y_adjust2 - .01
+
+        # text
+        gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-150, height), cgls(height-100, height), "File 1", 1, y_adjust)
+        if os.path.isfile('save.txt'):
+            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-200, height), cgls(height-150, height), name + ": LEVEL " + str(level) + " LEADER", 1, y_adjust)
+            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-250, height), cgls(height-200, height), "Progress: " + progress_percent, 1, y_adjust - .002)
+        else:
+            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-200, height), cgls(height-150, height), "No Save Data", 1, y_adjust)
+            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-250, height), cgls(height-200, height), "", 1, y_adjust)
+
+        gl_text_name(self.font, load2c, cgls(width-675, width), cgls(width-925, width), cgls(height-400, height), cgls(height-350, height), "File 2", 1, y_adjust2)
+        if os.path.isfile('save2.txt'):
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-450, height), cgls(height-400, height), name2 + ": LEVEL " + str(level2) + " LEADER", 1, y_adjust2)
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "Progress: " + progress_percent2, 1, y_adjust2)
+        else:
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-450, height), cgls(height-400, height), "No Save Data", 1, y_adjust2)
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "", 1, y_adjust2)
+
+        gl_text_name(self.font, load3c, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "File 3", 1, y_adjust3 - .01)
+        if os.path.isfile('save3.txt'):
+            gl_text_name(self.font, load3c, cgls(width-700, width), cgls(width-900, width), cgls(height-700, height), cgls(height-650, height), name3 + ": LEVEL " + str(level3) + " LEADER", 1, y_adjust3 - .03)
+            gl_text_name(self.font, load3c, cgls(width-700, width), cgls(width-900, width), cgls(height-750, height), cgls(height-700, height), "Progress: " + progress_percent3, 1, y_adjust3 - .06)
+        else:
+            gl_text_name(self.font, load3c, cgls(width-700, width), cgls(width-900, width), cgls(height-700, height), cgls(height-650, height), "No Save Data", 1, y_adjust3 - .03)
+            gl_text_name(self.font, load3c, cgls(width-700, width), cgls(width-900, width), cgls(height-750, height), cgls(height-700, height), "", 1, y_adjust3 - .06)
+
+        gl_text_name(self.font, backc, cgls(width-700, width), cgls(width-900, width), cgls(height-850, height), cgls(height-800, height), "Back", 1, y_adjust3-.185)
+
+        pygame.display.flip()
 
     def main_menu_fade(self, skip, new_fade=True):
         if new_fade == True:
