@@ -12,6 +12,8 @@ Remake dungeons
         Tilemap renders, but it flickers
     New 4/26
         Given up for now, will come back later and try to understand OpenGL better
+    New 5/17
+        Tilemap still flickers. Does not flicker when it's the only thing rendered.
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
