@@ -2015,18 +2015,18 @@ class MainGame():
         gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-150, height), cgls(height-100, height), "File 1", 1, y_adjust)
         if os.path.isfile('save.txt'):
             gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-200, height), cgls(height-150, height), name + ": LEVEL " + str(level) + " LEADER", 1, y_adjust)
-            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-250, height), cgls(height-200, height), "Progress: " + progress_percent, 1, y_adjust - .002)
+            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-250, height), cgls(height-200, height), "Progress: " + progress_percent, 1, y_adjust - .006)
         else:
             gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-200, height), cgls(height-150, height), "No Save Data", 1, y_adjust)
-            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-250, height), cgls(height-200, height), "", 1, y_adjust)
+            gl_text_name(self.font, load1c, cgls(width-700, width), cgls(width-900, width), cgls(height-250, height), cgls(height-200, height), "", 1, y_adjust - .006)
 
         gl_text_name(self.font, load2c, cgls(width-675, width), cgls(width-925, width), cgls(height-400, height), cgls(height-350, height), "File 2", 1, y_adjust2)
         if os.path.isfile('save2.txt'):
-            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-450, height), cgls(height-400, height), name2 + ": LEVEL " + str(level2) + " LEADER", 1, y_adjust2)
-            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "Progress: " + progress_percent2, 1, y_adjust2)
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-450, height), cgls(height-400, height), name2 + ": LEVEL " + str(level2) + " LEADER", 1, y_adjust2 - .004)
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "Progress: " + progress_percent2, 1, y_adjust2 - .015)
         else:
-            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-450, height), cgls(height-400, height), "No Save Data", 1, y_adjust2)
-            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "", 1, y_adjust2)
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-450, height), cgls(height-400, height), "No Save Data", 1, y_adjust2 - .004)
+            gl_text_name(self.font, load2c, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "", 1, y_adjust2 - .015)
 
         gl_text_name(self.font, load3c, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "File 3", 1, y_adjust3 - .01)
         if os.path.isfile('save3.txt'):
