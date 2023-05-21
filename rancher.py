@@ -17,6 +17,28 @@ class PetCharacter():
     
     def get_image(self):
         return self.image
+    
+    def set_squares(self, squares):
+        self.squares = squares
+    
+    def set_rect(self):
+        self.rect = pygame.rect.Rect(self.squares[self.coords[0]][self.coords[1]][0], self.squares[self.coords[0]][self.coords[1]][1], 88, 89)
+
+    def draw(self):
+        blit_image(size, self.squares[self.coords[0]][self.coords[1]][0], self.squares[self.coords[0]][self.coords[1]][1], self.image, 1,1,1)
+
+    def move(self, target):
+        # x
+        if target[0] < self.coords[0]:
+            self.coords[0] - 1
+        elif target[0] > self.coords[0]:
+            self.coords[0] + 1
+
+        # y
+        if target[1] < self.coords[1]:
+            self.coords[1] - 1
+        elif target[1] > self.coords[1]:
+            self.coords[1] + 1
 
 class RancherMinigame():
 
@@ -51,7 +73,17 @@ class RancherMinigame():
             [(x, y+add_y*8), (x+add_x, y+add_y*8), (x+add_x*2, y+add_y*8), (x+add_x*3, y+add_y*8), (x+add_x*4, y+add_y*8), (x+add_x*5, y+add_y*8), (x+add_x*6, y+add_y*8), (x+add_x*7, y+add_y*8), (x+add_x*8, y+add_y*8), (x+add_x*9, y+add_y*8), (x+add_x*10, y+add_y*8), (x+add_x*11, y+add_y*8)]
         ]
 
-        rug = False
+        # create rects
+        rects = []
+        z = 0
+        for x in range(len(squares)):
+            for y in range(len(squares[0])):
+                rects.append([[x,y], pygame.rect.Rect(squares[x][y][0], squares[x][y][1], 91.4, 91.4)])
+
+        for pet in pets:
+            pet.set_squares(squares)
+
+        target = None
         current_positions = [[0, 0]]
         timer = pygame.time.get_ticks()
         while True:
@@ -65,13 +97,17 @@ class RancherMinigame():
                     if event.button == 1:
                         pos = pygame.mouse.get_pos()
                         print(pos)
-            if pygame.time.get_ticks() - timer > 5000 and rug == True:
-                current_positions[0][0] = random.randint(0,8)
-                current_positions[0][1] = random.randint(0,10)
+                        for rect in rects:
+                            if rect[1].collidepoint(pygame.mouse.get_pos()):
+                                target = rect[0]
+            if pygame.time.get_ticks() - timer > 1000 and target != None:
+                pets[0].move(target)
                 timer = pygame.time.get_ticks()
+                if target == pets[0].get_coords():
+                    target = None
 
             self.show_screen()
-            self.draw_pets(coords_list)
+            self.draw_pets(pets)
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -89,9 +125,7 @@ class RancherMinigame():
 
     def draw_pets(self, pets):
         for pet in pets:
-            coords = pet.get_coords()
-            image = pet.get_image()
-            blit_image(size, coords[0], coords[1], image, 1,1,1)
+            pet.draw()
 
     def test_pets(self, squares):
         for x in squares:
