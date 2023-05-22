@@ -25,26 +25,28 @@ class PetCharacter():
         self.rect = pygame.rect.Rect(self.squares[self.coords[0]][self.coords[1]][0], self.squares[self.coords[0]][self.coords[1]][1], 88, 89)
 
     def draw(self):
-        blit_image(size, self.squares[self.coords[0]][self.coords[1]][0], self.squares[self.coords[0]][self.coords[1]][1], self.image, 1,1,1)
+        c = self.coords
+        blit_image(size, self.squares[c[0]][c[1]][0], self.squares[c[0]][c[1]][1], self.image, 1,1,1)
 
     def move(self, target):
         # x
         if target[0] < self.coords[0]:
-            self.coords[0] - 1
+            self.coords[0] -= 1
         elif target[0] > self.coords[0]:
-            self.coords[0] + 1
+            self.coords[0] += 1
 
         # y
         if target[1] < self.coords[1]:
-            self.coords[1] - 1
+            self.coords[1] -= 1
         elif target[1] > self.coords[1]:
-            self.coords[1] + 1
+            self.coords[1] += 1
 
 class RancherMinigame():
 
     def __init__(self):
         self.background = "ranchbg.png"
         self.clock = pygame.time.Clock()
+        self.debug = 0
 
     def standalone(self):
         pygame.init()
@@ -53,6 +55,7 @@ class RancherMinigame():
                                               pygame.DOUBLEBUF|pygame.OPENGL)
         pet1 = PetCharacter("images/rancher/illusium.png")
         self.run([pet1])
+        
 
     def run(self, pets = None, screen = None):
         if screen != None:
@@ -78,7 +81,8 @@ class RancherMinigame():
         z = 0
         for x in range(len(squares)):
             for y in range(len(squares[0])):
-                rects.append([[x,y], pygame.rect.Rect(squares[x][y][0], squares[x][y][1], 91.4, 91.4)])
+                nums_x = [8,7,6,5,4,3,2,1,0]
+                rects.append([[nums_x[x],y], pygame.rect.Rect(squares[x][y][0], squares[x][y][1], 91.4, 91.4)])
 
         for pet in pets:
             pet.set_squares(squares)
@@ -95,12 +99,13 @@ class RancherMinigame():
                     #if return_rect.collidepoint(event.pos):
                     #    return "RAN"
                     if event.button == 1:
-                        pos = pygame.mouse.get_pos()
-                        print(pos)
+                        if self.debug == 1:
+                            pos = pygame.mouse.get_pos()
+                            print(pos)
                         for rect in rects:
                             if rect[1].collidepoint(pygame.mouse.get_pos()):
                                 target = rect[0]
-            if pygame.time.get_ticks() - timer > 1000 and target != None:
+            if pygame.time.get_ticks() - timer > 200 and target != None:
                 pets[0].move(target)
                 timer = pygame.time.get_ticks()
                 if target == pets[0].get_coords():
@@ -120,7 +125,20 @@ class RancherMinigame():
 
         # draw info pane
         glBegin(GL_QUADS)
-        rect_ogl("BLACK", cgls(39, width), cgls(439, width), cgls(39, height), cgls(858, height))
+        rect_ogl("BLACK", cgls(39, width), cgls(439, width), cgls(239, height), cgls(858, height))
+
+        rect_ogl("BLACK", cgls(39, width), cgls(119, width), cgls(139, height), cgls(219, height))
+        rect_ogl("BLACK", cgls(39, width), cgls(119, width), cgls(119, height), cgls(39, height))
+
+        rect_ogl("BLACK", cgls(144, width), cgls(224, width), cgls(139, height), cgls(219, height))
+        rect_ogl("BLACK", cgls(144, width), cgls(224, width), cgls(119, height), cgls(39, height))
+
+        rect_ogl("BLACK", cgls(254, width), cgls(334, width), cgls(139, height), cgls(219, height))
+        rect_ogl("BLACK", cgls(254, width), cgls(334, width), cgls(119, height), cgls(39, height))
+
+        rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(139, height), cgls(219, height))
+        rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(119, height), cgls(39, height))
+
         glEnd()
 
     def draw_pets(self, pets):
