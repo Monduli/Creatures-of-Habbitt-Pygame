@@ -44,12 +44,15 @@ class PetCharacter():
 class RancherMinigame():
 
     def __init__(self):
+        pygame.init()
         self.background = "ranchbg.png"
         self.clock = pygame.time.Clock()
         self.debug = 0
+        self.selected = None
+        self.font = pygame.font.Font("font/VCR.001.ttf", 32)
+        self.weather = "Sunny"
 
     def standalone(self):
-        pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
@@ -140,6 +143,9 @@ class RancherMinigame():
         rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(119, height), cgls(39, height))
 
         glEnd()
+
+        if self.selected == None:
+            gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(808, height), cgls(858, height), "Ranch Information", 1, 1)
 
     def draw_pets(self, pets):
         for pet in pets:
