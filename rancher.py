@@ -50,7 +50,7 @@ class RancherMinigame():
         self.debug = 0
         self.selected = None
         self.font = pygame.font.Font("font/VCR.001.ttf", 32)
-        self.weather = "Sunny"
+        self.weather = "Sun"
 
     def standalone(self):
         pygame.mixer.init()
@@ -63,6 +63,7 @@ class RancherMinigame():
     def run(self, pets = None, screen = None):
         if screen != None:
             self.screen = screen
+        self.pets = pets
         x = 455
         y = 39
         add_x = 91.4
@@ -146,6 +147,8 @@ class RancherMinigame():
 
         if self.selected == None:
             gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(808, height), cgls(858, height), "Ranch Information", 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(758, height), cgls(808, height), "Weather: " + self.weather, 1, 1)
+            gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(708, height), cgls(758, height), "Pets Present: " + str(len(self.pets)), 1, 1)
 
     def draw_pets(self, pets):
         for pet in pets:
