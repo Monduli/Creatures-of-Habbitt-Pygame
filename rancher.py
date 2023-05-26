@@ -13,22 +13,41 @@ class PetCharacter():
         self.coords = [0, 0]
 
     def get_coords(self):
+        """
+        Gets the current x,y coords of the pet
+        """
         return self.coords
     
     def get_image(self):
+        """
+        Gets the image of the pet
+        """
         return self.image
     
     def set_squares(self, squares):
+        """
+        sets self.squares to the list of coordinates provided
+        """
         self.squares = squares
     
     def set_rect(self):
+        """
+        creates pygame rect corresponding to pet's current coordinates
+        """
         self.rect = pygame.rect.Rect(self.squares[self.coords[0]][self.coords[1]][0], self.squares[self.coords[0]][self.coords[1]][1], 88, 89)
 
     def draw(self):
+        """
+        draws pet
+        """
         c = self.coords
         blit_image(size, self.squares[c[0]][c[1]][0], self.squares[c[0]][c[1]][1], self.image, 1,1,1)
 
     def move(self, target):
+        """
+        Moves pet to target coordinates 1 square at a time
+        """
+
         # x
         if target[0] < self.coords[0]:
             self.coords[0] -= 1
