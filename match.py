@@ -1104,8 +1104,10 @@ class MatchGame(object):
             self.player_active = self.party_turns[self.party_current][0]
         for member in party:
             if member.get_chp() <= 0:
+                # skip loop and move to next character
                 continue
             else:
+                # character is still alive, keep going
                 return enemy_text
         return "DEAD"
         
