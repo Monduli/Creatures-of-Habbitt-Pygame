@@ -6,6 +6,7 @@ import match
 from classes import *
 import crawler
 import pickle
+from rancher import *
 
 SIZE = width, height = 1600, 900
 
@@ -79,6 +80,10 @@ class MainGame():
         self.boosted = 0
         self.music = pygame.mixer.Channel(5)
         self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
+
+        # ranch initialization
+        self.ranch_game = RancherMinigame(self.screen)
+        self.pets = [PetCharacter("images/rancher/illusium.png")]
 
         # character objects
         self.characters = [
@@ -517,7 +522,7 @@ class MainGame():
             #               || Boost Party
         # determine which menu options are available
         if self.progress > 1:
-            options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Venture Out", "leave"]
+            options = ["Inn", "Smithy", "inn", "blacksmith", "Haberdashery", "Save", "haberdashery", "save", "Ranch", "ranch", "Venture Out", "leave"]
         elif self.progress == 0:
             options = ["Inn", "???", "inn", "???", "???", "Save", "???", "save", "Venture Out", "leave"]
         choice = self.town_options(options)
@@ -556,9 +561,15 @@ class MainGame():
             self.user_text = self.dialog.determine_dialog(choice, self.progress, self.main_character.get_name())
             self.advance = 0
 
-        # save game (TODO: Broken)
+        # save game 
         elif choice == "save":
             self.user_text = self.load_save_choices("SAVE")
+            self.advance = 0
+
+        elif choice == "ranch":
+            self.music.fadeout(300)
+            self.ranch_game.run(self.pets)
+            self.user_text = [[[None, "[Returning to town.]"]]]
             self.advance = 0
 
         # Open dungeons menu and process result
@@ -620,7 +631,8 @@ class MainGame():
         # Distribute "options" input into separate variables
         text_top_left, text_top_right, target_top_left, target_top_right = options[0], options[1], options[2], options[3]
         text_bot_left, text_bot_right, target_bot_left, target_bot_right = options[4], options[5], options[6], options[7]
-        text_leave, target_leave = options[8], options[9]
+        text_bot_bot_left, target_bot_bot_left = options[8], options[9]
+        text_leave, target_leave = options[10], options[11]
 
         # for screen fill
         black = 0, 0, 0
@@ -631,6 +643,7 @@ class MainGame():
         top_right_rect = pygame.Rect(width-750,height-350,700,50)
         bot_left_rect = pygame.Rect(width-1550,height-250,700,50)
         bot_right_rect = pygame.Rect(width-750,height-250,700,50)
+        bot_bot_left_rect = pygame.Rect(width-1550,height-150,700,50)
         leave_rect = pygame.Rect(width-750,height-150,700,50)
         debug_rect = pygame.Rect(width-500, height-75, 400, 50)
 
@@ -645,6 +658,7 @@ class MainGame():
             color_top_right = self.color_passive
             color_bot_left = self.color_passive
             color_bot_right = self.color_passive
+            color_bot_bot_left = self.color_passive
             color_leave = self.color_passive
             color_party = self.color_passive
             color_boost = self.color_passive
@@ -661,6 +675,8 @@ class MainGame():
                         return target_bot_left
                     if bot_right_rect.collidepoint(event.pos):
                         return target_bot_right
+                    if bot_bot_left_rect.collidepoint(event.pos):
+                        return target_bot_bot_left
                     if leave_rect.collidepoint(event.pos):
                         return target_leave
                     if party_rect.collidepoint(event.pos):
@@ -677,6 +693,8 @@ class MainGame():
                 color_bot_left = self.color_active
             if bot_right_rect.collidepoint(pygame.mouse.get_pos()):
                 color_bot_right = self.color_active
+            if bot_bot_left_rect.collidepoint(pygame.mouse.get_pos()):
+                color_bot_bot_left = self.color_active
             if leave_rect.collidepoint(pygame.mouse.get_pos()):
                 color_leave = self.color_active
             if party_rect.collidepoint(pygame.mouse.get_pos()):
@@ -690,6 +708,7 @@ class MainGame():
             gl_text_name(self.font, color_bot_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-650, height), cgls(height-700, height), text_bot_left, 1, 1.17)
             gl_text_name(self.font, color_bot_right, cgls(width-750, width), cgls(width-50, width), cgls(height-650, height), cgls(height-700, height), text_bot_right, 1, 1.17)
             gl_text_name(self.font, color_boost, cgls(width-100, width), cgls(width-500, width), cgls(height-825, height), cgls(height-875, height), "Boost Party", 1, 2)
+            gl_text_name(self.font, color_bot_bot_left, cgls(width-1550, width), cgls(width-850, width), cgls(height-750, height), cgls(height-800, height), text_bot_bot_left, 1, 1.31)
             gl_text_name(self.font, color_leave, cgls(width-750, width), cgls(width-50, width), cgls(height-750, height), cgls(height-800, height), text_leave, 1, 1.31)
             gl_text_name(self.font, color_party, cgls(width-300, width), cgls(width-0, width), cgls(height-50, height), cgls(height, height), "Party", 1, .99)
 

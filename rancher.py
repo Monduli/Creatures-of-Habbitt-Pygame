@@ -62,8 +62,8 @@ class PetCharacter():
 
 class RancherMinigame():
 
-    def __init__(self):
-        pygame.init()
+    def __init__(self, screen):
+        self.screen = screen
         self.background = "ranchbg.png"
         self.clock = pygame.time.Clock()
         self.debug = 0
@@ -72,6 +72,7 @@ class RancherMinigame():
         self.weather = "Sun"
 
     def standalone(self):
+        pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
@@ -107,6 +108,8 @@ class RancherMinigame():
                 nums_x = [8,7,6,5,4,3,2,1,0]
                 rects.append([[nums_x[x],y], pygame.rect.Rect(squares[x][y][0], squares[x][y][1], 91.4, 91.4)])
 
+        back_rect = pygame.rect.Rect(39, 781, 400, 80)
+
         for pet in pets:
             pet.set_squares(squares)
 
@@ -125,6 +128,8 @@ class RancherMinigame():
                         if self.debug == 1:
                             pos = pygame.mouse.get_pos()
                             print(pos)
+                        if back_rect.collidepoint(pygame.mouse.get_pos()):
+                            return
                         for rect in rects:
                             if rect[1].collidepoint(pygame.mouse.get_pos()):
                                 target = rect[0]
@@ -134,12 +139,17 @@ class RancherMinigame():
                 if target == pets[0].get_coords():
                     target = None
 
-            self.show_screen()
+            hlb = "BLACK"
+            if back_rect.collidepoint(pygame.mouse.get_pos()):
+                hlb = "RED"
+
+            self.show_screen(hlb)
             self.draw_pets(pets)
             pygame.display.flip()
             self.clock.tick(60)
 
-    def show_screen(self):
+    def show_screen(self, hlb):
+        highlight_back = hlb
         black = 0, 0, 0
         self.screen.fill(black)
         blit_bg(0, self.background, False)
@@ -148,19 +158,19 @@ class RancherMinigame():
 
         # draw info pane
         glBegin(GL_QUADS)
-        rect_ogl("BLACK", cgls(39, width), cgls(439, width), cgls(239, height), cgls(858, height))
+        rect_ogl("BLACK", cgls(39, width), cgls(439, width), cgls(339, height), cgls(858, height))
 
-        rect_ogl("BLACK", cgls(39, width), cgls(119, width), cgls(139, height), cgls(219, height))
-        rect_ogl("BLACK", cgls(39, width), cgls(119, width), cgls(119, height), cgls(39, height))
+        rect_ogl("BLACK", cgls(39, width), cgls(119, width), cgls(239, height), cgls(319, height))
+        rect_ogl("BLACK", cgls(39, width), cgls(119, width), cgls(219, height), cgls(139, height))
 
-        rect_ogl("BLACK", cgls(144, width), cgls(224, width), cgls(139, height), cgls(219, height))
-        rect_ogl("BLACK", cgls(144, width), cgls(224, width), cgls(119, height), cgls(39, height))
+        rect_ogl("BLACK", cgls(144, width), cgls(224, width), cgls(239, height), cgls(319, height))
+        rect_ogl("BLACK", cgls(144, width), cgls(224, width), cgls(219, height), cgls(139, height))
 
-        rect_ogl("BLACK", cgls(254, width), cgls(334, width), cgls(139, height), cgls(219, height))
-        rect_ogl("BLACK", cgls(254, width), cgls(334, width), cgls(119, height), cgls(39, height))
+        rect_ogl("BLACK", cgls(254, width), cgls(334, width), cgls(239, height), cgls(319, height))
+        rect_ogl("BLACK", cgls(254, width), cgls(334, width), cgls(219, height), cgls(139, height))
 
-        rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(139, height), cgls(219, height))
-        rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(119, height), cgls(39, height))
+        rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(239, height), cgls(319, height))
+        rect_ogl("BLACK", cgls(359, width), cgls(439, width), cgls(219, height), cgls(139, height))
 
         glEnd()
 
@@ -168,6 +178,7 @@ class RancherMinigame():
             gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(808, height), cgls(858, height), "Ranch Information", 1, 1)
             gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(758, height), cgls(808, height), "Weather: " + self.weather, 1, 1)
             gl_text_name(self.font, "BLACK", cgls(39, width), cgls(439, width), cgls(708, height), cgls(758, height), "Pets Present: " + str(len(self.pets)), 1, 1)
+            gl_text_name(self.font, highlight_back, cgls(39, width), cgls(439, width), cgls(119, height), cgls(39, height), "Return to Town", 1, 1.8)
 
     def draw_pets(self, pets):
         for pet in pets:
