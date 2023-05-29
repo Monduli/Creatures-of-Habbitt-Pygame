@@ -7,6 +7,7 @@ from classes import *
 import crawler
 import pickle
 from rancher import *
+from equipment_menu import EquipmentMenu
 
 SIZE = width, height = 1600, 900
 
@@ -133,6 +134,9 @@ class MainGame():
             BlankCharacter([10,10,10,10,10,10])
             ]
         self.set_char_lists()
+
+        self.smithing_menu = EquipmentMenu("WEP")
+        self.haber_menu = EquipmentMenu("ACC")
 
     def start_screen(self):
         #### SETUP ####
@@ -546,13 +550,23 @@ class MainGame():
 
         # No blacksmith to run yet
         if choice == "blacksmith":
-            self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
-            self.advance = 0
+            if self.characters[13].get_recruited() == False:
+                self.user_text = [[[None, "There is no one to run the blacksmith, so it remains closed."], [None, "[Returning to town.]"]]]
+                self.advance = 0
+            else:
+                self.smithing_menu.run(self.screen)
+                self.user_text = [[[None, "[Returning to town.]"]]]
+                self.advance = 0
 
         # No haberdashery to run yet
         if choice == "haberdashery":
-            self.user_text = [[[None, "There is no one to run the accessories shop, so it remains closed."], [None, "[Returning to town.]"]]]
-            self.advance = 0
+            if self.characters[14].get_recruited() == False:
+                self.user_text = [[[None, "There is no one to run the accessories shop, so it remains closed."], [None, "[Returning to town.]"]]]
+                self.advance = 0
+            else:
+                self.haber_menu.run(self.screen)
+                self.user_text = [[[None, "[Returning to town.]"]]]
+                self.advance = 0
         
         # Inn menu loads because Henrietta is retrieved by prog2
         elif choice == "inn":
@@ -1276,7 +1290,7 @@ class MainGame():
                             self.difficulty = "Smooth"
                             colors = ["BLACK" for x in range(0,8)]
                     
-            number_highlight = self.find_collide_for_highlight_color(progress_reqs, page)
+            number_highlight = find_collide_for_highlight_color(self.progress, progress_reqs, page)
 
             # make buttons red if you hover over them
             if dungeon_1_rect.collidepoint(pygame.mouse.get_pos()) and number_highlight[0] == 1:
@@ -1325,18 +1339,6 @@ class MainGame():
 
             pygame.display.flip()
             self.clock.tick(60)
-
-    def find_collide_for_highlight_color(self, progress_reqs, page):
-        array = [0,0,0,0,0,0,0,0]
-        for x in range(8):
-            y = x
-            if page == 2:
-                y += 8
-            elif page == 3:
-                y += 16
-            if self.progress >= progress_reqs[y]:
-                array[x] = 1
-        return array
 
 
     def character_creator(self):

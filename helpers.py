@@ -678,6 +678,17 @@ def blit_bg(i, bg="cave.png", move=True):
         blit_image([width, height], 0, 0, background, 1, 1, 1)
         return i
 
+def find_collide_for_highlight_color(progress, progress_reqs, page):
+    array = [0,0,0,0,0,0,0,0]
+    for x in range(8):
+        y = x
+        if page == 2:
+            y += 8
+        elif page == 3:
+            y += 16
+        if progress >= progress_reqs[y]:
+            array[x] = 1
+    return array
 
 def cgls(value, length):
     return ((value/length) * 2) - 1
