@@ -28,6 +28,7 @@ class EquipmentMenu():
         """
         if self.function == "ACC":
             # Load accessories list to create haberdash menu
+            # TODO: Create the actual categories for accessories, these are placeholders
             self.items = ["Circlets", "Bracelets", "Watches", "Earrings", "Necklaces", "Crystals", "Rings", "Adornments"]
             self.database = [
                 # Swords
