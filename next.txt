@@ -1,3 +1,6 @@
+Refactor files 
+    Make it so each menu type has its own .py file like equipmentmenu.py does
+
 Multiple save slots
 
 Implement difficulty options in the Options menu
