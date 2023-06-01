@@ -19,6 +19,9 @@ class EquipmentMenu():
         self.database = []
 
     def standalone(self):
+        """
+        Runs if this file is run by itself.
+        """
         self.screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF|pygame.OPENGL)
         self.run()
 
@@ -68,6 +71,10 @@ class EquipmentMenu():
             ]
 
     def run(self, screen = None):
+        """
+        The main code of equipmentmenu
+        screen = pygame screen that everything is blitted to
+        """
         self.pull_proper_list()
         if screen != None:
             self.screen = screen
@@ -137,6 +144,7 @@ class EquipmentMenu():
     def display_menu(self, colors):
         """
         Draws the menu (OpenGL)
+        colors = colors of the menu items which are set in run
         """
 
         blit_bg(0, "blacksmith.png", False)
@@ -165,5 +173,7 @@ class EquipmentMenu():
 
 
 if __name__ == "__main__":
+    # create equipmentmenu
     menu = EquipmentMenu("WEP", True)
+    # run standalone version
     menu.standalone()
