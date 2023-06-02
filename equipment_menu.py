@@ -149,10 +149,12 @@ class EquipmentMenu():
 
         blit_bg(0, "blacksmith.png", False)
 
+        # pull the list of items from self.items determined in pull_proper_list
         items = self.items
         # handy variable for text position adjustments (y)
         bulk_adjust_y = 1.07
 
+        # text will always be white since the buttons are only ever black or active color, not white
         black_text = False
 
         # create visual buttons and text
