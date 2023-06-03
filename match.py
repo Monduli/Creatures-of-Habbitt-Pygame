@@ -145,8 +145,6 @@ class Board(object):
     
     def busy(self):
         if self.wait > 0 and not (self.refill or self.matches):
-            if self.wait == 1:
-                self.printdb("Wait diminished")
             self.wait -= 1
             return True
         return self.refill or self.matches
@@ -968,7 +966,7 @@ class MatchGame(object):
                         [topLeft, topRight, bottomRight, bottomLeft], 3)
      """   
     def process_action(self, item, party, enemy, player_active, enemy_active, turns, enemy_turns):
-        self.printdb(enemy_active, enemy_active.get_chp())
+        self.printdb(enemy_active.get_name() + str(enemy_active.get_chp()))
         action = item
         update_text = None
         if enemy_active not in enemy:
