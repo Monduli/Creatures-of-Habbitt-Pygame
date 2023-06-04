@@ -144,12 +144,18 @@ class Board(object):
         return j * self.w + i
     
     def busy(self):
+        """
+        Checks if the board is 'busy', meaning that it is currently moving or matching tiles.
+        """
         if self.wait > 0 and not (self.refill or self.matches):
             self.wait -= 1
             return True
         return self.refill or self.matches
     
     def tick(self, dt, display):
+        """
+        One tick of the in-game clock. Checks for matches and the need to refill the board.
+        """
         if self.refill or self.matches:
             self.wait = 1000
         if self.refill:
@@ -162,14 +168,18 @@ class Board(object):
             self.explosion_time += dt
             f = int(self.explosion_time * EXPLOSION_SPEED)
             if f < len (self.explosion):
-                self.update_matches(self.explosion[f], display)
+                self.explode_matches(self.explosion[f], display)
                 return
-            self.update_matches(self.blank, display)
+            self.explode_matches(self.blank, display)
             self.refill = list(self.refill_columns())
         self.explosion_time = 0
         self.matches = self.find_matches()
 
     def draw(self, display):
+        """
+        Draws the board.
+        display: The pygame display that the game will be drawn to.
+        """
         #display.blit(self.background, (0,0))
         for i, c in enumerate(self.board):
             x = MARGIN + SHAPE_WIDTH * (i % self.w)
@@ -185,12 +195,22 @@ class Board(object):
             blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], c.x, 800 - c.y + c.offset, c.image, 1, 1, 1)
 
     def swap_old(self, cursor):
+        """
+        The old version of the swapping function.
+        Will be retained for when the AI is implemented.
+        cursor: The box that has selected two tiles to swap.
+        """
         i = self.pos(*cursor)
         b = self.board
         b[i], b[i+1] = b[i+1], b[i]
         self.matches = self.find_matches()
 
     def swap(self, i, j):
+        """
+        The newer version of swap. Uses the mouse.
+        i: The position of one of the tiles in the board.
+        j: The position of the other tile in the board.
+        """
         b = self.board
         b[i], b[j] = b[j], b[i]
         b[i].set_i(i)
@@ -200,6 +220,9 @@ class Board(object):
         self.matches = self.find_matches()
         
     def find_matches(self):
+        """
+        Checks for matches on the board.
+        """
         def lines():
             for j in range(self.h):
                 yield range(j * self.w, (j+1) * self.w)
@@ -218,6 +241,10 @@ class Board(object):
         return match_list
     
     def send_matches_to_game(self, match_list):
+        """
+        Sends the matches that have been made elsewhere so the elements of the UI can work together.
+        match_list: List of currently matched tiles.
+        """
         global curr_match
         global in_curr_match
         current_matches = match_list
@@ -227,7 +254,10 @@ class Board(object):
                     curr_match.append(self.board[x[0]].shape)
                 in_curr_match.append(x[0])
     
-    def update_matches(self, image, display):
+    def explode_matches(self, image, display):
+        """
+        Turns the matched tiles into explosions.
+        """
         for match in self.matches:
             #circle = loadify("images/circle.png")
             for position in match:
@@ -245,6 +275,10 @@ class Board(object):
                     #pygame.display.update()
 
     def refill_columns(self):
+        """
+        Refills the columns of the board from the top.
+        Animated, drops tiles from above with gravity.
+        """
         self.boom_played = 0
         for i in range(self.w):
             target = self.size - i - 1
@@ -290,6 +324,10 @@ class Board(object):
 class MatchGame(object):
 
     def __init__(self, screen):
+        """
+        Constructor for Match Game.
+        screen: pygame display to be used from other elements of the game
+        """
         #pygame.init()
         self.clock = pygame.time.Clock()
         #self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
