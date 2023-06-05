@@ -328,40 +328,69 @@ class MatchGame(object):
         Constructor for Match Game.
         screen: pygame display to be used from other elements of the game
         """
-        #pygame.init()
+        # game clock
         self.clock = pygame.time.Clock()
-        #self.display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
-        #                                       pygame.RESIZABLE)
+
+        # display, which comes from the main game or the standalone launcher
         self.display = screen
+
+        # the board, which holds the positions of all the tiles
         self.board = Board(PUZZLE_COLUMNS, PUZZLE_ROWS, background)
+
+        # the font
         self.font = pygame.font.Font('font/VCR.001.ttf', FONT_SIZE)
+
+        # the text that shows on the right side of the screen
         self.party_text = []
         self.enemy_text = []
+
+        # the position of the background
         self.i = 0
-        self.spread = []
+
+        # The elevation of the current line of text, used for wordwrap
         self.level = 0
+
+        # The distribution x y of the board spacing
+        self.spread = []
         for x in range(2, 1102, 100):
             self.spread.append(x)
+
+        # toggle for fullscreen mode
         self.fullscreen = 0
+
+        # ???
         self.removed = 0
+
+        # Fade variables
         self.counter_x = 0
         self.counter_y = 0
         self.fade_out = 0
         self.fade_image = pygame.image.load("images/circlefade.png")
         self.end_fade = 0
         self.start_fade = 0
+
+        # state of the game board
         self.state = "PLAY"
+
+        # prep for fading back to the dungeon crawler
         self.return_to_crawl = 0
+
+        # the active enemy whose turn it is
         self.enemy_active = None
+
+        # name of the main character
         self.mc_name = None
 
         # the length of the currently playing victory line
         self.talking_length = 0
         self.talking_timer = 0
+        # whether someone is talking
         self.talking = 0
 
+        # debug variable for various print statements
         self.debug = 0
 
+        # the image shown next to character info to indicate if they are buffed or debuffed
         self.buff_image = pygame.image.load("images/tabs/orange_gem_new.png").convert_alpha()
         self.buff_image = pygame.transform.scale(self.buff_image, (96, 96))
         self.debuff_image = pygame.image.load("images/tabs/blue_gem_new.png").convert_alpha()
@@ -369,15 +398,30 @@ class MatchGame(object):
  
 
     def start(self):
+        """
+        Initializes the board
+        """
         self.board.randomize()
         self.cursor = [0,0]
         self.swap_time = 1
 
     def quit(self):
+        # Quits the game
         pygame.quit()
         sys.exit()
 
     def play(self, new_party, enemies, display=screen, need_fade=0):
+        """The main play function of MatchGame. Initializes and runs the game.
+
+        Args:
+            new_party (_type_): The party of player characters
+            enemies (_type_): List of enemies currently in use in MatchGame.
+            display (_type_, optional): The pygame display currently in use. Defaults to screen.
+            need_fade (int, optional): Whether a fade in is needed (1) or not (0). Defaults to 0.
+
+        Returns:
+            None
+        """
         self.start()
         party = new_party.copy()
         self.end_fade = need_fade
