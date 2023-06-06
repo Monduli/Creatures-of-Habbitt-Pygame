@@ -422,13 +422,24 @@ class MatchGame(object):
         Returns:
             None
         """
+
+        # starts the game
         self.start()
+
+        # copies new party into party variable
         party = new_party.copy()
+
+        # insert the fade (if needed) into self.end_fade
         self.end_fade = need_fade
+
+        # use the existing display if there is one
         if display != screen:
             self.display = display
+
+        # grab the main character's name
         self.mc_name = party[0].get_name()
 
+        # Remove None valued targets from party (so nothing displays for that slot)
         to_remove = []
         for x in range(4):
             if party[x] == None:
