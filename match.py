@@ -510,8 +510,9 @@ class MatchGame(object):
         turn = 0
 
         now = "skip"
+
+        # these are both debug variables + a timer
         self.debug = 0
-        debug = self.debug
         self.timing = 0
         self.debug_timer = pygame.time.get_ticks()
         wait_timer = 0
