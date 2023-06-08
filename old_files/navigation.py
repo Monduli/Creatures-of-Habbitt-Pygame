@@ -1,10 +1,10 @@
 import sys, pygame, os
-import dialog as dia
-import classes
-from helpers import *
-import match
-from classes import *
-import crawler
+import game_files.dialog_db as dia
+import game_files.classes as classes
+from game_files.helpers import *
+import game_files.match_game as match_game
+from game_files.classes import *
+import game_files.dungeon_crawler as dungeon_crawler
 
 class MainGame():
     def __init__(self):
@@ -837,7 +837,7 @@ class MainGame():
     def load_dungeon(self, dungeon):
         self.screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF|pygame.OPENGL)
-        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon))
+        state = dungeon_crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon))
         self.screen = pygame.display.set_mode((width, height))
         return state
 

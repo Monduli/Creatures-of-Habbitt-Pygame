@@ -1,10 +1,9 @@
 import sys, pygame, os
-import dialog as dia
-import classes
+import dialog_db as dia
 from helpers import *
-import match
+import match_game
 from classes import *
-import crawler
+import dungeon_crawler
 import pickle
 from rancher import *
 from equipment_menu import EquipmentMenu
@@ -1839,7 +1838,7 @@ class MainGame():
             self.clock.tick(60)
 
     def load_dungeon(self, dungeon):
-        state = crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), dungeon, True)
+        state = dungeon_crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), dungeon, True)
         self.counter_x = 1600
         self.main_menu_fade("Habbitt", False)
         return state

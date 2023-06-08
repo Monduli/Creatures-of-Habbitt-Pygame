@@ -3,7 +3,7 @@ from helpers import *
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import match
+import match_game as match_game
 import dungeon_layouts as dl
 
 size = width, height = 1600, 900
@@ -349,7 +349,7 @@ class Crawler():
                 print("Moving to match")
                 self.in_combat.set_volume(self.oo_combat.get_volume())
                 self.oo_combat.set_volume(0)
-                state = match.MatchGame(self.screen).play(party, dungeon_enemies[current_room][0], self.screen, 1)
+                state = match_game.MatchGame(self.screen).play(party, dungeon_enemies[current_room][0], self.screen, 1)
                 self.oo_combat.set_volume(self.in_combat.get_volume())
                 self.in_combat.set_volume(0)
                 if state == "WIN":

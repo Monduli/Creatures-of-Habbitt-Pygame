@@ -1,4 +1,4 @@
-from navigation_gl import *
+from screens import *
 
 if __name__ == "__main__":
     game = MainGame()

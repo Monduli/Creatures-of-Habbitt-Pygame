@@ -15,7 +15,6 @@ from classes import *
 import math as Math
 import varname
 import threading
-import display_test as dis
 import numpy as np
 
 size = width, height = 1600, 900
@@ -540,13 +539,19 @@ class MatchGame(object):
 
         curr_character = self.party_current
 
+        # game loop
         while True:
+            # swap characters if curr_character and party_current are not the same
             if curr_character != self.party_current:
                 self.printdb("Character swapped")
                 curr_character = self.party_current
+
+            # set check to p_text if not equal
             if check != self.p_text:
                 self.printdb(self.party_text)
                 check = self.p_text
+
+            # get the party turns
             party_turns = turn_order(self.party)
             next_turn = 0
             if self.enemy_active not in self.enemy and len(self.enemy) > 0:

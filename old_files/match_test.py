@@ -8,14 +8,11 @@ import pygame, random, time, sys
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from pygame.locals import *
-from helpers import *
+from game_files.helpers import *
 import itertools
-import os
-from classes import *
+from game_files.classes import *
 import math as Math
-import varname
-import threading
-import display_test as dis
+import old_files.display_test as dis
 import numpy as np
 
 size = width, height = 1600, 900
