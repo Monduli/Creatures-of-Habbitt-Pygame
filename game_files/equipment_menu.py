@@ -1,3 +1,9 @@
+######################################
+# COH EQUIPMENT MENU                 #
+# Displays different types of        #
+# equipment to upgrade.              #
+######################################
+
 from helpers import * 
 import pygame as pyg
 from OpenGL.GL import *
