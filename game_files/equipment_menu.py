@@ -14,7 +14,7 @@ class EquipmentMenu():
     def __init__(self, function, standalone=False):
         if standalone != False:
             pygame.init()
-        self.background = "ranchbg.png"
+        self.background = None
         self.clock = pygame.time.Clock()
         self.debug = 0
         self.selected = None
