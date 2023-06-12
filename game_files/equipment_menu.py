@@ -122,6 +122,7 @@ class EquipmentMenu():
                         if leave_rect.collidepoint(pygame.mouse.get_pos()):
                             return
 
+            # if you mouse over any of the rects change their color to the active color
             if type_1_rect.collidepoint(pygame.mouse.get_pos()):
                 color_c1 = self.color_active
             if type_2_rect.collidepoint(pygame.mouse.get_pos()):
