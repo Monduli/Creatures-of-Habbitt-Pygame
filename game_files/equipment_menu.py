@@ -106,6 +106,7 @@ class EquipmentMenu():
 
             self.screen.fill(black)
 
+            # colors that change between black and active color for rectangles when moused over
             color_c1, color_c2, color_c3, color_c4, color_c5, color_c6, color_c7, color_c8, color_next, color_leave = colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7], self.color_passive, self.color_passive
             color_diff = self.color_passive
 
