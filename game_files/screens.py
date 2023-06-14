@@ -2160,6 +2160,7 @@ class MainGame():
         right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)
 
 if __name__ == "__main__":
+    # Does the same thing as main.py does
     print("Creatures of Habbitt Version Alpha 1")
     MainGame().controller()
 
