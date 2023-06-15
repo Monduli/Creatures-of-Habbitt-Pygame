@@ -1,3 +1,8 @@
+"""
+File that contains code for screens in Creatures of Habbitt
+Author: Dan Glendon
+"""
+
 import sys, pygame, os
 import dialog_db as dia
 from helpers import *
@@ -132,12 +137,19 @@ class MainGame():
             # None
             BlankCharacter([10,10,10,10,10,10])
             ]
-        self.set_char_lists()
+        self.rom_characters, self.npc_characters = set_char_lists(self.characters, self.rom_characters, self.npc_characters)
 
         self.smithing_menu = EquipmentMenu("WEP")
         self.haber_menu = EquipmentMenu("ACC")
 
     def start_screen(self):
+        """
+        Controls logic for clicking actions on the start screen.
+        Runs the drawing function as well.
+
+        Returns:
+            None, to return to controller
+        """
         #### SETUP ####
         pygame.display.set_caption("Creatures of Habbitt v.01")
         
@@ -511,7 +523,7 @@ class MainGame():
         inputs: None
         return: None
         """
-        self.set_char_lists()
+        self.rom_characters, self.npc_characters = set_char_lists(self.characters, self.rom_characters, self.npc_characters)
         if not self.music.get_busy():
             self.music.play(self.habbitt_music, -1)
             self.music.set_volume(7)
@@ -1177,31 +1189,31 @@ class MainGame():
             # process map checks if you have the progress assigned and otherwise returns ???
             if page == 1:
                 dungeon_1 = "Habbitt Cave"
-                dungeon_2 = self.process_map(progress_reqs[1], "Grilla's Garage")
-                dungeon_3 = self.process_map(progress_reqs[2], "Kahuna Sands")
-                dungeon_4 = self.process_map(progress_reqs[3], "Tantamount Tower")
-                dungeon_5 = self.process_map(progress_reqs[4], "Auspicious Abode")
-                dungeon_6 = self.process_map(progress_reqs[5], "Mall Mountain")
-                dungeon_7 = self.process_map(progress_reqs[6], "Haunted Home")
-                dungeon_8 = self.process_map(progress_reqs[7], "Pristine Pasture")
+                dungeon_2 = self.high_enough_progress_to_show_map_name(progress_reqs[1], "Grilla's Garage")
+                dungeon_3 = self.high_enough_progress_to_show_map_name(progress_reqs[2], "Kahuna Sands")
+                dungeon_4 = self.high_enough_progress_to_show_map_name(progress_reqs[3], "Tantamount Tower")
+                dungeon_5 = self.high_enough_progress_to_show_map_name(progress_reqs[4], "Auspicious Abode")
+                dungeon_6 = self.high_enough_progress_to_show_map_name(progress_reqs[5], "Mall Mountain")
+                dungeon_7 = self.high_enough_progress_to_show_map_name(progress_reqs[6], "Haunted Home")
+                dungeon_8 = self.high_enough_progress_to_show_map_name(progress_reqs[7], "Pristine Pasture")
             elif page == 2:
-                dungeon_1 = self.process_map(progress_reqs[8], "???")
-                dungeon_2 = self.process_map(progress_reqs[9], "Windmill Wilds")
-                dungeon_3 = self.process_map(progress_reqs[10], "???")
-                dungeon_4 = self.process_map(progress_reqs[11], "Sea Sharp Shark School")
-                dungeon_5 = self.process_map(progress_reqs[12], "???")
-                dungeon_6 = self.process_map(progress_reqs[13], "Reaper's Respite")
-                dungeon_7 = self.process_map(progress_reqs[14], "Ursine Utopia")
-                dungeon_8 = self.process_map(progress_reqs[15], "Lake of Life")
+                dungeon_1 = self.high_enough_progress_to_show_map_name(progress_reqs[8], "???")
+                dungeon_2 = self.high_enough_progress_to_show_map_name(progress_reqs[9], "Windmill Wilds")
+                dungeon_3 = self.high_enough_progress_to_show_map_name(progress_reqs[10], "???")
+                dungeon_4 = self.high_enough_progress_to_show_map_name(progress_reqs[11], "Sea Sharp Shark School")
+                dungeon_5 = self.high_enough_progress_to_show_map_name(progress_reqs[12], "???")
+                dungeon_6 = self.high_enough_progress_to_show_map_name(progress_reqs[13], "Reaper's Respite")
+                dungeon_7 = self.high_enough_progress_to_show_map_name(progress_reqs[14], "Ursine Utopia")
+                dungeon_8 = self.high_enough_progress_to_show_map_name(progress_reqs[15], "Lake of Life")
             elif page == 3:
-                dungeon_1 = self.process_map(progress_reqs[16], "Homea")
-                dungeon_2 = self.process_map(progress_reqs[17], "St. Stephonia")
-                dungeon_3 = self.process_map(progress_reqs[18], "Tower of Torment")
-                dungeon_4 = self.process_map(progress_reqs[19], "Acrimonious Abyss")
-                dungeon_5 = self.process_map(progress_reqs[20], "Bonus")
-                dungeon_6 = self.process_map(progress_reqs[21], "Bonus")
-                dungeon_7 = self.process_map(progress_reqs[22], "Bonus")
-                dungeon_8 = self.process_map(progress_reqs[23], "Bonus")
+                dungeon_1 = self.high_enough_progress_to_show_map_name(progress_reqs[16], "Homea")
+                dungeon_2 = self.high_enough_progress_to_show_map_name(progress_reqs[17], "St. Stephonia")
+                dungeon_3 = self.high_enough_progress_to_show_map_name(progress_reqs[18], "Tower of Torment")
+                dungeon_4 = self.high_enough_progress_to_show_map_name(progress_reqs[19], "Acrimonious Abyss")
+                dungeon_5 = self.high_enough_progress_to_show_map_name(progress_reqs[20], "Bonus")
+                dungeon_6 = self.high_enough_progress_to_show_map_name(progress_reqs[21], "Bonus")
+                dungeon_7 = self.high_enough_progress_to_show_map_name(progress_reqs[22], "Bonus")
+                dungeon_8 = self.high_enough_progress_to_show_map_name(progress_reqs[23], "Bonus")
 
             # add dungeons to an array
             dungeons = [dungeon_1, dungeon_2, dungeon_3, dungeon_4, dungeon_5, dungeon_6, dungeon_7, dungeon_8]
@@ -1844,6 +1856,13 @@ class MainGame():
         return state
         
     def fade(self, fade_image, counter_x, counter_y):
+        """Handles general fading math.
+
+        Args:
+            fade_image (pygame surface): The black box to be used for fading
+            counter_x (int): Int representing x location of the fade image
+            counter_y (int): Int representing y location of the fade image
+        """
         fade_out = 1
         while fade_out != 0:
             if fade_out == 1:
@@ -1868,6 +1887,17 @@ class MainGame():
                     counter_y = 0
 
     def determine_background(self, dialog, bg, move):
+        """Determines the background that will be used based on current dialog.
+
+        Args:
+            dialog (string): Currently displayed dialog
+            bg (string): Current background
+            move (bool): Whether the background is currently moving
+
+        Returns:
+            Background: string representing the name of the current background to be loaded
+            Move: Whether the background should be scrolling
+        """
         if dialog == "Regardless of your choice, I'm taking you outside.":
             return retrieve_background("forest"), True
         elif dialog == "Maybe you should just follow that road over there until you run into something." or dialog == "To Town":
@@ -1889,13 +1919,30 @@ class MainGame():
         else:
             return bg, move
         
-    def process_map(self, pnum, map_name):
+    def high_enough_progress_to_show_map_name(self, pnum, map_name):
+        """Determines if you have high enough progress to show map name.
+
+        Args:
+            pnum (int): Progress number needed to show map
+            map_name (string): Name of the map to be shown if progress is met
+
+        Returns:
+            string: Name of map if progress met, or question marks if not
+        """
         if self.progress > pnum:
             return map_name
         else:
             return "???"
 
     def in_party(self, name):
+        """Checks if a member is in the party.
+
+        Args:
+            name (string): The name of character to be checked
+
+        Returns:
+            bool: Returns True if character in party, or False if not
+        """
         for member in self.party:
             if member != None:
                 if member.get_name() == name:
@@ -1903,6 +1950,9 @@ class MainGame():
         return False
 
     def controller(self):
+        """
+        Controls where in the game you are relative to the main menu
+        """
         while True:
             option = self.start_screen()
             #self.fade(self.fade_image, self.counter_x, self.counter_y)
@@ -1925,6 +1975,15 @@ class MainGame():
                 sys.exit()
 
     def load_save_choices(self, mode):
+        """
+        Config for loading and saving.
+
+        Args:
+            mode (string): "LOAD" or "SAVE" depending on the function
+
+        Returns:
+            None, to return to the previous menu
+        """
         #### SETUP ####
         black = 0, 0, 0
         speed = [3, 0]
@@ -1984,7 +2043,7 @@ class MainGame():
                 file3 = open('save3.txt', 'rb')
                 self.save3 = pickle.load(file3)
 
-            self.gl_draw_load_save_screen("LOAD", self.color_passive, color_load1, color_load2, color_load3, color_back)
+            self.gl_draw_load_save_screen(color_load1, color_load2, color_load3, color_back)
             self.clock.tick(60)
 
     def load_file(self, filename):
@@ -1997,7 +2056,7 @@ class MainGame():
         self.main_menu_fade("Habbitt")
         self.in_dialog(False, "Load", self.progress)
 
-    def gl_draw_load_save_screen(self, mode, black, load1c, load2c, load3c, backc):
+    def gl_draw_load_save_screen(self, load1c, load2c, load3c, backc):
         self.i = blit_bg(self.i, self.background, self.background_move)
 
         # Squares
@@ -2131,11 +2190,6 @@ class MainGame():
         if self.debug == 1:
             print(self.mc_for_save[1])
         self.dialog = dia.Dialog(self.mc_for_save[1])
-
-    def set_char_lists(self):
-        c = self.characters
-        self.rom_characters = [c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10]]
-        self.npc_characters = [c[11],c[12],c[13],c[14],c[15],c[16],c[17],c[18],c[19],c[20],c[21]]
 
     def handle_inn_dialog(self, left, right, rank):
         if left.get_name() == self.main_character.get_name():
