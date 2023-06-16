@@ -203,6 +203,16 @@ class MainGame():
             self.clock.tick(60)
 
     def gl_draw_start_screen(self, cp, c1, c2, c3, c4, c5):
+        """Draws the start screen in OpenGL.
+
+        Args:
+            cp (string): Color passive, ie BLACK
+            c1 (string): color of the first button, can be BLACK or color_active
+            c2 (string): color of the second button, can be BLACK or color_active
+            c3 (string): color of the third button, can be BLACK or color_active
+            c4 (string): color of the fourth button, can be BLACK or color_active
+            c5 (string): color of the fifth button, can be BLACK or color_active
+        """
         self.i = blit_bg(self.i, self.background, self.background_move)
 
         #gl_text(self.font, "BLACK",  cgls(width-500, width), cgls(width-1100, width), cgls(height-150, height), cgls(height-100, height), "Creatures of Habbitt v.01", .88, .982)
