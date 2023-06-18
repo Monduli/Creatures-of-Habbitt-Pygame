@@ -1,3 +1,8 @@
+########
+# Holds bond conversation related functions.
+# Created with the intention of separating from helpers.
+########
+
 from helpers import *
 
 def retrieve_conversation(mc_name, char1, char2, rank, rom=False):
