@@ -1,4 +1,7 @@
 ####
+# Author: Dan
+# Contains the code for the match 3+ game. Stands alone, but is connected with dungeon_crawler.py
+####
 # HUGE thanks to user Gareth Rees on StackExchange for this match 3 template.
 # https://codereview.stackexchange.com/questions/15873/a-small-bejeweled-like-game-in-pygame
 ####
