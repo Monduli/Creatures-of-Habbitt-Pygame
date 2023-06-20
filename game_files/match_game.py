@@ -6,7 +6,6 @@
 # https://codereview.stackexchange.com/questions/15873/a-small-bejeweled-like-game-in-pygame
 ####
 
-
 import pygame, random, time, sys
 from OpenGL.GL import *
 from OpenGL.GLU import *

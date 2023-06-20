@@ -1,8 +1,14 @@
+#####
+# Creatures of Habbitt - Dungeons Layout File
+# Author: Dan
+# Holds the layouts of the dungeons in crawler mode.
+#####
 # dungeon format:
 # first is the room to be loaded
 # second number is the room to go to from the left exit
 # third number is the room to go to from the top exit
 # fourth number is the room to go to from the right exit
+#####
 
 from helpers import *
 
