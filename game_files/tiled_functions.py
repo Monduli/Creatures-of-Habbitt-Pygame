@@ -7,13 +7,27 @@ HEIGHT = 900
 size = (WIDTH, HEIGHT)
 
 class TiledMap:
+    """
+    Class that contains tools for creating a map using tiles.
+    """
+
     def __init__(self, filename):
+        """Constructor for TiledMap
+
+        Args:
+            filename (string): Name of file to be loaded with pytmx
+        """
         tm = pytmx.load_pygame(filename, pixelalpha=True)
         self.width = tm.width * tm.tilewidth
         self.height = tm.height * tm.tileheight
         self.tmxdata = tm
 
     def render(self, surface):
+        """Blits tiles to a surface that can later be either blit or displayed with OpenGL
+
+        Args:
+            surface (pygame Surface): The surface to be drawn to
+        """
         surface.fill('black')
         ti = self.tmxdata.get_tile_image_by_gid
         for layer in self.tmxdata.visible_layers:
@@ -25,6 +39,11 @@ class TiledMap:
                                             y*self.tmxdata.tileheight))
                         
     def make_map(self):
+        """Creates a surface then uses render to add tiles to it.
+
+        Returns:
+            surface: the surface created with tiles on it
+        """
         temp_surface = pygame.Surface((self.width, self.height))
         self.render(temp_surface)
         return temp_surface
