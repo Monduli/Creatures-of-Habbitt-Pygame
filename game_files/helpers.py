@@ -7,6 +7,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import numpy as np
+from pygame.locals import *
 
 width = 1600
 height = 900
@@ -791,11 +792,23 @@ def which_num_party_member(m_n, mc_name):
         if m_n == "TBH":
             return 16
         
-def set_char_lists(characters, rom_chars, npc_chars):
+def set_char_lists(characters):
         c = characters
         rom_chars = [c[0],c[1],c[2],c[3],c[4],c[5],c[6],c[7],c[8],c[9],c[10]]
         npc_chars = [c[11],c[12],c[13],c[14],c[15],c[16],c[17],c[18],c[19],c[20],c[21]]
         return rom_chars, npc_chars
+
+def input(key, fullscreen, display, WINDOW_WIDTH, WINDOW_HEIGHT):
+    if key == K_r:
+        if fullscreen == 0:
+            display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
+                                            pygame.DOUBLEBUF|pygame.OPENGL|pygame.FULLSCREEN)
+            fullscreen = 1
+        else:
+            display = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT),
+                                            pygame.DOUBLEBUF|pygame.OPENGL)
+            fullscreen = 0
+        return display
 
 if __name__ == "__main__":
     print("This is the helper file. Do not run this directly.")

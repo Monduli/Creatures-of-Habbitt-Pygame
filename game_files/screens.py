@@ -137,7 +137,7 @@ class MainGame():
             # None
             BlankCharacter([10,10,10,10,10,10])
             ]
-        self.rom_characters, self.npc_characters = set_char_lists(self.characters, self.rom_characters, self.npc_characters)
+        self.rom_characters, self.npc_characters = set_char_lists(self.characters)
 
         self.smithing_menu = EquipmentMenu("WEP")
         self.haber_menu = EquipmentMenu("ACC")
@@ -159,7 +159,7 @@ class MainGame():
         
         self.background, self.background_move = self.determine_background("villageinnnight", None, False)
         
-        title_rect = pygame.Rect(width-1100,height-800,500,50)
+        title_rect = pygame.Rect(width-width*0.6875,height-height*0.88,width*0.3125,height*0.0555555555555556)
         start_rect = pygame.Rect(width-900,height-450,200,50)
         town_start_rect = pygame.Rect(width-900,height-375,200,50)
         load_rect = pygame.Rect(width-900,height-300,200,50)
@@ -173,6 +173,9 @@ class MainGame():
 
             for event in pygame.event.get():                  
                 if event.type == pygame.QUIT: sys.exit()
+                if event.type == KEYUP:
+                    if event.key == K_r:
+                        self.full_screen, self.display, self.width, self.height = input(event.key, self.fullscreen, self.display, width, height)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if start_rect.collidepoint(event.pos):
                         return "new_game"
@@ -216,7 +219,7 @@ class MainGame():
         self.i = blit_bg(self.i, self.background, self.background_move)
 
         #gl_text(self.font, "BLACK",  cgls(width-500, width), cgls(width-1100, width), cgls(height-150, height), cgls(height-100, height), "Creatures of Habbitt v.01", .88, .982)
-        blit_image((width, height), width-1200, height-450, pygame.image.load("images/logo.png").convert_alpha(), 1,1,1)
+        blit_image((width, height), width*.25, height*.5, pygame.image.load("images/logo.png").convert_alpha(), 1,1,1)
         gl_text_name(self.font, c1, cgls(width-700, width), cgls(width-900, width), cgls(height-500, height), cgls(height-450, height), "New Game", 1, .965)
         gl_text_name(self.font, c2, cgls(width-675, width), cgls(width-925, width), cgls(height-575, height), cgls(height-525, height), "Skip Intro", 1, .96)
         gl_text_name(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "Load", 1, .95)
@@ -533,7 +536,7 @@ class MainGame():
         inputs: None
         return: None
         """
-        self.rom_characters, self.npc_characters = set_char_lists(self.characters, self.rom_characters, self.npc_characters)
+        self.rom_characters, self.npc_characters = set_char_lists(self.characters)
         if not self.music.get_busy():
             self.music.play(self.habbitt_music, -1)
             self.music.set_volume(7)
