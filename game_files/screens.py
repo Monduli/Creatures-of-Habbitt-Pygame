@@ -22,6 +22,9 @@ class MainGame():
         # keeps track of where you are in the storyline
         self.progress = 1
 
+        # keeps track of whether game is fullscreen or not
+        self.full_screen = 0
+
         # difficulty
         # smooth, groovy, bodacious, chaos
         self.difficulty = "Smooth"
@@ -175,7 +178,7 @@ class MainGame():
                 if event.type == pygame.QUIT: sys.exit()
                 if event.type == KEYUP:
                     if event.key == K_r:
-                        self.full_screen, self.display, self.width, self.height = input(event.key, self.fullscreen, self.display, width, height)
+                        self.full_screen, self.screen, self.width, self.height = fullscreenify(self.full_screen, self.screen, width, height)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if start_rect.collidepoint(event.pos):
                         return "new_game"
