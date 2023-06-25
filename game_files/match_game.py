@@ -18,6 +18,7 @@ import math as Math
 import varname
 import threading
 import numpy as np
+import main
 
 size = width, height = 1600, 900
 black = 0, 0, 0
@@ -724,8 +725,8 @@ class MatchGame(object):
             
             if curr_match != [] and self.debug == 1:
                 self.printdb(curr_match)
+
             # If any matches are made by the player  
-            # TODO: Make it not change party members in the middle of a combo 
             if self.state == "PLAY":   
                 while len(curr_match) > 0:
                     character_swap_timing = 1
@@ -765,6 +766,8 @@ class MatchGame(object):
 
                 if now - timer > 5000:
                     flash = self.enemy_attack(self.enemy, self.player_active, self.enemy_active, party_turns)
+                    if flash == "DEAD":
+                        return "DEAD"
                     if flash != 0:
                         if self.player_active in self.party:
                             self.flash_red = self.party.index(self.player_active)
@@ -783,11 +786,15 @@ class MatchGame(object):
                 if self.debug == 1:
                     self.printdb("UPDATE TEXT: " + str(self.debug_timer - pygame.time.get_ticks()))
                     self.debug_timer = pygame.time.get_ticks()
+
                 if now - text_timer > 1000:
+                    # Remove "it is" someone's turn text and cycle to the next queued text every second (if there is another)
                     if self.party_text[0][0:5] == "It is" and len(self.party_text) > 1:
                         self.party_text.remove(self.party_text[0])
                     text_timer = pygame.time.get_ticks()
+
                 if now - text_timer < 2000:
+                    # Cycle to next enemy text if there is any
                     if now - text_timer > 1000 and hold == 0:
                         if len(self.enemy_text) > 1:
                             self.enemy_text.remove(self.enemy_text[0])
@@ -1183,6 +1190,8 @@ class MatchGame(object):
         p_defense = player_active.get_physical_guard()
         attacker = enemy_active
         target = player_active
+        if player_active not in self.party:
+            target = self.party[0]
         if e_attack > p_defense:
             dmg = e_attack - p_defense
         else:
@@ -1194,19 +1203,23 @@ class MatchGame(object):
             target.set_chp(0)
             update_text = target.get_name() + " has fallen!"
             self.party_text.append(update_text)
-            self.party.remove(target)
+            if target in self.party:
+                self.party.remove(target)
+                self.find_and_remove_from_party_turns(target)
+            else:
+                print("Error. Target not in party.")
             self.removed = target
             if self.party_current+1 < len(party_turns):
                 self.party_current += 1
             else:
                 self.party_current = 0
-            self.player_active = self.party_turns[self.party_current][0]
         for member in party:
             if member.get_chp() <= 0:
                 # skip loop and move to next character
                 continue
             else:
                 # character is still alive, keep going
+                self.player_active = self.party_turns[self.party_current][0]
                 return enemy_text
         return "DEAD"
         
@@ -1264,12 +1277,10 @@ class MatchGame(object):
         if self.debug == 1:
             print(string)
 
+    def find_and_remove_from_party_turns(self, target):
+        for x in self.party_turns:
+            if x[0] == target:
+                self.party_turns.remove(x)
+
 if __name__ == '__main__':
-    print("Running match game in debug mode.")
-    pygame.init()
-    pygame.mixer.init()
-    screen = pygame.display.set_mode((width, height),
-                                              pygame.DOUBLEBUF|pygame.OPENGL)
-    party = fill_party()
-    state = MatchGame(screen).play(party, get_dungeon("cave")[0])
-    print("Your final result was: " + state)
+    main.run_game()

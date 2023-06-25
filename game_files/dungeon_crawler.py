@@ -5,6 +5,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import match_game as match_game
 import dungeon_layouts as dl
+import main
 
 size = width, height = 1600, 900
 FPS = 60
@@ -356,6 +357,8 @@ class Crawler():
                     self.enemy.x = 3200
                     self.enemy.y = 3200
                     self.enemy.can_chase = 0
+                if state == "DEAD":
+                    return "DEAD"
                 self.counter_x = 0
                 self.end_fade_transfer = 1
                 self.move_to_match = 0
@@ -819,10 +822,4 @@ class Crawler():
             return True
 
 if __name__ == '__main__':
-    pygame.init()
-    screen = pygame.display.set_mode((width, height),
-                                              pygame.DOUBLEBUF|pygame.OPENGL)
-    party = boost_party()
-    dungeon = "cave"
-    state = Crawler(screen).play(party, get_dungeon(dungeon), dungeon)
-    print("Your final result was: " + state)
+    main.run_game()

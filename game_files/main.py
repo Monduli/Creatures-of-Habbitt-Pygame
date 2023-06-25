@@ -6,6 +6,9 @@
 
 from screens import *
 
-if __name__ == "__main__":
+def run_game():
     game = MainGame()
     game.controller()
+
+if __name__ == "__main__":
+    run_game()
