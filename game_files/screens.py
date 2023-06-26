@@ -1866,6 +1866,14 @@ class MainGame():
             self.clock.tick(60)
 
     def load_dungeon(self, dungeon):
+        """Loads a dungeon and sends player to the crawler mode.
+
+        Args:
+            dungeon (string): Name of the dungeon for loading purposes
+
+        Returns:
+            string: Either "WIN" or "DEAD" depending on what happens in crawler mode.
+        """
         state = dungeon_crawler.Crawler(self.screen).play(self.party, get_dungeon(dungeon), dungeon, True)
         self.counter_x = 1600
         self.main_menu_fade("Habbitt", False)
@@ -2063,6 +2071,11 @@ class MainGame():
             self.clock.tick(60)
 
     def load_file(self, filename):
+        """Loads a save game.
+
+        Args:
+            filename (string): The file to be loaded.
+        """
         #load file
         file = open(filename, 'rb')
         self.data = pickle.load(file)
@@ -2073,6 +2086,14 @@ class MainGame():
         self.in_dialog(False, "Load", self.progress)
 
     def gl_draw_load_save_screen(self, load1c, load2c, load3c, backc):
+        """Draws the save/load interface.
+
+        Args:
+            load1c (string): Color of the first load button
+            load2c (string): Color of the second load button
+            load3c (string): Color of the third load button
+            backc (string): Color of the back button
+        """
         self.i = blit_bg(self.i, self.background, self.background_move)
 
         # Squares
@@ -2136,6 +2157,14 @@ class MainGame():
         pygame.display.flip()
 
     def main_menu_fade(self, skip, new_fade=True):
+        """Handles the fading that the main menu does when you select
+        an option.
+
+        Args:
+            skip (string): The skip, if any, that will be applied after the fade
+            new_fade (bool, optional): Whether the fade is 
+                continued from another or not. Defaults to True.
+        """
         if new_fade == True:
             self.counter_x = 0
         while True:
@@ -2157,11 +2186,20 @@ class MainGame():
             pygame.display.flip()
 
     def blit_bg_camera(self, bg="cave.png", move=True):
+        """Blits (in OpenGL) background according to the 
+        location of the camera.
+
+        Args:
+            bg (str, optional): Name of background file. Defaults to "cave.png".
+            move (bool, optional): Whether the background should move. Defaults to True.
+        """
         background = pygame.image.load("images/" + bg).convert_alpha()
         background = pygame.transform.scale(background,(1600,900))
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
     def distribute_data(self):
+        """Distributes the data held in a save file (txt)
+        """
         if self.debug == 1:
             print(len(self.data))
             print(self.data)
@@ -2208,21 +2246,107 @@ class MainGame():
         self.dialog = dia.Dialog(self.mc_for_save[1])
 
     def handle_inn_dialog(self, left, right, rank):
-        if left.get_name() == self.main_character.get_name():
-            if right.get_name() == "N. Steen":
-                self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
-            elif right.get_name() == "Henrietta":
-                self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
-        if left.get_name() == "N. Steen":
-            if right.get_name() == self.main_character.get_name():
-                self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
-            elif right.get_name() == "Henrietta":
-                self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
-        if left.get_name() == "Henrietta":
-            if right.get_name() == self.main_character.get_name():
-                self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
-            elif right.get_name() == "N. Steen":
-                self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
+        """Picks a bond conversation based on the characters selected.
+
+        Args:
+            left (string): The character on the left
+            right (string): The character on the right
+            rank (int): _description_
+        """
+        l = which_num_party_member(left.get_name(), self.main_character.get_name())
+        r = which_num_party_member(right.get_name(), self.main_character.get_name())
+        # MC
+        if (r == 1 and l == 0) or (r == 0 and l == 1):
+            self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
+        elif (r == 2 and l == 0) or (r == 0 and l == 2):
+            self.user_text = self.dialog.mc_radish_bond_dialog[rank-1]
+        elif (r == 3 and l == 0) or (l == 3 and r == 0):
+            self.user_text = self.dialog.mc_grapefart_bond_dialog[rank-1]
+        elif (r == 4 and l == 0) or (r == 0 and l == 4):
+            self.user_text = self.dialog.mc_lambaste_bond_dialog[rank-1]
+        elif (r == 5 and l == 0) or (l == 5 and r == 0):
+            self.user_text = self.dialog.mc_sunny_bond_dialog[rank-1]
+        elif (r == 6 and l == 0) or (l == 6 and r == 0):
+            self.user_text = self.dialog.mc_oscar_bond_dialog[rank-1]
+        elif (r == 7 and l == 0) or (l == 7 and r == 0):
+            self.user_text = self.dialog.mc_donkey_bond_dialog[rank-1]
+        elif (r == 8 and l == 0) or (l == 8 and r == 0):
+            self.user_text = self.dialog.mc_sidney_bond_dialog[rank-1]
+        elif (r == 9 and l == 0) or (l == 9 and r == 0):
+            self.user_text = self.dialog.mc_hollow_bond_dialog[rank-1]
+        elif (r == 10 and l == 0) or (l == 10 and r == 0):
+            self.user_text = self.dialog.mc_gol_bond_dialog[rank-1]
+        elif (r == 11 and l == 0) or (r == 0 and l == 11):
+            self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
+        elif (r == 12 and l == 0) or (r == 0 and l == 12):
+            self.user_text = self.dialog.mc_grilla_bond_dialog[rank-1]
+        elif (r == 13 and l == 0) or (r == 0 and l == 13):
+            self.user_text = self.dialog.mc_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 0) or (r == 0 and l == 14):
+            self.user_text = self.dialog.mc_rayna_bond_dialog[rank-1]
+        # Bear
+        elif (r == 2 and l == 1) or (r == 1 and l == 2):
+            self.user_text = self.dialog.bear_radish_bond_dialog[rank-1]
+        elif (r == 3 and l == 1) or (r == 1 and l == 3):
+            self.user_text = self.dialog.bear_grapefart_bond_dialog[rank-1]
+        elif (r == 4 and l == 1) or (r == 1 and l == 4):
+            self.user_text = self.dialog.bear_lambaste_bond_dialog[rank-1]
+        elif (r == 5 and l == 1) or (r == 1 and l == 5):
+            self.user_text = self.dialog.bear_sunny_bond_dialog[rank-1]
+        elif (r == 11 and l == 1) or (r == 1 and l == 11):
+            self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
+        elif (r == 12 and l == 1) or (r == 1 and l == 12):
+            self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
+        elif (r == 13 and l == 1) or (r == 1 and l == 13):
+            self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 1) or (r == 1 and l == 14):
+            self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
+        # Radish
+        elif (r == 3 and l == 2) or (r == 2 and l == 3):
+            self.user_text = self.dialog.radish_grapefart_bond_dialog[rank-1]
+        elif (r == 4 and l == 2) or (r == 2 and l == 4):
+            self.user_text = self.dialog.radish_lambaste_bond_dialog[rank-1]
+        elif (r == 5 and l == 2) or (r == 2 and l == 5):
+            self.user_text = self.dialog.radish_sunny_bond_dialog[rank-1]
+        elif (r == 11 and l == 2) or (r == 2 and l == 11):
+            self.user_text = self.dialog.radish_henrietta_bond_dialog[rank-1]
+        elif (r == 12 and l == 2) or (r == 2 and l == 12):
+            self.user_text = self.dialog.radish_grilla_bond_dialog[rank-1]
+        elif (r == 13 and l == 2) or (r == 2 and l == 13):
+            self.user_text = self.dialog.radish_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 2) or (r == 2 and l == 14):
+            self.user_text = self.dialog.radish_rayna_bond_dialog[rank-1]
+        # Grapefart
+        elif (r == 4 and l == 3) or (r == 3 and l == 4):
+            self.user_text = self.dialog.grapefart_lambaste_bond_dialog[rank-1]
+        elif (r == 5 and l == 3) or (r == 3 and l == 5):
+            self.user_text = self.dialog.grapefart_sunny_bond_dialog[rank-1]
+        elif (r == 11 and l == 3) or (r == 3 and l == 11):
+            self.user_text = self.dialog.grapefart_henrietta_bond_dialog[rank-1]
+        elif (r == 12 and l == 3) or (r == 3 and l == 12):
+            self.user_text = self.dialog.grapefart_grilla_bond_dialog[rank-1]
+        elif (r == 13 and l == 3) or (r == 3 and l == 13):
+            self.user_text = self.dialog.grapefart_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 3) or (r == 3 and l == 14):
+            self.user_text = self.dialog.grapefart_rayna_bond_dialog[rank-1]
+        # Lam'baste
+        elif (r == 5 and l == 4) or (r == 4 and l == 5):
+            self.user_text = self.dialog.lambaste_sunny_bond_dialog[rank-1]
+        elif (r == 11 and l == 4) or (r == 4 and l == 11):
+            self.user_text = self.dialog.lambaste_henrietta_bond_dialog[rank-1]
+        elif (r == 12 and l == 4) or (r == 4 and l == 12):
+            self.user_text = self.dialog.lambaste_grilla_bond_dialog[rank-1]
+        elif (r == 13 and l == 4) or (r == 4 and l == 13):
+            self.user_text = self.dialog.lambaste_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 4) or (r == 4 and l == 14):
+            self.user_text = self.dialog.lambaste_rayna_bond_dialog[rank-1]
+        # Henrietta
+        elif (r == 12 and l == 11) or (r == 11 and l == 12):
+            self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
+        elif (r == 13 and l == 11) or (r == 11 and l == 13):
+            self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 11) or (r == 11 and l == 14):
+            self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
         self.in_dialog(False, False, self.progress)

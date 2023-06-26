@@ -742,10 +742,10 @@ def which_num_party_member(m_n, mc_name):
             # [4] - Lam'baste Lamb (F)
             # [5] - Sunny Spider (F)
             # [6] - Oscar Lion (M)
-            # [7] - Hans Horse (M)
+            # [7] - Donkey Hote (M)
             # [8] - Sidney Shark (F)
-            # [9] - None
-            # [10] - Hollow
+            # [9] - Hollow
+            # [10] - GoL
             # [11] - Henrietta
             # [12] - Grilla
             # [13] - Dane

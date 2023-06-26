@@ -452,6 +452,158 @@ class Dialog():
             [None, "END INN DIALOG"]
             ]],
             ]
+        # MC
+        self.mc_radish_bond_dialog = []
+        
+        self.mc_grapefart_bond_dialog = []
+
+        self.mc_lambaste_bond_dialog = []
+
+        self.mc_sunny_bond_dialog = []
+
+        self.mc_oscar_bond_dialog = []
+
+        self.mc_donkey_bond_dialog = []
+
+        self.mc_sidney_bond_dialog = []
+
+        self.mc_hollow_bond_dialog = []
+
+        self.mc_gol_bond_dialog = []
+
+        self.mc_grilla_bond_dialog = []
+
+        self.mc_dane_bond_dialog = []
+
+        self.mc_rayna_bond_dialog = []
+
+        # Bear
+        self.bear_radish_bond_dialog = []
+        
+        self.bear_grapefart_bond_dialog = []
+
+        self.bear_lambaste_bond_dialog = []
+
+        self.bear_sunny_bond_dialog = []
+
+        self.bear_oscar_bond_dialog = []
+
+        self.bear_donkey_bond_dialog = []
+
+        self.bear_sidney_bond_dialog = []
+
+        self.bear_hollow_bond_dialog = []
+
+        self.bear_gol_bond_dialog = []
+
+        self.bear_grilla_bond_dialog = []
+
+        self.bear_dane_bond_dialog = []
+
+        self.bear_rayna_bond_dialog = []
+        
+        # Radish
+        self.radish_grapefart_bond_dialog = []
+
+        self.radish_lambaste_bond_dialog = []
+
+        self.radish_sunny_bond_dialog = []
+
+        self.radish_oscar_bond_dialog = []
+
+        self.radish_donkey_bond_dialog = []
+
+        self.radish_sidney_bond_dialog = []
+
+        self.radish_hollow_bond_dialog = []
+
+        self.radish_gol_bond_dialog = []
+
+        self.radish_henrietta_bond_dialog = []
+
+        self.radish_grilla_bond_dialog = []
+
+        self.radish_dane_bond_dialog = []
+
+        self.radish_rayna_bond_dialog = []
+
+        # Grapefart
+        self.grapefart_lambaste_bond_dialog = []
+
+        self.grapefart_sunny_bond_dialog = []
+
+        self.grapefart_oscar_bond_dialog = []
+
+        self.grapefart_donkey_bond_dialog = []
+
+        self.grapefart_sidney_bond_dialog = []
+
+        self.grapefart_hollow_bond_dialog = []
+
+        self.grapefart_gol_bond_dialog = []
+
+        self.grapefart_henrietta_bond_dialog = []
+
+        self.grapefart_grilla_bond_dialog = []
+
+        self.grapefart_dane_bond_dialog = []
+
+        self.grapefart_rayna_bond_dialog = []
+
+        # Lambaste
+        self.lambaste_sunny_bond_dialog = []
+
+        self.lambaste_oscar_bond_dialog = []
+
+        self.lambaste_donkey_bond_dialog = []
+
+        self.lambaste_sidney_bond_dialog = []
+
+        self.lambaste_hollow_bond_dialog = []
+
+        self.lambaste_gol_bond_dialog = []
+
+        self.lambaste_henrietta_bond_dialog = []
+
+        self.lambaste_grilla_bond_dialog = []
+
+        self.lambaste_dane_bond_dialog = []
+
+        self.lambaste_rayna_bond_dialog = []
+
+        # Sunny
+        self.sunny_oscar_bond_dialog = []
+
+        self.sunny_donkey_bond_dialog = []
+
+        self.sunny_sidney_bond_dialog = []
+
+        self.sunny_hollow_bond_dialog = []
+
+        self.sunny_gol_bond_dialog = []
+
+        self.sunny_henrietta_bond_dialog = []
+
+        self.sunny_grilla_bond_dialog = []
+
+        self.sunny_dane_bond_dialog = []
+
+        self.sunny_rayna_bond_dialog = []
+
+        # Henrietta
+        self.henrietta_grilla_bond_dialog = []
+
+        self.henrietta_dane_bond_dialog = []
+
+        self.henrietta_rayna_bond_dialog = []
+
+        # Grilla
+        self.grilla_dane_bond_dialog = []
+
+        self.grilla_rayna_bond_dialog = []
+
+        # Dane
+        self.dane_rayna_bond_dialog = []
         
         #########
         # SKIPS #
