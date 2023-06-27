@@ -2347,6 +2347,11 @@ class MainGame():
             self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
         elif (r == 14 and l == 11) or (r == 11 and l == 14):
             self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
+        # Grilla
+        elif (r == 12 and l == 13) or (r == 13 and l == 12):
+            self.user_text = self.dialog.grilla_dane_bond_dialog[rank-1]
+        elif (r == 14 and l == 12) or (r == 12 and l == 14):
+            self.user_text = self.dialog.grilla_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
         self.in_dialog(False, False, self.progress)
