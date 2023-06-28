@@ -2293,6 +2293,16 @@ class MainGame():
             self.user_text = self.dialog.bear_lambaste_bond_dialog[rank-1]
         elif (r == 5 and l == 1) or (r == 1 and l == 5):
             self.user_text = self.dialog.bear_sunny_bond_dialog[rank-1]
+        elif (r == 6 and l == 1) or (l == 6 and r == 1):
+            self.user_text = self.dialog.bear_oscar_bond_dialog[rank-1]
+        elif (r == 7 and l == 1) or (l == 7 and r == 1):
+            self.user_text = self.dialog.bear_donkey_bond_dialog[rank-1]
+        elif (r == 8 and l == 1) or (l == 8 and r == 1):
+            self.user_text = self.dialog.bear_sidney_bond_dialog[rank-1]
+        elif (r == 9 and l == 1) or (l == 9 and r == 1):
+            self.user_text = self.dialog.bear_hollow_bond_dialog[rank-1]
+        elif (r == 10 and l == 1) or (l == 10 and r == 1):
+            self.user_text = self.dialog.bear_gol_bond_dialog[rank-1]
         elif (r == 11 and l == 1) or (r == 1 and l == 11):
             self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
         elif (r == 12 and l == 1) or (r == 1 and l == 12):
