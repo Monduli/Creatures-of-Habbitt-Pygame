@@ -2256,122 +2256,239 @@ class MainGame():
         l = which_num_party_member(left.get_name(), self.main_character.get_name())
         r = which_num_party_member(right.get_name(), self.main_character.get_name())
         # MC
-        if (r == 1 and l == 0) or (r == 0 and l == 1):
-            self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
-        elif (r == 2 and l == 0) or (r == 0 and l == 2):
-            self.user_text = self.dialog.mc_radish_bond_dialog[rank-1]
-        elif (r == 3 and l == 0) or (l == 3 and r == 0):
-            self.user_text = self.dialog.mc_grapefart_bond_dialog[rank-1]
-        elif (r == 4 and l == 0) or (r == 0 and l == 4):
-            self.user_text = self.dialog.mc_lambaste_bond_dialog[rank-1]
-        elif (r == 5 and l == 0) or (l == 5 and r == 0):
-            self.user_text = self.dialog.mc_sunny_bond_dialog[rank-1]
-        elif (r == 6 and l == 0) or (l == 6 and r == 0):
-            self.user_text = self.dialog.mc_oscar_bond_dialog[rank-1]
-        elif (r == 7 and l == 0) or (l == 7 and r == 0):
-            self.user_text = self.dialog.mc_donkey_bond_dialog[rank-1]
-        elif (r == 8 and l == 0) or (l == 8 and r == 0):
-            self.user_text = self.dialog.mc_sidney_bond_dialog[rank-1]
-        elif (r == 9 and l == 0) or (l == 9 and r == 0):
-            self.user_text = self.dialog.mc_hollow_bond_dialog[rank-1]
-        elif (r == 10 and l == 0) or (l == 10 and r == 0):
-            self.user_text = self.dialog.mc_gol_bond_dialog[rank-1]
-        elif (r == 11 and l == 0) or (r == 0 and l == 11):
-            self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
-        elif (r == 12 and l == 0) or (r == 0 and l == 12):
-            self.user_text = self.dialog.mc_grilla_bond_dialog[rank-1]
-        elif (r == 13 and l == 0) or (r == 0 and l == 13):
-            self.user_text = self.dialog.mc_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 0) or (r == 0 and l == 14):
-            self.user_text = self.dialog.mc_rayna_bond_dialog[rank-1]
+        if l == 0 or r == 0:
+            if r == 1 or l == 1:
+                self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
+            elif r == 2 or l == 2:
+                self.user_text = self.dialog.mc_radish_bond_dialog[rank-1]
+            elif r == 3 or l == 3:
+                self.user_text = self.dialog.mc_grapefart_bond_dialog[rank-1]
+            elif r == 4 or l == 4:
+                self.user_text = self.dialog.mc_lambaste_bond_dialog[rank-1]
+            elif r == 5 or l == 5:
+                self.user_text = self.dialog.mc_sunny_bond_dialog[rank-1]
+            elif r == 6 or l == 6:
+                self.user_text = self.dialog.mc_oscar_bond_dialog[rank-1]
+            elif r == 7 or l == 7:
+                self.user_text = self.dialog.mc_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.mc_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.mc_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.mc_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.mc_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.mc_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.mc_rayna_bond_dialog[rank-1]
         # Bear
-        elif (r == 2 and l == 1) or (r == 1 and l == 2):
-            self.user_text = self.dialog.bear_radish_bond_dialog[rank-1]
-        elif (r == 3 and l == 1) or (r == 1 and l == 3):
-            self.user_text = self.dialog.bear_grapefart_bond_dialog[rank-1]
-        elif (r == 4 and l == 1) or (r == 1 and l == 4):
-            self.user_text = self.dialog.bear_lambaste_bond_dialog[rank-1]
-        elif (r == 5 and l == 1) or (r == 1 and l == 5):
-            self.user_text = self.dialog.bear_sunny_bond_dialog[rank-1]
-        elif (r == 6 and l == 1) or (l == 6 and r == 1):
-            self.user_text = self.dialog.bear_oscar_bond_dialog[rank-1]
-        elif (r == 7 and l == 1) or (l == 7 and r == 1):
-            self.user_text = self.dialog.bear_donkey_bond_dialog[rank-1]
-        elif (r == 8 and l == 1) or (l == 8 and r == 1):
-            self.user_text = self.dialog.bear_sidney_bond_dialog[rank-1]
-        elif (r == 9 and l == 1) or (l == 9 and r == 1):
-            self.user_text = self.dialog.bear_hollow_bond_dialog[rank-1]
-        elif (r == 10 and l == 1) or (l == 10 and r == 1):
-            self.user_text = self.dialog.bear_gol_bond_dialog[rank-1]
-        elif (r == 11 and l == 1) or (r == 1 and l == 11):
-            self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
-        elif (r == 12 and l == 1) or (r == 1 and l == 12):
-            self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
-        elif (r == 13 and l == 1) or (r == 1 and l == 13):
-            self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 1) or (r == 1 and l == 14):
-            self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
+        elif l == 1 or r == 1:
+            if r == 2 or l == 2:
+                self.user_text = self.dialog.bear_radish_bond_dialog[rank-1]
+            elif r == 3 or l == 3:
+                self.user_text = self.dialog.bear_grapefart_bond_dialog[rank-1]
+            elif r == 4 or l == 4:
+                self.user_text = self.dialog.bear_lambaste_bond_dialog[rank-1]
+            elif r == 5 or l == 5:
+                self.user_text = self.dialog.bear_sunny_bond_dialog[rank-1]
+            elif r == 6 or l == 6:
+                self.user_text = self.dialog.bear_oscar_bond_dialog[rank-1]
+            elif r == 7 or l == 7:
+                self.user_text = self.dialog.bear_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.bear_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.bear_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.bear_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
         # Radish
-        elif (r == 3 and l == 2) or (r == 2 and l == 3):
-            self.user_text = self.dialog.radish_grapefart_bond_dialog[rank-1]
-        elif (r == 4 and l == 2) or (r == 2 and l == 4):
-            self.user_text = self.dialog.radish_lambaste_bond_dialog[rank-1]
-        elif (r == 5 and l == 2) or (r == 2 and l == 5):
-            self.user_text = self.dialog.radish_sunny_bond_dialog[rank-1]
-        elif (r == 6 and l == 2) or (l == 6 and r == 2):
-            self.user_text = self.dialog.bear_oscar_bond_dialog[rank-1]
-        elif (r == 7 and l == 2) or (l == 7 and r == 2):
-            self.user_text = self.dialog.bear_donkey_bond_dialog[rank-1]
-        elif (r == 8 and l == 2) or (l == 8 and r == 2):
-            self.user_text = self.dialog.bear_sidney_bond_dialog[rank-1]
-        elif (r == 9 and l == 2) or (l == 9 and r == 2):
-            self.user_text = self.dialog.bear_hollow_bond_dialog[rank-1]
-        elif (r == 10 and l == 2) or (l == 10 and r == 2):
-            self.user_text = self.dialog.bear_gol_bond_dialog[rank-1]
-        elif (r == 11 and l == 2) or (r == 2 and l == 11):
-            self.user_text = self.dialog.radish_henrietta_bond_dialog[rank-1]
-        elif (r == 12 and l == 2) or (r == 2 and l == 12):
-            self.user_text = self.dialog.radish_grilla_bond_dialog[rank-1]
-        elif (r == 13 and l == 2) or (r == 2 and l == 13):
-            self.user_text = self.dialog.radish_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 2) or (r == 2 and l == 14):
-            self.user_text = self.dialog.radish_rayna_bond_dialog[rank-1]
+        elif l == 2 or r == 2:
+            if r == 3 or l == 3:
+                self.user_text = self.dialog.radish_grapefart_bond_dialog[rank-1]
+            elif r == 4 or l == 4:
+                self.user_text = self.dialog.radish_lambaste_bond_dialog[rank-1]
+            elif r == 5 or l == 5:
+                self.user_text = self.dialog.radish_sunny_bond_dialog[rank-1]
+            elif r == 6 or l == 6:
+                self.user_text = self.dialog.radish_oscar_bond_dialog[rank-1]
+            elif r == 7 or l == 7:
+                self.user_text = self.dialog.radish_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.radish_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.radish_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.radish_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.radish_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.radish_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.radish_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.radish_rayna_bond_dialog[rank-1]
         # Grapefart
-        elif (r == 4 and l == 3) or (r == 3 and l == 4):
-            self.user_text = self.dialog.grapefart_lambaste_bond_dialog[rank-1]
-        elif (r == 5 and l == 3) or (r == 3 and l == 5):
-            self.user_text = self.dialog.grapefart_sunny_bond_dialog[rank-1]
-        elif (r == 11 and l == 3) or (r == 3 and l == 11):
-            self.user_text = self.dialog.grapefart_henrietta_bond_dialog[rank-1]
-        elif (r == 12 and l == 3) or (r == 3 and l == 12):
-            self.user_text = self.dialog.grapefart_grilla_bond_dialog[rank-1]
-        elif (r == 13 and l == 3) or (r == 3 and l == 13):
-            self.user_text = self.dialog.grapefart_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 3) or (r == 3 and l == 14):
-            self.user_text = self.dialog.grapefart_rayna_bond_dialog[rank-1]
+        elif l == 3 or r == 3:
+            if r == 4 or l == 4:
+                self.user_text = self.dialog.grapefart_lambaste_bond_dialog[rank-1]
+            elif r == 5 or l == 5:
+                self.user_text = self.dialog.grapefart_sunny_bond_dialog[rank-1]
+            elif r == 6 or l == 6:
+                self.user_text = self.dialog.grapefart_oscar_bond_dialog[rank-1]
+            elif r == 7 or l == 7:
+                self.user_text = self.dialog.grapefart_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.grapefart_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.grapefart_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.grapefart_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.grapefart_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.grapefart_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.grapefart_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.grapefart_rayna_bond_dialog[rank-1]
         # Lam'baste
-        elif (r == 5 and l == 4) or (r == 4 and l == 5):
-            self.user_text = self.dialog.lambaste_sunny_bond_dialog[rank-1]
-        elif (r == 11 and l == 4) or (r == 4 and l == 11):
-            self.user_text = self.dialog.lambaste_henrietta_bond_dialog[rank-1]
-        elif (r == 12 and l == 4) or (r == 4 and l == 12):
-            self.user_text = self.dialog.lambaste_grilla_bond_dialog[rank-1]
-        elif (r == 13 and l == 4) or (r == 4 and l == 13):
-            self.user_text = self.dialog.lambaste_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 4) or (r == 4 and l == 14):
-            self.user_text = self.dialog.lambaste_rayna_bond_dialog[rank-1]
+        elif l == 4 or r == 4:
+            if r == 5 or l == 5:
+                self.user_text = self.dialog.lambaste_sunny_bond_dialog[rank-1]
+            elif r == 6 or l == 6:
+                self.user_text = self.dialog.lambaste_oscar_bond_dialog[rank-1]
+            elif r == 7 or l == 7:
+                self.user_text = self.dialog.lambaste_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.lambaste_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.lambaste_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.lambaste_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.lambaste_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.lambaste_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.lambaste_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.lambaste_rayna_bond_dialog[rank-1]
+        # Sunny
+        elif l == 5 or r == 5:
+            if r == 6 or l == 6:
+                self.user_text = self.dialog.sunny_oscar_bond_dialog[rank-1]
+            elif r == 7 or l == 7:
+                self.user_text = self.dialog.sunny_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.sunny_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.sunny_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.sunny_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.sunny_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.sunny_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.sunny_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.sunny_rayna_bond_dialog[rank-1]
+        # Oscar
+        elif l == 6 or r == 6:
+            if r == 7 or l == 7:
+                self.user_text = self.dialog.oscar_donkey_bond_dialog[rank-1]
+            elif r == 8 or l == 8:
+                self.user_text = self.dialog.oscar_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.oscar_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.oscar_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.oscar_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.oscar_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.oscar_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.oscar_rayna_bond_dialog[rank-1]
+        # Donkey Hote
+        elif l == 7 or r == 7:
+            if r == 8 or l == 8:
+                self.user_text = self.dialog.donkey_sidney_bond_dialog[rank-1]
+            elif r == 9 or l == 9:
+                self.user_text = self.dialog.donkey_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.donkey_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.donkey_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.donkey_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.donkey_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.donkey_rayna_bond_dialog[rank-1]
+        # Sidney Shark
+        elif l == 8 or r == 8:
+            if r == 9 or l == 9:
+                self.user_text = self.dialog.sidney_hollow_bond_dialog[rank-1]
+            elif r == 10 or l == 10:
+                self.user_text = self.dialog.sidney_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.sidney_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.sidney_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.sidney_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.sidney_rayna_bond_dialog[rank-1]
+        # Hollow
+        elif l == 9 or r == 9:
+            if r == 10 or l == 10:
+                self.user_text = self.dialog.hollow_gol_bond_dialog[rank-1]
+            elif r == 11 or l == 11:
+                self.user_text = self.dialog.hollow_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.hollow_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.hollow_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.hollow_rayna_bond_dialog[rank-1]
+        # Giver of Life
+        elif l == 10 or r == 10:
+            if r == 11 or l == 11:
+                self.user_text = self.dialog.gol_henrietta_bond_dialog[rank-1]
+            elif r == 12 or l == 12:
+                self.user_text = self.dialog.gol_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.gol_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.gol_rayna_bond_dialog[rank-1]
         # Henrietta
-        elif (r == 12 and l == 11) or (r == 11 and l == 12):
-            self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
-        elif (r == 13 and l == 11) or (r == 11 and l == 13):
-            self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 11) or (r == 11 and l == 14):
-            self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
+        elif l == 11 or r == 11:
+            if r == 12 or l == 12:
+                self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
+            elif r == 13 or l == 13:
+                self.user_text = self.dialog.bear_dane_bond_dialog[rank-1]
+            elif r == 14 or l == 14:
+                self.user_text = self.dialog.bear_rayna_bond_dialog[rank-1]
         # Grilla
-        elif (r == 12 and l == 13) or (r == 13 and l == 12):
-            self.user_text = self.dialog.grilla_dane_bond_dialog[rank-1]
-        elif (r == 14 and l == 12) or (r == 12 and l == 14):
-            self.user_text = self.dialog.grilla_rayna_bond_dialog[rank-1]
+        elif l == 12 or r == 12:
+            if l == 13 or r == 13:
+                self.user_text = self.dialog.grilla_dane_bond_dialog[rank-1]
+            elif l == 14 or r == 14:
+                self.user_text = self.dialog.grilla_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
         self.in_dialog(False, False, self.progress)
