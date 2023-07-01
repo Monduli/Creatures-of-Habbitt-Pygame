@@ -88,6 +88,7 @@ class MainGame():
         self.boosted = 0
         self.music = pygame.mixer.Channel(5)
         self.habbitt_music = pygame.mixer.Sound("audio/bgm/habbittnature.wav")
+        self.talking_to_pals = pygame.mixer.Sound("audio/bgm/talking_to_pals.wav")
 
         # ranch initialization
         self.ranch_game = RancherMinigame(self.screen)
@@ -2495,9 +2496,15 @@ class MainGame():
                 self.user_text = self.dialog.dane_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
+        self.play_song(l, r, rank-1)
         self.in_dialog(False, False, self.progress)
+        self.music.fadeout(300)
         left.set_conversation_completeness(right.get_name(), self.main_character.get_name(), rank)
         right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)
+
+    def play_song(self, l, r, rank):
+        self.music.play(self.talking_to_pals, -1)
+        self.music.set_volume(7)
 
 if __name__ == "__main__":
     # Does the same thing as main.py does
