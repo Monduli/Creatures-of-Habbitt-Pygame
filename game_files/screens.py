@@ -2249,8 +2249,8 @@ class MainGame():
         """Picks a bond conversation based on the characters selected.
 
         Args:
-            left (string): The character on the left
-            right (string): The character on the right
+            left (string): The character on the left, converted to "l"
+            right (string): The character on the right, converted to "r"
             rank (int): _description_
         """
         l = which_num_party_member(left.get_name(), self.main_character.get_name())
@@ -2489,6 +2489,10 @@ class MainGame():
                 self.user_text = self.dialog.grilla_dane_bond_dialog[rank-1]
             elif l == 14 or r == 14:
                 self.user_text = self.dialog.grilla_rayna_bond_dialog[rank-1]
+        # Dane
+        elif l == 13 or r == 13:
+            if l == 14 or r == 14:
+                self.user_text = self.dialog.dane_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
         self.in_dialog(False, False, self.progress)
