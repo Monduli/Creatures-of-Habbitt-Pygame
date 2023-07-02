@@ -80,3 +80,70 @@ Stats pictures are not aligned. Dialog pictures are not implemented.
 Retroactively updated yesterday's additions to this document
 
 5/6/2023
+Adjusted stats character pics
+
+5/7
+Updated bonds list
+
+5/8
+Added more to which_num_party_member_bonds
+
+5/9
+Added dungeon names and adjusted text height
+
+5/10
+Added difficulty button, new button lighting
+
+5/11
+Fixed difficulty buttons in venture out
+
+5/12
+Updated next.txt
+
+5/13
+Fixed text showing as white blocks and pink/grey
+
+5/14
+Added comments to navigation.py (now screens.py)
+
+5/15
+Added several new characters to classes
+
+5/16
+Wrote Donkey Hote song, multiple small changes
+
+5/17 - 5/18
+Brainstormed
+
+5/19
+Added multiple save/load files
+
+5/20 - 5/27
+Rancher mode
+
+5/28 - 5/30
+Equipment Menu
+
+5/31
+Brainstormed
+
+================
+
+6/1 - 6/24
+Added docstrings and comments to many functions
+
+6/25 - 6/26
+Added fullscreen to screens.py
+Started converting screen equations to use relative location instead of 1600x900
+
+6/27
+Fixed party being dead and the game not processing it right (crashing)
+
+6/28 - 7/1
+Added dialog options but not the actual dialog structures
+Created background music for conversations
+
+================
+
+7/2
+Worked on writeup in OneNote, updated this README significantly for the last months
