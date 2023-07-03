@@ -2496,13 +2496,21 @@ class MainGame():
                 self.user_text = self.dialog.dane_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
-        self.play_song(l, r, rank-1)
+        self.play_song_bond(l, r, rank-1)
         self.in_dialog(False, False, self.progress)
         self.music.fadeout(300)
         left.set_conversation_completeness(right.get_name(), self.main_character.get_name(), rank)
         right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)
 
-    def play_song(self, l, r, rank):
+    def play_song_bond(self, l, r, rank):
+        """Will eventually be able to play songs based on conversational context.
+        Currently only plays the conversation song, as that's the only one implemented properly
+
+        Args:
+            l (_type_): _description_
+            r (_type_): _description_
+            rank (_type_): _description_
+        """
         self.music.play(self.talking_to_pals, -1)
         self.music.set_volume(7)
 
