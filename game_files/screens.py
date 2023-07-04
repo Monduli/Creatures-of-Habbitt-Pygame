@@ -2259,6 +2259,7 @@ class MainGame():
         # MC
         if l == 0 or r == 0:
             if r == 1 or l == 1:
+                song = 0
                 self.user_text = self.dialog.mc_bear_bond_dialog[rank-1]
             elif r == 2 or l == 2:
                 self.user_text = self.dialog.mc_radish_bond_dialog[rank-1]
@@ -2279,6 +2280,7 @@ class MainGame():
             elif r == 10 or l == 10:
                 self.user_text = self.dialog.mc_gol_bond_dialog[rank-1]
             elif r == 11 or l == 11:
+                song = 10
                 self.user_text = self.dialog.mc_henrietta_bond_dialog[rank-1]
             elif r == 12 or l == 12:
                 self.user_text = self.dialog.mc_grilla_bond_dialog[rank-1]
@@ -2307,6 +2309,7 @@ class MainGame():
             elif r == 10 or l == 10:
                 self.user_text = self.dialog.bear_gol_bond_dialog[rank-1]
             elif r == 11 or l == 11:
+                song = 23
                 self.user_text = self.dialog.bear_henrietta_bond_dialog[rank-1]
             elif r == 12 or l == 12:
                 self.user_text = self.dialog.bear_grilla_bond_dialog[rank-1]
@@ -2496,13 +2499,13 @@ class MainGame():
                 self.user_text = self.dialog.dane_rayna_bond_dialog[rank-1]
         if self.debug == 1:
             print(self.user_text)
-        self.play_song_bond(l, r, rank-1)
+        self.play_song_bond(song)
         self.in_dialog(False, False, self.progress)
         self.music.fadeout(300)
         left.set_conversation_completeness(right.get_name(), self.main_character.get_name(), rank)
         right.set_conversation_completeness(left.get_name(), self.main_character.get_name(), rank)
 
-    def play_song_bond(self, l, r, rank):
+    def play_song_bond(self, song_num):
         """Will eventually be able to play songs based on conversational context.
         Currently only plays the conversation song, as that's the only one implemented properly
 
@@ -2511,8 +2514,9 @@ class MainGame():
             r (_type_): _description_
             rank (_type_): _description_
         """
-        self.music.play(self.talking_to_pals, -1)
-        self.music.set_volume(7)
+        if song_num in [0, 10, 23]:
+            self.music.play(self.talking_to_pals, -1)
+            self.music.set_volume(7)
 
 if __name__ == "__main__":
     # Does the same thing as main.py does
