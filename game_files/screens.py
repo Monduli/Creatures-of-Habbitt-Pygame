@@ -2510,9 +2510,7 @@ class MainGame():
         Currently only plays the conversation song, as that's the only one implemented properly
 
         Args:
-            l (_type_): _description_
-            r (_type_): _description_
-            rank (_type_): _description_
+            song_num (integer): The number associated with the rank conversation that has been chosen.
         """
         if song_num in [0, 10, 23]:
             self.music.play(self.talking_to_pals, -1)
