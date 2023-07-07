@@ -736,6 +736,7 @@ def add_char(char):
 def which_num_party_member(m_n, mc_name):
         # bonds list:
             # [0] - Main Character (M/F)
+            # Romance Characters
             # [1] - Bear N. Steen (M)
             # [2] - Radish Rabbit (F)
             # [3] - Gil Grapefart (M)
@@ -746,17 +747,18 @@ def which_num_party_member(m_n, mc_name):
             # [8] - Sidney Shark (F)
             # [9] - Hollow
             # [10] - GoL
+            # Vendors
             # [11] - Henrietta
             # [12] - Grilla
             # [13] - Dane
             # [14] - Rayna
-            # [15] - None
-            # [16] - None
-            # [17] - None
-            # [18] - None
-            # [19] - None
-            # [20] - None
-            # [21] - None
+            # [15] - Truffles Porken (Rancher NPC)
+            # [16] - Pigby Porken
+            # Villains
+            # [17] - Vulpe Renard
+            # [18] - Candy Caniche
+            # [19] - Ward N. Stain
+            # [20] - Juliette
         if m_n == mc_name:
             return 0
         if m_n == "N. Steen":
@@ -787,10 +789,18 @@ def which_num_party_member(m_n, mc_name):
             return 13
         if m_n == "Rayna":
             return 14
-        if m_n == "TBH":
+        if m_n == "Truffles":
             return 15
-        if m_n == "TBH":
+        if m_n == "Pigby":
             return 16
+        if m_n == "Vulpe":
+            return 17
+        if m_n == "Candy":
+            return 18
+        if m_n == "N. Stain":
+            return 19
+        if m_n == "Juliette":
+            return 20
         
 def set_char_lists(characters):
         c = characters
