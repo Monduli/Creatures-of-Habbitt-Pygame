@@ -18,6 +18,8 @@ SIZE = width, height = 1600, 900
 class MainGame():
     def __init__(self):
         pygame.init()
+        
+        self.version_num = "211"
 
         # keeps track of where you are in the storyline
         self.progress = 1
@@ -229,6 +231,7 @@ class MainGame():
         gl_text_name(self.font, c3, cgls(width-700, width), cgls(width-900, width), cgls(height-650, height), cgls(height-600, height), "Load", 1, .95)
         gl_text_name(self.font, c4, cgls(width-700, width), cgls(width-900, width), cgls(height-725, height), cgls(height-675, height), "Options", 1, .925)
         gl_text_name(self.font, c5, cgls(width-700, width), cgls(width-900, width), cgls(height-800, height), cgls(height-750, height), "Exit", 1, .89)
+        gl_text_name(self.font, self.color_passive, cgls(width, width), cgls(width-100, width), cgls(height-850, height), cgls(height-800, height), self.version_num, 1, .8)
 
         pygame.display.flip()
 
