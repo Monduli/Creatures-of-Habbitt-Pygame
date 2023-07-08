@@ -19,7 +19,7 @@ class MainGame():
     def __init__(self):
         pygame.init()
         
-        self.version_num = "211"
+        self.version_num = "212"
 
         # keeps track of where you are in the storyline
         self.progress = 1
@@ -301,14 +301,6 @@ class MainGame():
                     if speaking_name in remove:
                         self.slots = remove_portrait(speaking_name, self.slots)
                     else:
-                        #gl_text_name(self.font, "BLACK", cgls(width-1250, width), cgls(width-1550, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        #if speaking_name == self.slots[0]:
-                        #    gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-1100, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        #elif speaking_name == self.slots[1] or self.special_cases_slots_2(speaking_name):
-                        #    gl_text_name(self.font, "BLACK", cgls(width-650, width), cgls(width-950, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        #elif speaking_name == self.slots[2] or self.special_cases_slots_3(speaking_name):
-                        #    gl_text_name(self.font, "BLACK", cgls(width-800, width), cgls(width-500, width), cgls(height-630, height), cgls(height-580, height), speaking_name, 1, .95) #.8, .95
-                        
                         # Arg 1 is the name of the character to be portraited, Arg 2 is always main character
                         character = retrieve_character(speaking_name, self.characters)
                         # self.slots[0] is left, self.slots[1] is middle, self.slots[2] is right
@@ -319,10 +311,6 @@ class MainGame():
                         elif self.slots[1] == 0 and self.slots[0] != speaking_name and self.slots[2] != speaking_name:
                             self.slots[1] = speaking_name
 
-                # (width-1550,height-250,1500,200)
-                #glBegin(GL_QUADS)
-                #rect_ogl("BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), cgls(height-850, height))
-                #glEnd()
                 if speaking_name == None:
                     gl_text_wrap_dialog(self.font, "BLACK", cgls(width-1550, width), cgls(width-50, width), cgls(height-650, height), -.999999, self.user_text[0][self.advance][1], .7, 2.15, self.level)
                 else:
@@ -1471,8 +1459,6 @@ class MainGame():
             # draw rectangle and argument passed which should
             # be on self.screen
             glBegin(GL_QUADS)
-            #pygame.draw.rect(self.screen, color, input_rect)
-            # width-750, height/2/2, 200, 50
             rect_ogl(color, cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
             glEnd()
         
@@ -1584,18 +1570,6 @@ class MainGame():
             gl_text_name(self.font, "BLACK", cgls(width-1400, width), cgls(width-1050, width), cgls(height/2/2-125, height), cgls(height/2/2-75, height), char_name, 1, .89)
             gl_text_name(self.font, color_back, cgls(width/2+100, width), cgls(width/2-100, width), cgls(height-825, height), cgls(height-875, height), "Back", 1, 2)
 
-            # party portraits
-            """
-            if len(self.party) > 0:
-                blit_image(SIZE, width - 100, height-825, self.party[0].get_portrait_dungeon(), 1, 1, 1)
-            if len(self.party) > 1:
-                blit_image(SIZE, width - 200, height-825, self.party[1].get_portrait_dungeon(), 1, 1, 1)
-            if len(self.party) > 2:
-                blit_image(SIZE, width - 300, height-825, self.party[2].get_portrait_dungeon(), 1, 1, 1)
-            if len(self.party) > 3:
-                blit_image(SIZE, width - 400, height-825, self.party[3].get_portrait_dungeon(), 1, 1, 1)
-            """
-
             # Add/Remove party member button
             if characters[current_member] != self.main_character:
                 if char_name not in party_names:
@@ -1646,12 +1620,10 @@ class MainGame():
             y = 0
             which_character = 0
             
-            
             romanced = 0
             char = characters[current_member]
             bonds = char.get_bonds()
-            
-
+        
             # relationship portraits, dynamically shows only the other characters
             for member in which_list[switcher]:
                 if member != char_name:
@@ -1694,6 +1666,7 @@ class MainGame():
                             image = what_list[switcher][which_character].get_portrait()
                             image = pygame.transform.scale(image, (50,50))
                             blit_image((width, height), bounds[0] + 400, bounds[2] - 525 + y, image, 1,1,1)
+
                             # rectangle "healthbar"-like tracking for relationship status
                             # show pink rectangle instead of green for bonded characters
                             glBegin(GL_QUADS)
@@ -1749,10 +1722,6 @@ class MainGame():
                             self.party[2] = characters[current_member]
                         elif self.party[3] == None:
                             self.party[3] = characters[current_member]
-
-            #glBegin(GL_QUADS)
-            #rect_ogl("BLACK", cgls(width-950, width), cgls(width-650, width), cgls(height/2/2-25, height), cgls(height/2/2-75, height))
-            #glEnd()
             
             pygame.display.flip()
 

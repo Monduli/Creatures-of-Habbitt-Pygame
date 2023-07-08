@@ -147,3 +147,16 @@ Created background music for conversations
 
 7/2
 Worked on writeup in OneNote, updated this README significantly for the last months
+
+7/4
+Changed how play_song_bond works:
+	When bond dialog is selected, song equals a certain number
+    If that number is in particular lists of numbers, it will play a particular song
+
+7/6
+Changed the version number in the main.py print command.
+Version number now reflects the number of commits that were performed on the Creatures of Habbitt repository
+(As of today, this number is 210)
+
+7/8
+Cleaned up legacy code
