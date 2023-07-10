@@ -19,7 +19,7 @@ class MainGame():
     def __init__(self):
         pygame.init()
         
-        self.version_num = "212"
+        self.version_num = "213"
 
         # keeps track of where you are in the storyline
         self.progress = 1
@@ -2469,6 +2469,25 @@ class MainGame():
         elif l == 13 or r == 13:
             if l == 14 or r == 14:
                 self.user_text = self.dialog.dane_rayna_bond_dialog[rank-1]
+        # Rayna
+        elif l == 14 or r == 14:
+            pass
+        # Truffles Porkin
+        elif l == 15 or r == 15:
+            pass
+        # Pigby Porkin
+        elif l == 16 or r == 16:
+            pass
+        # Vulpe
+        elif l == 17 or r == 17:
+            pass
+        # Candy Caniche
+        elif l == 18 or r == 18:
+            pass
+        # Ward N. Stain
+        elif l == 19 or r == 19:
+            pass
+        # Juliette is unnecessary as she is covered by the above
         if self.debug == 1:
             print(self.user_text)
         self.play_song_bond(song)

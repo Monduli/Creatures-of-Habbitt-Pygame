@@ -160,3 +160,9 @@ Version number now reflects the number of commits that were performed on the Cre
 
 7/8
 Cleaned up legacy code
+
+7/9
+Added donkeyhote song
+
+7/10
+Added more character to bond conversations
