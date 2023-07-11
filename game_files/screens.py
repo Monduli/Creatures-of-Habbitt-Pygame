@@ -2469,6 +2469,18 @@ class MainGame():
         elif l == 13 or r == 13:
             if l == 14 or r == 14:
                 self.user_text = self.dialog.dane_rayna_bond_dialog[rank-1]
+            elif l == 15 or r == 15:
+                self.user_text = self.dialog.dane_truffles_bond_dialog[rank-1]
+            elif l == 16 or r == 16:
+                self.user_text = self.dialog.dane_pigby_bond_dialog[rank-1]
+            elif l == 17 or r == 17:
+                self.user_text = self.dialog.dane_vulpe_bond_dialog[rank-1]
+            elif l == 18 or r == 18:
+                self.user_text = self.dialog.dane_candy_bond_dialog[rank-1]
+            elif l == 19 or r == 19:
+                self.user_text = self.dialog.dane_ward_bond_dialog[rank-1]
+            elif l == 20 or r == 20:
+                self.user_text = self.dialog.dane_juliette_bond_dialog[rank-1]
         # Rayna
         elif l == 14 or r == 14:
             pass
