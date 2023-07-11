@@ -166,3 +166,6 @@ Added donkeyhote song
 
 7/10
 Added more character to bond conversations
+
+7/11
+Added to Dane's bond dialogs. (Day off)
