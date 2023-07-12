@@ -78,8 +78,14 @@ class EquipmentMenu():
 
     def run(self, screen = None):
         """
-        The main code of equipmentmenu
-        screen = pygame screen that everything is blitted to
+        The function `run` is a loop that handles mouse events and updates the colors of rectangles
+        based on mouse position.
+        
+        :param screen: The `screen` parameter is an optional parameter that represents the pygame screen
+        object. It is used to display the menu on the screen. If no screen object is provided, the menu
+        will not be displayed
+        :return: The function does not explicitly return anything. However, it seems that the function
+        is intended to return when the "leave" rectangle is clicked.
         """
         self.pull_proper_list()
         if screen != None:
