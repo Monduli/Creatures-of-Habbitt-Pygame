@@ -13,6 +13,14 @@
 from helpers import *
 
 def get_dungeon_layout(dungeon_name):
+    """
+    The function "get_dungeon_layout" returns the layout and enemies of a specified dungeon.
+    
+    :param dungeon_name: The parameter `dungeon_name` is a string that represents the name of the
+    dungeon
+    :return: a list containing the layout of the specified dungeon and the enemies present in that
+    dungeon.
+    """
     if dungeon_name == "cave":
         return [cave, cave_enemies]
     if dungeon_name == "cavetiled":

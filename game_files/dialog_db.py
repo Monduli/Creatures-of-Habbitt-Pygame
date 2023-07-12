@@ -5,6 +5,7 @@
     # [2] - Target of right choice button at intersection
     #############
 
+# The Dialog class is a blueprint for creating dialog objects.
 class Dialog():
     def __init__(self, player_name):
         self.player_name = player_name

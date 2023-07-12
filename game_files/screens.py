@@ -2059,13 +2059,13 @@ class MainGame():
         self.in_dialog(False, "Load", self.progress)
 
     def gl_draw_load_save_screen(self, load1c, load2c, load3c, backc):
-        """Draws the save/load interface.
-
-        Args:
-            load1c (string): Color of the first load button
-            load2c (string): Color of the second load button
-            load3c (string): Color of the third load button
-            backc (string): Color of the back button
+        """
+        The function `gl_draw_load_save_screen` draws the save/load interface in a game using OpenGL.
+        
+        :param load1c: The parameter `load1c` is the color of the first load button
+        :param load2c: Color of the second load button
+        :param load3c: Color of the third load button
+        :param backc: The parameter "backc" is the color of the back button in the save/load interface
         """
         self.i = blit_bg(self.i, self.background, self.background_move)
 
@@ -2171,7 +2171,10 @@ class MainGame():
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
     def distribute_data(self):
-        """Distributes the data held in a save file (txt)
+        """
+        The function `distribute_data` is responsible for distributing data from a list to various
+        attributes and variables within the class.
+        (This is used for loading a save file.)
         """
         if self.debug == 1:
             print(len(self.data))
