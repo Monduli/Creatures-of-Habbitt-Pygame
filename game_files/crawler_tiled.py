@@ -453,6 +453,16 @@ class Crawler():
         pass
     
     def input(self, key = None, pressed = False):
+        """
+        The function takes keyboard input and moves the player character accordingly, with additional
+        functionality for quitting the game and toggling fullscreen mode.
+        
+        :param key: The `key` parameter represents the key that was pressed on the keyboard. It is an
+        optional parameter and its default value is `None`
+        :param pressed: The `pressed` parameter is a boolean value that indicates whether any keys are
+        currently being pressed. It is used to check if any keys are pressed before executing the code
+        inside the `if` statement, defaults to False (optional)
+        """
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
@@ -520,11 +530,37 @@ class Crawler():
                         self.fullscreen = 0
 
     def check_for_movement_keys_being_pressed(self, keys):
+        """
+        The function checks if any movement keys (arrow keys or WASD keys) are being pressed.
+        
+        :param keys: The "keys" parameter is a dictionary that represents the current state of all
+        keyboard keys. Each key is represented by a key code, and the value associated with each key
+        code indicates whether the key is currently being pressed (True) or not (False)
+        :return: a boolean value. It returns True if any of the movement keys (UP, DOWN, LEFT, RIGHT, W,
+        A, S, D) are being pressed, and False otherwise.
+        """
         if keys[pygame.K_UP] or keys[pygame.K_DOWN] or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_w] or keys[pygame.K_a] or keys[pygame.K_s] or keys[pygame.K_d]:
             return True
         return False
 
     def draw_gl_scene(self, dungeon_rooms, current_room, party, dungeon_enemies):
+        """
+        The function `draw_gl_scene` is responsible for rendering the game scene, including the dungeon
+        map, player and enemy characters, and party information.
+        
+        :param dungeon_rooms: The `dungeon_rooms` parameter is a list that represents the rooms in the
+        dungeon. Each element in the list represents a room and contains information about the room such
+        as its layout, enemies, and items
+        :param current_room: The current_room parameter represents the index of the current room in the
+        dungeon_rooms list. It is used to determine which room to display in the game scene
+        :param party: The "party" parameter is a list that represents the player's party. It contains
+        the party members' information such as their stats, abilities, and equipment
+        :param dungeon_enemies: The parameter "dungeon_enemies" is a list that represents the enemies
+        present in each room of the dungeon. Each element of the list corresponds to a room in the
+        dungeon. Each element is a tuple containing two values: the first value represents the room
+        number, and the second value represents the enemy
+        :return: nothing.
+        """
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
         global texID
@@ -673,6 +709,17 @@ class Crawler():
         return
     
     def blit_bg_camera(self, bg="cave.png", move=True):
+        """
+        The function `blit_bg_camera` loads a background image and blits it onto the screen at the
+        specified coordinates.
+        
+        :param bg: The "bg" parameter is a string that represents the filename of the background image
+        that you want to load. In this case, it is set to "cave.png", defaults to cave.png (optional)
+        :param move: The "move" parameter is a boolean value that determines whether the background
+        image should move along with the camera or stay fixed in place. If "move" is set to True, the
+        background image will move with the camera. If "move" is set to False, the background image will
+        stay fixed, defaults to True (optional)
+        """
         background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
