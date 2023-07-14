@@ -724,6 +724,19 @@ class Crawler():
         blit_image([width, height], 0, 0, background, 1, 1, 1)
 
     def write_details_gl(self, party_member, nums, party):
+        """
+        The function `write_details_gl` writes various details of a party member to the screen using the
+        `gl_text` function.
+        
+        :param party_member: The parameter "party_member" represents the index of the party member for
+        whom the details are being written
+        :param nums: The parameter "nums" is a list of lists. Each inner list contains four elements:
+        the x-coordinate, y-coordinate, width, and height of a rectangle. These rectangles are used to
+        position the text on the screen
+        :param party: The parameter "party" is a list of party members. Each party member is an object
+        that has various attributes such as name, role, level, HP, physical attack, magic attack,
+        physical guard, magical guard, quickness, healing, and chutzpah. The function "write_details
+        """
         gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-210, height), cgls(height-160, height), self.get_actual_name(party[party_member].get_name()), 1, 1)
         gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-270, height), cgls(height-220, height), str(party[party_member].get_role()) + " " + str(party[party_member].get_level()), 1, 1)
         gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-330, height), cgls(height-280, height), "HP: " + str(party[party_member].get_hp()), 1, 1)
@@ -755,21 +768,31 @@ class Crawler():
             gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-750, height), cgls(height-700, height), "C: " + str(party[party_member].get_chutzpah()), 1, 1)
         else:
             gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-750, height), cgls(height-700, height), "CHUTZPAH: " + str(party[party_member].get_chutzpah()), 1, 1)
-        
-        
+
 
     def check_for_expand(self, num):
-        if self.expand == 0 and num == 0:
-            return True
-        if self.expand == 1 and num == 1:
-            return True
-        if self.expand == 2 and num == 2:
-            return True
-        if self.expand == 3 and num == 3:
+        """
+        The function checks if the value of `self.expand` is equal to the value of `num`.
+        
+        :param num: The `num` parameter is an integer that is being compared to the `expand` attribute
+        of the object
+        :return: a boolean value. It returns True if the value of `self.expand` is equal to the value of
+        `num`, and False otherwise.
+        """
+        if self.expand == num:
             return True
         return False
     
     def get_actual_name(self, name):
+        """
+        The function `get_actual_name` takes a name as input and returns the corresponding actual name
+        if it matches one of the predefined names, otherwise it returns the input name itself.
+        
+        :param name: The parameter "name" is a string representing a person's name
+        :return: the actual name corresponding to the given name. If the given name matches one of the
+        predefined names, the function returns the corresponding actual name. If the given name does not
+        match any of the predefined names, the function returns the given name itself.
+        """
         if name == "N. Steen":
             return "Bear N. Steen"
         if name == "Radish":
@@ -782,6 +805,17 @@ class Crawler():
             return name
         
     def fade(self, counter_x, counter_y, fade_dir):
+        """
+        The function `fade` takes in three parameters (`counter_x`, `counter_y`, `fade_dir`) and
+        performs a fade effect based on the value of `fade_dir`.
+        
+        :param counter_x: counter_x is a variable that keeps track of the horizontal position of the
+        fade effect
+        :param counter_y: The parameter `counter_y` represents the vertical position of the fade effect
+        :param fade_dir: The parameter "fade_dir" is used to determine the direction of the fade effect.
+        It can have two possible values:
+        :return: either "done" or "not done" depending on the conditions inside the if statements.
+        """
         if fade_dir == 1:
             counter_x += 256
             counter_y += 144
@@ -800,13 +834,46 @@ class Crawler():
         return "not done"
 
     def crawler_fade_out(self, counter_x, counter_y):
+        """
+        The function `crawler_fade_out` resizes an image using pygame's `transform.scale` method.
+        
+        :param counter_x: The parameter `counter_x` is the current value of the counter for the x-axis.
+        It represents the number of pixels that have been scrolled horizontally
+        :param counter_y: The parameter `counter_y` is likely a variable that keeps track of the number
+        of iterations or steps taken in the vertical direction of the crawler. It could be used to
+        determine how much to fade out the image vertically
+        """
         self.fade_image = pygame.transform.scale(self.fade_image,(12800 - counter_x,7200 - counter_y))
 
     def crawler_fade_in(self, counter_x, counter_y, fade):
+        """
+        The function `crawler_fade_in` scales an image and then blits it onto the screen with specified
+        parameters.
+        
+        :param counter_x: The parameter `counter_x` is used to control the width of the `fade_image`. It
+        determines how much the width of the image should increase or decrease during the fade-in effect
+        :param counter_y: The parameter "counter_y" is likely used to control the vertical size of the
+        image being faded in. It is used to determine the height of the scaled image in the line
+        `self.fade_image = pygame.transform.scale(self.fade_image,(0 + counter_x,0 + counter_y))`
+        :param fade: The "fade" parameter is the surface or image that will be used to fade in the
+        "self.fade_image". It is used in the "blit_image" function to determine how the fading effect
+        will be applied
+        """
         self.fade_image = pygame.transform.scale(self.fade_image,(0 + counter_x,0 + counter_y))
         blit_image((1600,900), 7200-counter_x/2, 4050-counter_y/2, fade, 1,1,1)
     
     def fade_start_y(self, y, direction):
+        """
+        The function `fade_start_y` is used to fade an image in the vertical direction based on the
+        given `y` coordinate and `direction`.
+        
+        :param y: The parameter "y" represents the y-coordinate of the starting position for the fade
+        effect
+        :param direction: The "direction" parameter in the given code represents the direction in which
+        the fade effect should occur. It can have two possible values: "fade_up" or "fade_down"
+        :return: a boolean value. If the fade counters have finished, it returns True. Otherwise, it
+        returns False.
+        """
         # up
         if direction == "fade_up":
             blit_image([width, y], 0, y-self.counter_y, self.fade_image, 1, 1, 1)
@@ -823,6 +890,15 @@ class Crawler():
         else: return False
 
     def fade_finish_y(self, y, direction):
+        """
+        The function `fade_finish_y` is used to fade an image either up or down based on the given
+        direction and updates the fade direction once the fading is finished.
+        
+        :param y: The parameter "y" represents the y-coordinate of the position where the fade effect is
+        being applied
+        :param direction: The "direction" parameter is a string that specifies the direction in which
+        the fade effect should occur. It can have two possible values: "fade_up" or "fade_down"
+        """
         # up
         if direction == "fade_up":
             blit_image([width, y], 0, 0-self.counter_y, self.fade_image, 1, 1, 1)
@@ -834,6 +910,16 @@ class Crawler():
             self.fade_dir = "fade_done"
 
     def fade_start_x(self, x, direction):
+        """
+        The function `fade_start_x` is used to fade an image in from the left or right direction.
+        
+        :param x: The parameter "x" represents the x-coordinate of the starting position for the fade
+        effect
+        :param direction: The "direction" parameter is a string that specifies the direction in which
+        the fade effect should occur. It can have two possible values: "fade_left" or "fade_right"
+        :return: a boolean value. If the fade counters have finished, it returns True. Otherwise, it
+        returns False.
+        """
         # left
         if direction == "fade_left":
             blit_image([x, height], x-self.counter_x, 0, self.fade_image, 1, 1, 1)
