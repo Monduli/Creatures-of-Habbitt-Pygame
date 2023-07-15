@@ -936,6 +936,15 @@ class Crawler():
         else: return False
 
     def fade_finish_x(self, x, direction):
+        """
+        The function `fade_finish_x` is used to fade an image in a specific direction and update the
+        fade direction once the fading is finished.
+        
+        :param x: The parameter "x" represents the x-coordinate of the position where the fade effect is
+        being applied
+        :param direction: The "direction" parameter is a string that specifies the direction in which
+        the fade effect should occur. It can have two possible values: "fade_left" or "fade_right"
+        """
         # left
         if direction == "fade_left":
             blit_image([x, height], 0-self.counter_x, 0, self.fade_image, 1, 1, 1)
@@ -947,6 +956,13 @@ class Crawler():
             self.fade_dir = "fade_done"
 
     def fade_counters_x(self, x):
+        """
+        The function `fade_counters_x` increments the `counter_x` variable based on the value of `x` and
+        returns `True` if `counter_x` becomes greater than or equal to `x`.
+        
+        :param x: The parameter "x" represents the maximum value that the counter_x variable can reach
+        :return: True if the value of self.counter_x becomes greater than or equal to x.
+        """
         if self.counter_x < x/4.5:
             self.counter_x += x/18
         elif self.counter_x < x/1.8:
@@ -958,6 +974,13 @@ class Crawler():
             return True
 
     def fade_counters_y(self, y):
+        """
+        The function `fade_counters_y` updates the value of `self.counter_y` based on the input `y` and
+        returns `True` if `self.counter_y` becomes greater than or equal to `y`.
+        
+        :param y: The parameter "y" represents the maximum value for the counter
+        :return: True if the value of self.counter_y becomes greater than or equal to y.
+        """
         if self.counter_y < y/4.5:
             self.counter_y += y/18
         elif self.counter_y < y/1.8:
@@ -969,6 +992,9 @@ class Crawler():
             return True
 
     def gl_show_map(self):
+        """
+        The function `gl_show_map` displays a texture on a quad using OpenGL.
+        """
         glEnable(GL_TEXTURE_2D)
         rgb_surface = pygame.image.tostring( self.map_img, 'RGB')
         glBindTexture(GL_TEXTURE_2D, self.texID)
@@ -991,6 +1017,13 @@ class Crawler():
         glEnd()
 
     def surfaceToTexture(self, pygame_surface ):
+        """
+        The function converts a Pygame surface to a texture and sets the texture parameters.
+        
+        :param pygame_surface: The `pygame_surface` parameter is a surface object created using the
+        Pygame library. It represents an image or a portion of an image that you want to convert to a
+        texture
+        """
         global texID
         rgb_surface = pygame.image.tostring( pygame_surface, 'RGB')
         glBindTexture(GL_TEXTURE_2D, texID)
