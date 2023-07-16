@@ -72,6 +72,10 @@ class RancherMinigame():
         self.weather = "Sun"
 
     def standalone(self):
+        """
+        The function initializes Pygame, sets up the screen, creates a PetCharacter object, and runs the
+        game loop.
+        """
         pygame.init()
         pygame.mixer.init()
         self.screen = pygame.display.set_mode((width, height),
@@ -81,6 +85,16 @@ class RancherMinigame():
         
 
     def run(self, pets = None, screen = None):
+        """
+        The `run` function takes in `pets` and `screen` as optional parameters, sets up a grid of
+        squares, handles user input, and updates the screen with the pets' positions.
+        
+        :param pets: The `pets` parameter is a list of pet objects. Each pet object represents a pet in
+        the game and has various attributes and methods associated with it
+        :param screen: The `screen` parameter is used to specify the screen on which the game will be
+        displayed. It is an optional parameter, and if not provided, the default screen will be used
+        :return: The code does not explicitly return anything.
+        """
         if screen != None:
             self.screen = screen
         self.pets = pets
