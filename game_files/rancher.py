@@ -163,6 +163,13 @@ class RancherMinigame():
             self.clock.tick(60)
 
     def show_screen(self, hlb):
+        """
+        The function `show_screen` is responsible for displaying the game screen with various elements
+        such as background, pets, and information pane.
+        
+        :param hlb: The parameter "hlb" stands for "highlight_back" and it represents the color used to
+        highlight the background of the text
+        """
         highlight_back = hlb
         black = 0, 0, 0
         self.screen.fill(black)
