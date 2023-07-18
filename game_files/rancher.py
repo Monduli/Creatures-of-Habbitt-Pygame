@@ -202,10 +202,21 @@ class RancherMinigame():
             gl_text_name(self.font, highlight_back, cgls(39, width), cgls(439, width), cgls(119, height), cgls(39, height), "Return to Town", 1, 1.8)
 
     def draw_pets(self, pets):
+        """
+        The function "draw_pets" takes a list of pets and calls the "draw" method on each pet.
+        
+        :param pets: A list of pet objects that need to be drawn
+        """
         for pet in pets:
             pet.draw()
 
     def test_pets(self, squares):
+        """
+        The function "test_pets" loads an image, scales it, and then blits it onto a surface.
+        
+        :param squares: The "squares" parameter is a list of lists. Each inner list represents a square
+        and contains two elements: the x-coordinate and the y-coordinate of the square
+        """
         for x in squares:
             for y in x:
                 image = pygame.image.load("images/rancher/illusium.png").convert_alpha()
