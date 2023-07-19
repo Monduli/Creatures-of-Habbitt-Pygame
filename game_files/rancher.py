@@ -8,19 +8,28 @@ size = width, height = 1600, 900
 class PetCharacter():
 
     def __init__(self, img):
+        """
+        The function initializes an object with an image, converts it to an alpha surface, scales it to
+        a specific size, and sets the initial coordinates to (0, 0).
+        
+        :param img: The `img` parameter is the file path of the image that you want to load and use for
+        the object
+        """
         to_convert = pygame.image.load(img).convert_alpha()
         self.image = pygame.transform.scale(to_convert, (88,89))
         self.coords = [0, 0]
 
     def get_coords(self):
         """
-        Gets the current x,y coords of the pet
+        The function returns the coordinates of an object.
+        :return: The method is returning the value of the "coords" attribute.
         """
         return self.coords
     
     def get_image(self):
         """
-        Gets the image of the pet
+        The function returns the image attribute of an object.
+        :return: The image attribute of the object.
         """
         return self.image
     
@@ -32,13 +41,14 @@ class PetCharacter():
     
     def set_rect(self):
         """
-        creates pygame rect corresponding to pet's current coordinates
+        The function sets the rectangle attributes of an object using the coordinates and dimensions
+        provided.
         """
         self.rect = pygame.rect.Rect(self.squares[self.coords[0]][self.coords[1]][0], self.squares[self.coords[0]][self.coords[1]][1], 88, 89)
 
     def draw(self):
         """
-        draws pet
+        The function "draw" is used to draw a pet by blitting an image onto a specified coordinate.
         """
         c = self.coords
         blit_image(size, self.squares[c[0]][c[1]][0], self.squares[c[0]][c[1]][1], self.image, 1,1,1)
@@ -63,6 +73,14 @@ class PetCharacter():
 class RancherMinigame():
 
     def __init__(self, screen):
+        """
+        The function initializes various attributes for a game screen, including the background image,
+        clock, debug mode, selected item, font, and weather.
+        
+        :param screen: The "screen" parameter is the surface object representing the game window or
+        screen on which the game will be displayed. It is typically created using the
+        pygame.display.set_mode() function
+        """
         self.screen = screen
         self.background = "ranchbg.png"
         self.clock = pygame.time.Clock()
