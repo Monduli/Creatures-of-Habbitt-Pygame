@@ -157,9 +157,12 @@ class EquipmentMenu():
 
     def display_menu(self, colors):
         """
-        Draws the menu (OpenGL)
-        colors = colors of the menu items which are set in run
-        """
+        The function `display_menu` displays a menu with buttons and text on the screen using the Pygame
+        library in Python.
+        
+        :param colors: The "colors" parameter is a list of colors that will be used to display the menu
+        options. Each color in the list corresponds to a specific menu option
+        """        
 
         blit_bg(0, "blacksmith.png", False)
 
