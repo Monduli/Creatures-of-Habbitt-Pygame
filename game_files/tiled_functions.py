@@ -55,6 +55,16 @@ class Camera:
         self.height = height
 
     def apply(self, entity):
+        """
+        The function applies the camera's top left position to the entity's coordinates and returns the
+        updated rectangle.
+        
+        :param entity: The "entity" parameter is an object that represents a game entity, such as a
+        character or an object in the game world. It likely has attributes like "x" and "y" that
+        represent its position on the game screen
+        :return: The code is returning the updated position of the entity's rectangle after applying the
+        camera's top left position.
+        """
         entity.x + self.camera.topleft[0]
         entity.y + self.camera.topleft[1]
         return entity.rect.move(self.camera.topleft)
