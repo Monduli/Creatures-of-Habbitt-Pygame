@@ -70,9 +70,25 @@ class Camera:
         return entity.rect.move(self.camera.topleft)
     
     def apply_rect(self, rect):
+        """
+        The function applies the position of a rectangle relative to the camera's top left corner.
+        
+        :param rect: The parameter "rect" is a rectangle object that represents the position and size of
+        an object. It typically has attributes such as "left", "top", "width", and "height" that define
+        its position and size on the screen
+        :return: the rectangle `rect` after applying the camera's top left position to it.
+        """
         return rect.move(self.camera.topleft)
 
     def update(self, target):
+        """
+        The function updates the camera position based on the target's position to ensure that the
+        target is centered on the screen.
+        
+        :param target: The "target" parameter is an object that has a "rect" attribute. The "rect"
+        attribute is a rectangle that represents the position and size of the target object. The
+        "centerx" and "centery" attributes of the "rect" represent the x and y coordinates of the center
+        """
         x = -target.rect.centerx + int(WIDTH / 2)
         y = -target.rect.centery + int(HEIGHT / 2)
 
