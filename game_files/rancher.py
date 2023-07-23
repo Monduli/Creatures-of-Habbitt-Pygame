@@ -55,9 +55,11 @@ class PetCharacter():
 
     def move(self, target):
         """
-        Moves pet to target coordinates 1 square at a time
+        The function moves an object towards a target by adjusting its x and y coordinates.
+        
+        :param target: The "target" parameter is a tuple containing the x and y coordinates of the
+        target location
         """
-
         # x
         if target[0] < self.coords[0]:
             self.coords[0] -= 1
