@@ -35,7 +35,9 @@ class PetCharacter():
     
     def set_squares(self, squares):
         """
-        sets self.squares to the list of coordinates provided
+        The function sets the value of the "squares" attribute of an object.
+        
+        :param squares: The "squares" parameter is a list of square objects
         """
         self.squares = squares
     
