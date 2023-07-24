@@ -2522,6 +2522,8 @@ class MainGame():
             self.music.play(self.talking_to_pals, -1)
             self.music.set_volume(7)
 
+# The above code is checking if the current module is being run as the main program. If it is, then
+# the code inside the if statement will be executed.
 if __name__ == "__main__":
     # Does the same thing as main.py does
     print("Creatures of Habbitt Version Alpha 211")
