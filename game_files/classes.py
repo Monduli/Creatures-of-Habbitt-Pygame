@@ -238,6 +238,16 @@ class Character:
         self.bonds = value
 
     def distribute_stats(self, spread, stats):
+        """
+        The function distributes stats based on a given spread, assigning the highest value from the
+        stats list to the corresponding attribute.
+        
+        :param spread: The "spread" parameter is a list that specifies the order in which the stats
+        should be distributed. Each element in the list represents a stat category, such as "phys" for
+        physical attack, "quick" for quickness, "heart" for heartiness, "magic" for magic attack,
+        :param stats: The `stats` parameter is a list of numerical values representing the available
+        stats to distribute
+        """
         temp = stats
         for i in range(6):
             if spread[i] == "phys":
