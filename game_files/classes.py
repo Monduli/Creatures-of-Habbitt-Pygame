@@ -270,6 +270,10 @@ class Character:
                 stats.remove(max(temp))
 
     def calculate_stats(self):
+        """
+        The function calculates various stats for a character, including physical guard, magical guard,
+        health, current health, and willpower.
+        """
         armor_phys = 0
         armor_mag = 0
         #physical guard
@@ -283,6 +287,9 @@ class Character:
         self.set_willpower(10)
 
     def print_stats(self):
+        """
+        The function "print_stats" prints out the values of various attributes.
+        """
         print("PHYSATT: " + str(self.physical_attack) +
               " QUICK: " + str(self.quickness) +
                 " MAGATT: " + str(self.magic_attack) +
@@ -291,6 +298,14 @@ class Character:
                    " CHUTZ: " + str(self.chutzpah))
     
     def level_up(self, spread):
+        """
+        The `level_up` function increases the level of a character and adjusts their stats based on a
+        given spread.
+        
+        :param spread: The "spread" parameter is a list that specifies how the stat points should be
+        distributed when leveling up. It contains 6 elements, each representing a different stat. The
+        possible values for each element are:
+        """
         self.level += 1
         temp = [random.randint(2, 3), random.randint(1, 2), random.randint(1, 2), random.randint(0, 1), random.randint(0, 1), random.randint(0, 1)]
         for i in range(6):
