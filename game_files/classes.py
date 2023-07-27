@@ -324,6 +324,16 @@ class Character:
         self.calculate_stats()
 
     def add_support_points(self, target, points, mcname):
+        """
+        The function `add_support_points` increases the support points between two characters and checks
+        if the support level has increased.
+        
+        :param target: The "target" parameter represents the name of the party member whose support
+        points are being increased
+        :param points: The "points" parameter represents the number of support points to be added to the
+        bond between the character (self) and the target character
+        :param mcname: The parameter "mcname" represents the name of the main character in the game
+        """
         p = self.which_num_party_member_bonds(target, mcname)
         
         self.bonds[p][1] += points
@@ -334,13 +344,32 @@ class Character:
             print(self.name + "'s bond with " + target + " has ranked up to rank " + str(self.bonds[p][0]))
 
     def boost(self, target, spread):
+        """
+        The function "boost" increases the level of the target by spreading the increase over a
+        specified range.
+        
+        :param target: The target parameter represents the number of times the boost method should be
+        executed. It determines how many times the level_up method will be called
+        :param spread: The "spread" parameter is the amount by which the target should be increased each
+        time the "level_up" method is called
+        """
         for x in range(0, target):
             self.level_up(spread)
 
     def add_xp(self, amount):
+        """
+        The function adds a specified amount of experience points to a given object's xp attribute.
+        
+        :param amount: The parameter "amount" is the amount of experience points (xp) that will be added
+        to the current xp value of the object
+        """
         self.xp += amount
 
     def fill_xp_array(self):
+        """
+        The function `fill_xp_array` creates an array with 9998 elements, each representing the amount of XP required to reach the next level.
+        It then applies the formula 100 + 100y to each element, where y is the index of the element, representing an increasing XP curve.
+        """
         self.xp_tiers = [0] * 9998
         y = 0
         for x in self.xp_tiers:
@@ -348,6 +377,12 @@ class Character:
             y+=1
     
     def has_xp_to_level_up(self):
+        """
+        The function checks if a player has enough experience points to level up.
+        :return: a boolean value. If the conditions are met, it returns True indicating that the player
+        has enough experience points to level up. Otherwise, it returns False indicating that the player
+        does not have enough experience points to level up.
+        """
         if self.level < 9999:
             if self.xp >= self.xp_tiers[self.level-1]:
                 self.level_up(self.stat_spread)
