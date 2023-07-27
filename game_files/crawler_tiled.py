@@ -26,7 +26,7 @@ class Creature():
         self.rect = pygame.Rect(self.x, self.y, 96, 96)
 
     def draw(self):
-        blit_image([width, height], self.x, self.y, self.animation_frames[self.current_frame].convert_alpha(), 1, 1, 1)
+        self.screen.blit([width, height], self.x, self.y, self.animation_frames[self.current_frame].convert_alpha(), 1, 1, 1)
 
     def get_rect(self):
         return self.rect
@@ -152,8 +152,11 @@ class Crawler():
         sys.exit()
 
     def load_data(self):
+        """
+        The function loads a TiledMap file and creates an image and rectangle for the map.
+        """
         self.game_folder = path.dirname(__file__)
-        self.map_folder = path.join(self.game_folder, 'data/tmx')
+        self.map_folder = path.join(self.game_folder, 'data\\tmx')
         self.map = tf.TiledMap(path.join(self.map_folder, 'cave1.tmx'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -164,8 +167,6 @@ class Crawler():
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
         self.draw_map = 1
-
-        self.texID = glGenTextures(1)
 
         accel_x, accel_y = 0, 0
 
@@ -373,7 +374,6 @@ class Crawler():
                 self.move_to_match = 0
                 in_play = 0
 
-            
             self.draw_gl_scene(dungeon_rooms, current_room, party, dungeon_enemies)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
 
@@ -447,6 +447,7 @@ class Crawler():
                                 else:
                                     self.expand = 4
 
+            pygame.display.flip()
             
 
     def draw(self):
@@ -563,23 +564,7 @@ class Crawler():
         """
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
-        global texID
-        set_texID(texID)
-
-        #self.blit_bg_camera(dungeon_rooms[current_room][0], False)
-        glClear(GL_COLOR_BUFFER_BIT)
-        glLoadIdentity()
-        glDisable(GL_LIGHTING)
-        glEnable(GL_TEXTURE_2D)
-        self.map_rect = self.camera.apply_rect(self.map_rect)
-        self.surfaceToTexture( self.map_img )
-        glBindTexture(GL_TEXTURE_2D, texID)
-        glBegin(GL_QUADS)
-        glTexCoord2f(0, 0); glVertex2f(-1, 1)
-        glTexCoord2f(0, 1); glVertex2f(-1, -1)
-        glTexCoord2f(1, 1); glVertex2f(1, -1)
-        glTexCoord2f(1, 0); glVertex2f(1, 1)
-        glEnd()
+        
         self.draw_map = 0
         
         self.player.rect = self.camera.apply(self.player)
@@ -705,7 +690,154 @@ class Crawler():
             self.transfer = 0
 
         self.camera.update(self.player)
-        pygame.display.flip()
+        return
+    
+    def draw_scene(self, dungeon_rooms, current_room, party, dungeon_enemies):
+        """
+        The function `draw_gl_scene` is responsible for rendering the game scene, including the dungeon
+        map, player and enemy characters, and party information.
+        
+        :param dungeon_rooms: The `dungeon_rooms` parameter is a list that represents the rooms in the
+        dungeon. Each element in the list represents a room and contains information about the room such
+        as its layout, enemies, and items
+        :param current_room: The current_room parameter represents the index of the current room in the
+        dungeon_rooms list. It is used to determine which room to display in the game scene
+        :param party: The "party" parameter is a list that represents the player's party. It contains
+        the party members' information such as their stats, abilities, and equipment
+        :param dungeon_enemies: The parameter "dungeon_enemies" is a list that represents the enemies
+        present in each room of the dungeon. Each element of the list corresponds to a room in the
+        dungeon. Each element is a tuple containing two values: the first value represents the room
+        number, and the second value represents the enemy
+        :return: nothing.
+        """
+        #glLoadIdentity()
+        #glTranslatef(0.0,0.0,-10.0)
+        
+        self.draw_map = 0
+        
+        self.player.rect = self.camera.apply(self.player)
+        self.enemy.rect = self.camera.apply(self.enemy)
+        if dungeon_enemies[current_room][1] == None:
+            self.player.draw()
+        elif self.player.y < self.enemy.y:
+            self.enemy.draw()
+            self.player.draw()
+        else:
+            self.player.draw()
+            self.enemy.draw()
+
+        # Draw Party Info START
+        top = cgls(height-100, height)
+        bot = cgls(height-10, height)
+        nums = [[width-400, width-310, width-220, width-130],[height-100]]
+
+        glBegin(GL_QUADS)
+        # "party text"
+        #rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
+
+        # if the stats box is expanded:
+        if self.expand != 4:
+            # draw the stats box
+            rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
+
+        glEnd()
+        
+        # party member portrait rects (for clicking)
+        self.party_ports = []
+        port1_rect = pygame.Rect(nums[0][0],height-850,90,90)
+        self.party_ports.append(port1_rect)
+        if self.party[1] != None:
+            port2_rect = pygame.Rect(nums[0][1],height-850,90,90)
+            self.party_ports.append(port2_rect)
+        if self.party[2] != None:
+            port3_rect = pygame.Rect(nums[0][2],height-850,90,90)
+            self.party_ports.append(port3_rect)
+        if self.party[3] != None:
+            port4_rect = pygame.Rect(nums[0][3],height-850,90,90)
+            self.party_ports.append(port4_rect)
+
+        # party member portrait pics
+        shape_color("BLACK")
+        if party[0] != None:    
+            blit_image([width, height], width-400,height-100, party[0].get_portrait().convert_alpha(), 1, 1, 1)
+        if party[1] != None:  
+            blit_image([width, height], width-310,height-100, party[1].get_portrait().convert_alpha(), 1, 1, 1)
+        if party[2] != None:
+            blit_image([width, height], width-220,height-100, party[2].get_portrait().convert_alpha(), 1, 1, 1)
+        if party[3] != None:
+            blit_image([width, height], width-130,height-100, party[3].get_portrait().convert_alpha(), 1, 1, 1)
+
+        if self.expand == 0:
+            self.write_details_gl(0, nums, party)
+        if self.expand == 1:
+            self.write_details_gl(1, nums, party)
+        if self.expand == 2:
+            self.write_details_gl(2, nums, party)
+        if self.expand == 3:
+            self.write_details_gl(3, nums, party)
+
+        gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
+
+        # Draw Party Text END
+
+        # Handle Fades
+        if self.into_combat_transfer == 1:
+            blit_image([width, height], width-self.counter_x, 0, self.fade_image, 1, 1, 1)
+            print(self.counter_x)
+            if self.counter_x < 200:
+                self.counter_x += 50
+            elif self.counter_x < 500:
+                self.counter_x += 75
+            else:
+                self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.into_combat_transfer = 0
+                self.move_to_match = 1
+
+        if self.end_fade_transfer == 1:
+            # Add in party members vs. enemies portraits on sliding black screen
+            blit_image([width, height], 0-self.counter_x, 0, self.fade_image, 1, 1, 1)
+            print(self.counter_x)
+            self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.end_fade_transfer = 0
+
+        if self.into_combat_transfer == 1:
+            blit_image([width, height], width-self.counter_x, 0, self.fade_image, 1, 1, 1)
+            print(self.counter_x)
+            if self.counter_x < 200:
+                self.counter_x += 50
+            elif self.counter_x < 500:
+                self.counter_x += 75
+            else:
+                self.counter_x += 100
+            if self.counter_x >= 1700:
+                self.into_combat_transfer = 0
+                self.move_to_match = 1
+
+        status = False
+        if self.fade_dir == "fade_left_finish" and self.transfer == 3:
+            self.fade_finish_x(width, "fade_left")
+        if self.fade_dir == "fade_right_finish" and self.transfer == 3:
+            self.fade_finish_x(width, "fade_right")
+        if self.fade_dir == "fade_up_finish" and self.transfer == 3:
+            self.fade_finish_y(height, "fade_up")
+        if self.fade_dir == "fade_down_finish" and self.transfer == 3:
+            self.fade_finish_y(height, "fade_down")
+        if self.fade_dir == "fade_left":
+            status = self.fade_start_x(width, "fade_left")
+        if self.fade_dir == "fade_right":
+            status = self.fade_start_x(width, "fade_right")
+        if self.fade_dir == "fade_up":
+            status = self.fade_start_y(height, "fade_up")
+        if self.fade_dir == "fade_down":
+            status = self.fade_start_y(height, "fade_down")
+        if status:
+            self.transfer = 2
+        if self.fade_dir == "fade_done":
+            self.transfer = 0
+
+        self.camera.update(self.player)
         return
     
     def blit_bg_camera(self, bg="cave.png", move=True):
@@ -1039,22 +1171,9 @@ class Crawler():
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((width, height),
-                                              pygame.DOUBLEBUF|pygame.OPENGL)
-    
-    glViewport(0, 0, screen.get_width(), screen.get_height())
-    glDepthRange(0, 1)
-    glMatrixMode(GL_PROJECTION)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-    glShadeModel(GL_SMOOTH)
-    glClearColor(0.0, 0.0, 0.0, 0.0)
-    glClearDepth(1.0)
-    glDisable(GL_DEPTH_TEST)
-    glDisable(GL_LIGHTING)
-    glDepthFunc(GL_LEQUAL)
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
-    glEnable(GL_BLEND)
-    glClear(GL_COLOR_BUFFER_BIT)
+                                              pygame.DOUBLEBUF)
+
+    # Create party and dungeon
     party = fill_party()
     party = boost_party(party)
     dungeon = "cave"
