@@ -23,10 +23,12 @@ class TiledMap:
         self.tmxdata = tm
 
     def render(self, surface):
-        """Blits tiles to a surface that can later be either blit or displayed with OpenGL
-
-        Args:
-            surface (pygame Surface): The surface to be drawn to
+        """
+        The render function fills the surface with black color and then iterates through the visible
+        layers of a Tiled map, blitting each tile onto the surface.
+        
+        :param surface: The `surface` parameter is the surface object on which the tiles will be
+        rendered. It could be a pygame surface or any other compatible surface object
         """
         surface.fill('black')
         ti = self.tmxdata.get_tile_image_by_gid
