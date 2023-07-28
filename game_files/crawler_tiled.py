@@ -26,12 +26,26 @@ class Creature():
         self.rect = pygame.Rect(self.x, self.y, 96, 96)
 
     def draw(self):
+        """
+        The draw function blits an animation frame onto the screen at the specified x and y coordinates.
+        """
         self.screen.blit([width, height], self.x, self.y, self.animation_frames[self.current_frame].convert_alpha(), 1, 1, 1)
 
     def get_rect(self):
+        """
+        The function returns the value of the "rect" attribute.
+        :return: the value of the variable "self.rect".
+        """
         return self.rect
     
     def set_image(self, value):
+        """
+        The function sets the image attribute of an object to the value returned by the get_portrait
+        function.
+        
+        :param value: The value parameter is the input value that is passed to the set_image method. It
+        is used as an argument to the get_portrait function
+        """
         self.image = get_portrait(value)
     
     def next_image(self):
