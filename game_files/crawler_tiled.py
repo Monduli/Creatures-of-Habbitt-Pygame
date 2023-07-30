@@ -163,6 +163,13 @@ class Crawler():
         self.texID = None
 
     def start(self, prefix):
+        """
+        The start function initializes various variables and objects for a game, including enemies,
+        characters, animations, and audio.
+        
+        :param prefix: The "prefix" parameter is a string that represents the prefix for the audio files
+        used in the game. It is used to construct the file paths for the audio files
+        """
         goblin_frames = [get_portrait("Goblin_Stand")]
         goblin = Enemy("Goblin", 10, 10, 10, 10, 10, 10)
         self.enemy = EnemyMap(self.screen, goblin, width/2, height/2, get_portrait("Goblin_Stand"), goblin_frames)
