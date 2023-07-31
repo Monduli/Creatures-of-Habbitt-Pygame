@@ -190,6 +190,10 @@ class Crawler():
         self.camera(1280, 720)
 
     def start_player(self):
+        """
+        The function "start_player" initializes the player character and sets up their animation frames
+        and position on the screen.
+        """
         character = self.party[0]
         animation_frames_player = []
         for x in range (0, 2):
