@@ -204,6 +204,9 @@ class Crawler():
         self.camera = tf.Camera(self.map.width, self.map.height)
 
     def start_enemy(self):
+        """
+        The function "start_enemy" initializes an enemy object with a goblin portrait and frames.
+        """
         goblin_frames = [get_portrait("Goblin_Stand")]
         self.enemy = EnemyMap(self.screen, width*2, height*2, goblin_frames[0], goblin_frames)
 
