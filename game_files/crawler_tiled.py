@@ -30,7 +30,7 @@ class Creature():
         The draw function blits an animation frame onto the screen at the specified x and y coordinates.
         Uses: self.x, self.y, self.animation_frames, self.current_frame, self.screen
         """        
-        self.screen.blit([width, height], self.x, self.y, self.animation_frames[self.current_frame].convert_alpha(), 1, 1, 1)
+        self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [width-self.x, height-self.y])
     
     # Getters
     def get_x(self):
@@ -454,7 +454,7 @@ class Crawler():
                 self.move_to_match = 0
                 in_play = 0
 
-            self.draw_gl_scene(dungeon_rooms, current_room, party, dungeon_enemies)
+            self.draw(dungeon_rooms, current_room, party, dungeon_enemies)
             dt = min(self.clock.tick(FPS) / 1000.0, 1.0 / FPS)
 
             pressed = pygame.key.get_pressed()
@@ -528,10 +528,7 @@ class Crawler():
                                     self.expand = 4
 
             pygame.display.flip()
-            
 
-    def draw(self):
-        pass
     
     def input(self, key = None, pressed = False):
         """
@@ -556,7 +553,7 @@ class Crawler():
                         if self.speed_y < 10:
                             self.speed_y += 1
                     self.player.y += self.speed_y
-                if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
                     if self.speed_y != 0 and self.speed_x > 0:
                         self.speed_x = 0
                     if self.speed_x == 1:
@@ -567,7 +564,7 @@ class Crawler():
                         if self.speed_x > -10:
                             self.speed_x -= 1
                     self.player.x += self.speed_x
-                if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
+                if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
                     if self.speed_y != 0 and self.speed_x < 0:
                         self.speed_x = 0
                     if self.speed_x == -1:
@@ -624,7 +621,7 @@ class Crawler():
             return True
         return False
 
-    def draw_gl_scene(self, dungeon_rooms, current_room, party, dungeon_enemies):
+    def draw(self, dungeon_rooms, current_room, party, dungeon_enemies):
         """
         The function `draw_gl_scene` is responsible for rendering the game scene, including the dungeon
         map, player and enemy characters, and party information.
@@ -645,6 +642,8 @@ class Crawler():
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
         
+        self.screen.fill('black')
+        self.screen.blit(self.map_img, self.camera.camera)
         self.draw_map = 0
         
         self.player.rect = self.camera.apply(self.player)
@@ -662,17 +661,13 @@ class Crawler():
         top = cgls(height-100, height)
         bot = cgls(height-10, height)
         nums = [[width-400, width-310, width-220, width-130],[height-100]]
-
-        glBegin(GL_QUADS)
         # "party text"
         #rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
 
         # if the stats box is expanded:
-        if self.expand != 4:
+        #if self.expand != 4:
             # draw the stats box
-            rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
-
-        glEnd()
+        #    rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-170, height), cgls(height-810, height))
         
         # party member portrait rects (for clicking)
         self.party_ports = []
@@ -688,32 +683,38 @@ class Crawler():
             port4_rect = pygame.Rect(nums[0][3],height-850,90,90)
             self.party_ports.append(port4_rect)
 
+        # scale port pics
+        port1 = pygame.transform.scale(self.party[0].get_portrait(), (90,90))
+        port2 = pygame.transform.scale(self.party[1].get_portrait(), (90,90))
+        port3 = pygame.transform.scale(self.party[2].get_portrait(), (90,90))
+        port4 = pygame.transform.scale(self.party[3].get_portrait(), (90,90))
+
         # party member portrait pics
-        shape_color("BLACK")
         if party[0] != None:    
-            blit_image([width, height], width-400,height-100, party[0].get_portrait().convert_alpha(), 1, 1, 1)
+            self.screen.blit(port1.convert_alpha(), port1_rect)
         if party[1] != None:  
-            blit_image([width, height], width-310,height-100, party[1].get_portrait().convert_alpha(), 1, 1, 1)
+            self.screen.blit(port2.convert_alpha(), port2_rect)
         if party[2] != None:
-            blit_image([width, height], width-220,height-100, party[2].get_portrait().convert_alpha(), 1, 1, 1)
+            self.screen.blit(port3.convert_alpha(), port3_rect)
         if party[3] != None:
-            blit_image([width, height], width-130,height-100, party[3].get_portrait().convert_alpha(), 1, 1, 1)
-
+            self.screen.blit(port4.convert_alpha(), port4_rect)
+        
+        
         if self.expand == 0:
-            self.write_details_gl(0, nums, party)
+            self.write_text_details(0, nums, party)
         if self.expand == 1:
-            self.write_details_gl(1, nums, party)
+            self.write_text_details(1, nums, party)
         if self.expand == 2:
-            self.write_details_gl(2, nums, party)
+            self.write_text_details(2, nums, party)
         if self.expand == 3:
-            self.write_details_gl(3, nums, party)
+            self.write_text_details(3, nums, party)
 
-        gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
+        #gl_text(self.font, "BLACK", cgls(nums[0][3]+90, width), cgls(nums[0][0], width), cgls(height-160, height), cgls(height-110, height), "PARTY", .91, .985)
 
         # Draw Party Text END
 
         # Handle Fades
-        if self.into_combat_transfer == 1:
+        """ if self.into_combat_transfer == 1:
             blit_image([width, height], width-self.counter_x, 0, self.fade_image, 1, 1, 1)
             print(self.counter_x)
             if self.counter_x < 200:
@@ -767,13 +768,15 @@ class Crawler():
         if status:
             self.transfer = 2
         if self.fade_dir == "fade_done":
-            self.transfer = 0
+            self.transfer = 0 """
 
         self.camera.update(self.player)
         return
     
-    def draw_scene(self, dungeon_rooms, current_room, party, dungeon_enemies):
+    def draw_deprecated(self, dungeon_rooms, current_room, party, dungeon_enemies):
         """
+        THIS FUNCTION IS DEPRECATED AS IT USES OPENGL. USE DRAW INSTEAD.
+
         The function `draw_gl_scene` is responsible for rendering the game scene, including the dungeon
         map, player and enemy characters, and party information.
         
@@ -793,6 +796,7 @@ class Crawler():
         #glLoadIdentity()
         #glTranslatef(0.0,0.0,-10.0)
         
+        self.screen.blit(self.map_img, self.map_rect)
         self.draw_map = 0
         
         self.player.rect = self.camera.apply(self.player)
@@ -933,10 +937,12 @@ class Crawler():
         stay fixed, defaults to True (optional)
         """
         background = pygame.image.load("images/backgrounds/" + bg).convert_alpha()
-        blit_image([width, height], 0, 0, background, 1, 1, 1)
+        self.display.blit(background, [0,0])
 
-    def write_details_gl(self, party_member, nums, party):
+    def write_details_gl_deprecated(self, party_member, nums, party):
         """
+        DEPRECATED AS IT USES OPENGL
+
         The function `write_details_gl` writes various details of a party member to the screen using the
         `gl_text` function.
         
@@ -981,7 +987,117 @@ class Crawler():
         else:
             gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-750, height), cgls(height-700, height), "CHUTZPAH: " + str(party[party_member].get_chutzpah()), 1, 1)
 
+    def write_text_details(self, party_member, nums, party):
+        # nums = [[width-400, width-310, width-220, width-130],[height-100]]
 
+        # base rect
+        back_rect = pygame.Rect(nums[0][0]-20, 150, 400, 650)
+        pygame.draw.rect(self.screen, 'black', back_rect, 0)
+
+        base = 160
+        spacing = 60
+        # party member name
+        party_member_name_text = self.font.render(party[party_member].get_name(), True, 'white')
+        self.screen.blit(party_member_name_text, (nums[0][0], base))
+
+        # role and level
+        pm_role_level_text = self.font.render(party[party_member].get_role() + " " + str(party[party_member].get_level()), True, 'white')
+        self.screen.blit(pm_role_level_text, (nums[0][0], base+spacing*1))
+
+        # hp
+        hp = str(party[party_member].get_hp())
+        pm_hp_text = self.font.render("HP: " + hp, True, 'white')
+        self.screen.blit(pm_hp_text, (nums[0][0], base+spacing*2))
+
+        # physical attack
+        phys_a = party[party_member].get_physical_attack()
+        if phys_a > 1000:
+            pa = "PHY.ATT"
+        else:
+            pa = "PHYS ATTACK"
+        pm_pa_text = self.font.render(pa + ": " + str(phys_a), True, 'white')
+        self.screen.blit(pm_pa_text, (nums[0][0], base+spacing*3))
+
+        # magical attack
+        magic_a = party[party_member].get_magic_attack()
+        if magic_a > 1000:
+            ma = "MAG.ATT"
+        else:
+            ma = "MAGIC ATTACK"
+        pm_ma_text = self.font.render(ma + ": " + str(magic_a), True, 'white')
+        self.screen.blit(pm_ma_text, (nums[0][0], base+spacing*4))
+
+        # physical guard
+        phys_g = party[party_member].get_physical_guard()
+        if phys_g > 1000:
+            pg = "PHGUARD"
+        else:
+            pg = "PHYS GUARD"
+        pm_pg_text = self.font.render(pg + ": " + str(phys_g), True, 'white')
+        self.screen.blit(pm_pg_text, (nums[0][0], base+spacing*5))
+
+        # magic guard
+        mag_g = party[party_member].get_magical_guard()
+        if mag_g > 1000:
+            magg = "MAGUARD"
+        else:
+            magg = "MAGIC GUARD"
+        pm_mg_text = self.font.render(magg + ": " + str(mag_g), True, 'white')
+        self.screen.blit(pm_mg_text, (nums[0][0], base+spacing*6))
+
+        # quickness
+        quickness = party[party_member].get_quickness()
+        if quickness > 1000:
+            qu = "QUICK"
+        else:
+            qu = "QUICKNESS"
+        pm_qu_text = self.font.render(qu + ": " + str(quickness), True, 'white')
+        self.screen.blit(pm_qu_text, (nums[0][0], base+spacing*7))
+
+        # healing
+        healing = party[party_member].get_healing()
+        if healing > 1000:
+            heal = "HEALS"
+        else:
+            heal = "HEALING"
+        pm_h_text = self.font.render(heal + ": " + str(healing), True, 'white')
+        self.screen.blit(pm_h_text, (nums[0][0], base+spacing*8))
+
+        # chutzpah
+        chutzpah = party[party_member].get_chutzpah()
+        if chutzpah > 1000:
+            ch = "CHUTZ"
+        else:
+            ch = "CHUTZPAH"
+        pm_ch_text = self.font.render(ch + ": " + str(chutzpah), True, 'white')
+        self.screen.blit(pm_ch_text, (nums[0][0], base+spacing*9))
+        """
+        if party[party_member].get_magic_attack() > 1000:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-450, height), cgls(height-400, height), "MA: " + str(party[party_member].get_magic_attack()), 1, 1)
+        else:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-450, height), cgls(height-400, height), "MAG ATTACK: " + str(party[party_member].get_magic_attack()), 1, 1)
+        if party[party_member].get_magic_attack() > 1000:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-510, height), cgls(height-460, height), "PG: " + str(party[party_member].get_physical_guard()), 1, 1)
+        else:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-510, height), cgls(height-460, height), "PHYS GUARD: " + str(party[party_member].get_physical_guard()), 1, 1)
+        if party[party_member].get_magic_attack() > 1000:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-570, height), cgls(height-520, height), "MG: " + str(party[party_member].get_magical_guard()), 1, 1)
+        else:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-570, height), cgls(height-520, height), "MAG GUARD: " + str(party[party_member].get_magical_guard()), 1, 1)
+        if party[party_member].get_magic_attack() > 1000:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-630, height), cgls(height-580, height), "Q: " + str(party[party_member].get_quickness()), 1, 1)
+        else:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-630, height), cgls(height-580, height), "QUICKNESS: " + str(party[party_member].get_quickness()), 1, 1)
+        if party[party_member].get_magic_attack() > 1000:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-690, height), cgls(height-640, height), "H: " + str(party[party_member].get_healing()), 1, 1)
+        else:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-690, height), cgls(height-640, height), "HEALING: " + str(party[party_member].get_healing()), 1, 1)
+        if party[party_member].get_magic_attack() > 1000:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-750, height), cgls(height-700, height), "C: " + str(party[party_member].get_chutzpah()), 1, 1)
+        else:
+            gl_text(self.font, "BLACK", cgls(nums[0][3]+80, width), cgls(nums[0][0]+10, width), cgls(height-750, height), cgls(height-700, height), "CHUTZPAH: " + str(party[party_member].get_chutzpah()), 1, 1)
+        """
+            
     def check_for_expand(self, num):
         """
         The function checks if the value of `self.expand` is equal to the value of `num`.
@@ -1203,31 +1319,6 @@ class Crawler():
             self.counter_y = 0
             return True
 
-    def gl_show_map(self):
-        """
-        The function `gl_show_map` displays a texture on a quad using OpenGL.
-        """
-        glEnable(GL_TEXTURE_2D)
-        rgb_surface = pygame.image.tostring( self.map_img, 'RGB')
-        glBindTexture(GL_TEXTURE_2D, self.texID)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-        surface_rect = self.map_img.get_rect()
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 
-                     surface_rect.width, surface_rect.height, 0, GL_RGB, 
-                     GL_UNSIGNED_BYTE, rgb_surface)
-        glGenerateMipmap(GL_TEXTURE_2D)
-        glBindTexture(GL_TEXTURE_2D, 0)
-        glBindTexture(GL_TEXTURE_2D, self.texID)
-        glBegin(GL_QUADS)
-        glTexCoord2f(0, 0); glVertex2f(-1, 1)
-        glTexCoord2f(0, 1); glVertex2f(-1, -1)
-        glTexCoord2f(1, 1); glVertex2f(1, -1)
-        glTexCoord2f(1, 0); glVertex2f(1, 1)
-        glEnd()
-
     def surfaceToTexture(self, pygame_surface ):
         """
         The function converts a Pygame surface to a texture and sets the texture parameters.
@@ -1252,6 +1343,7 @@ if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((width, height),
                                               pygame.DOUBLEBUF)
+
 
     # Create party and dungeon
     party = fill_party()
