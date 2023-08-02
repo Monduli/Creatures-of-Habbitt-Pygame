@@ -606,6 +606,7 @@ class Crawler():
                         self.display = pygame.display.set_mode((width, height),
                                                     pygame.DOUBLEBUF|pygame.OPENGL)
                         self.fullscreen = 0
+            
 
     def check_for_movement_keys_being_pressed(self, keys):
         """
@@ -638,12 +639,9 @@ class Crawler():
         dungeon. Each element is a tuple containing two values: the first value represents the room
         number, and the second value represents the enemy
         :return: nothing.
-        """
-        #glLoadIdentity()
-        #glTranslatef(0.0,0.0,-10.0)
-        
+        """        
         self.screen.fill('black')
-        self.screen.blit(self.map_img, self.camera.camera)
+        self.draw_map_func(self.map_img, self.camera.camera)
         self.draw_map = 0
         
         self.player.rect = self.camera.apply(self.player)
@@ -658,8 +656,6 @@ class Crawler():
             self.enemy.draw()
 
         # Draw Party Info START
-        top = cgls(height-100, height)
-        bot = cgls(height-10, height)
         nums = [[width-400, width-310, width-220, width-130],[height-100]]
         # "party text"
         #rect_ogl("BLACK", cgls(nums[0][0], width), cgls(nums[0][3]+90, width), cgls(height-110, height), cgls(height-160, height))
@@ -773,6 +769,9 @@ class Crawler():
         self.camera.update(self.player)
         return
     
+    def draw_map_func(self, map_img, camera):
+        self.screen.blit(map_img, camera)
+
     def draw_deprecated(self, dungeon_rooms, current_room, party, dungeon_enemies):
         """
         THIS FUNCTION IS DEPRECATED AS IT USES OPENGL. USE DRAW INSTEAD.
