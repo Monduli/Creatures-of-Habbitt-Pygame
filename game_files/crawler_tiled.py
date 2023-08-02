@@ -10,119 +10,11 @@ import sys
 from os import path
 import tiled_functions as tf
 from classes import *
+from crawler_units import *
 
 size = width, height = 1600, 900
 FPS = 60
-texID = glGenTextures(1)
-
-class Creature():
-    def __init__(self, display, x, y, image, animation_frames):
-        self.x = x
-        self.y = y
-        self.animation_frames = animation_frames
-        self.current_frame = 0
-        self.image = image
-        self.display = display
-        self.rect = pygame.Rect(self.x, self.y, 96, 96)
-
-    def draw(self):
-        """
-        The draw function blits an animation frame onto the screen at the specified x and y coordinates.
-        Uses: self.x, self.y, self.animation_frames, self.current_frame, self.screen
-        """        
-        self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [width-self.x, height-self.y])
-    
-    # Getters
-    def get_x(self):
-        return self.x
-    
-    def get_y(self):
-        return self.y
-    
-    def get_animation_frames(self):
-        return self.animation_frames
-    
-    def get_current_frame(self):
-        return self.current_frame
-    
-    def get_image(self):
-        return self.image
-    
-    def get_display(self):
-        return self.display
-    
-    def get_rect(self):
-        return self.rect
-    
-    # Setters
-    def set_x(self, value):
-        self.x = value
-
-    def set_y(self, value):
-        self.y = value
-
-    def set_animation_frames(self, value):
-        self.animation_frames = value
-
-    def set_current_frame(self, value):
-        self.current_frame = value
-
-    def set_display(self, value):
-        self.display = value
-    
-    # Image functions
-    def set_image(self, value):
-        """
-        The function sets the image attribute of an object to the value returned by the get_portrait
-        function.
-        
-        :param value: The value parameter is the input value that is passed to the set_image method. It
-        is used as an argument to the get_portrait function
-        """
-        self.image = get_portrait(value)
-    
-    def next_image(self):
-        """
-        The function increments the current frame index of an animation and resets it to 0 if it reaches
-        the end.
-        """
-        if self.current_frame+1 < len(self.animation_frames):
-            self.current_frame += 1
-        else:
-            self.current_frame = 0
-
-    def image_stop(self):
-        """
-        The function sets the current frame of an image to 0.
-        """
-        self.current_frame = 0
-
-    # Rect Functions
-    def set_rect(self):
-        """
-        The function sets the rectangle attribute of an object using the x and y coordinates and a fixed
-        width and height.
-        """
-        self.rect = pygame.Rect(self.x, self.y, 96, 96)
-
-    def reset_rect(self):
-        """
-        The function sets the rectangle attribute of an object using the x and y coordinates and a fixed
-        width and height.
-        """
-        self.rect = pygame.Rect(self.x, self.y, 96, 96)
-
-
-class PlayerMap(Creature):
-    def __init__(self, mc, display, x, y, image, animation_frames):
-        super().__init__(display, x, y, image, animation_frames)
-        self.mc = mc
-
-class EnemyMap(Creature):
-    def __init__(self, display, x, y, image, animation_frames):
-        super().__init__(display, x, y, image, animation_frames)
-        self.can_chase = 1
-        
+texID = glGenTextures(1)        
 
 class Crawler():
     def __init__(self, screen):
@@ -189,9 +81,9 @@ class Crawler():
         self.in_combat.play(-1)
         self.camera(1280, 720)
 
-    def start_player(self):
+    def init_player(self):
         """
-        The function "start_player" initializes the player character and sets up their animation frames
+        The function "init_player" initializes the player character and sets up their animation frames
         and position on the screen.
         """
         character = self.party[0]
@@ -203,9 +95,9 @@ class Crawler():
         self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon(), animation_frames_player)
         self.camera = tf.Camera(self.map.width, self.map.height)
 
-    def start_enemy(self):
+    def init_enemy(self):
         """
-        The function "start_enemy" initializes an enemy object with a goblin portrait and frames.
+        The function "init_enemy" initializes an enemy object with a goblin portrait and frames.
         """
         goblin_frames = [get_portrait("Goblin_Stand")]
         self.enemy = EnemyMap(self.screen, width*2, height*2, goblin_frames[0], goblin_frames)
@@ -254,9 +146,9 @@ class Crawler():
 
         self.party = party
         enemy_port_name = dungeon_rooms[0][1]
-        self.start_player()
+        self.init_player()
         #self.start_audio(prefix)
-        self.start_enemy()
+        self.init_enemy()
 
         player_rect = self.player.get_rect()
         enemy_rect = self.enemy.get_rect()
@@ -368,70 +260,71 @@ class Crawler():
 
             # collisions with objects / doorways
             
+            """
             if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y) and in_play == 0:
                 in_play = 1
                 self.into_combat_transfer = 1  
 
-            # if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
-            #     self.fade_dir = "fade_left"
-            #     direction = "left"
-            #     self.transfer = 1
-            # if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][2] != None:
-            #     self.fade_dir = "fade_up"
-            #     direction = "up"
-            #     self.transfer = 1
-            # if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][3] != None:
-            #     self.fade_dir = "fade_right"
-            #     direction = "right"
-            #     self.transfer = 1
-            # if south_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][4] != None:
-            #     self.fade_dir = "fade_down"
-            #     direction = "down"
-            #     self.transfer = 1
+            if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
+                self.fade_dir = "fade_left"
+                direction = "left"
+                self.transfer = 1
+            if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][2] != None:
+                self.fade_dir = "fade_up"
+                direction = "up"
+                self.transfer = 1
+            if right_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][3] != None:
+                self.fade_dir = "fade_right"
+                direction = "right"
+                self.transfer = 1
+            if south_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][4] != None:
+                self.fade_dir = "fade_down"
+                direction = "down"
+                self.transfer = 1
 
-            # if self.transfer == 2:
-            #     if direction == "left":
-            #         if dungeon_rooms[current_room][1] == "END":
-            #             self.oo_combat.stop()
-            #             self.in_combat.stop()
-            #             print("Dungeon Completed!")
-            #             return "FINISHED"
-            #         current_room = dungeon_rooms[current_room][1]
-            #         self.player.x = 1000
-            #         self.player.y = height/2
-            #     if direction == "up":
-            #         if dungeon_rooms[current_room][2] == "END":
-            #             self.oo_combat.stop()
-            #             self.in_combat.stop()
-            #             print("Dungeon Completed!")
-            #             return "FINISHED"
-            #         current_room = dungeon_rooms[current_room][2]
-            #         self.player.y = 170
-            #         self.player.x = width/2 - 50
-            #     if direction == "right":
-            #         if dungeon_rooms[current_room][3] == "END":
-            #             self.oo_combat.stop()
-            #             self.in_combat.stop()
-            #             print("Dungeon Completed!")
-            #             return "FINISHED"
-            #         current_room = dungeon_rooms[current_room][3]
-            #         self.player.x = 500
-            #         self.player.y = height/2
-            #     if direction == "down":
-            #         if dungeon_rooms[current_room][4] == "END":
-            #             self.oo_combat.stop()
-            #             self.in_combat.stop()
-            #             print("Dungeon Completed!")
-            #             return "FINISHED"
-            #         current_room = dungeon_rooms[current_room][4]
-            #         self.player.y = 700
-            #         self.player.x = width/2 - 50
-            #     if dungeon_enemies[current_room][1] != None:
-            #         self.enemy.set_image(dungeon_enemies[current_room][1])
-            #     self.enemy_set = 0
-            #     self.enemy.can_chase = 1
-            #     self.transfer = 3
-
+            if self.transfer == 2:
+                if direction == "left":
+                    if dungeon_rooms[current_room][1] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
+                    current_room = dungeon_rooms[current_room][1]
+                    self.player.x = 1000
+                    self.player.y = height/2
+                if direction == "up":
+                    if dungeon_rooms[current_room][2] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
+                    current_room = dungeon_rooms[current_room][2]
+                    self.player.y = 170
+                    self.player.x = width/2 - 50
+                if direction == "right":
+                    if dungeon_rooms[current_room][3] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
+                    current_room = dungeon_rooms[current_room][3]
+                    self.player.x = 500
+                    self.player.y = height/2
+                if direction == "down":
+                    if dungeon_rooms[current_room][4] == "END":
+                        self.oo_combat.stop()
+                        self.in_combat.stop()
+                        print("Dungeon Completed!")
+                        return "FINISHED"
+                    current_room = dungeon_rooms[current_room][4]
+                    self.player.y = 700
+                    self.player.x = width/2 - 50
+                if dungeon_enemies[current_room][1] != None:
+                    self.enemy.set_image(dungeon_enemies[current_room][1])
+                self.enemy_set = 0
+                self.enemy.can_chase = 1
+                self.transfer = 3
+            """
 
             if self.into_combat_transfer == 1:
                 pass
@@ -541,6 +434,8 @@ class Crawler():
         currently being pressed. It is used to check if any keys are pressed before executing the code
         inside the `if` statement, defaults to False (optional)
         """
+        speed = 1
+        max_speed = 4
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
@@ -548,41 +443,41 @@ class Crawler():
                     if self.speed_x != 0 and self.speed_y < 0:
                         self.speed_y = 0
                     if self.speed_y < 0:
-                        self.speed_y += 2
+                        self.speed_y += speed
                     else:
-                        if self.speed_y < 10:
-                            self.speed_y += 1
+                        if self.speed_y < max_speed:
+                            self.speed_y += speed/2
                     self.player.y += self.speed_y
                 if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
                     if self.speed_y != 0 and self.speed_x > 0:
                         self.speed_x = 0
-                    if self.speed_x == 1:
-                        self.speed_x -= 1
+                    if self.speed_x == speed/2:
+                        self.speed_x -= speed/2
                     if self.speed_x > 0:
-                        self.speed_x -= 2
+                        self.speed_x -= speed
                     else:
-                        if self.speed_x > -10:
-                            self.speed_x -= 1
+                        if self.speed_x > -max_speed:
+                            self.speed_x -= speed/2
                     self.player.x += self.speed_x
                 if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
                     if self.speed_y != 0 and self.speed_x < 0:
                         self.speed_x = 0
-                    if self.speed_x == -1:
-                        self.speed_x += 1
+                    if self.speed_x == -speed/2:
+                        self.speed_x += speed/2
                     if self.speed_x < 0:
-                        self.speed_x += 2
+                        self.speed_x += speed
                     else:
-                        if self.speed_x < 10:
-                            self.speed_x += 1
+                        if self.speed_x < max_speed:
+                            self.speed_x += speed/2
                     self.player.x += self.speed_x
                 if (keys[pygame.K_DOWN] or keys[pygame.K_s]):
                     if self.speed_x != 0 and self.speed_y > 0:
                         self.speed_y = 0
                     if self.speed_y > 0:
-                        self.speed_y -= 2
+                        self.speed_y -= speed
                     else:
-                        if self.speed_y > -10:
-                            self.speed_y -= 1
+                        if self.speed_y > -max_speed:
+                            self.speed_y -= speed/2
                     self.player.y += self.speed_y
             else:
                 if key == K_q:
@@ -641,7 +536,7 @@ class Crawler():
         :return: nothing.
         """        
         self.screen.fill('black')
-        self.draw_map_func(self.map_img, self.camera.camera)
+        self.screen.blit(self.map_img, self.camera.camera)
         self.draw_map = 0
         
         self.player.rect = self.camera.apply(self.player)
@@ -766,11 +661,9 @@ class Crawler():
         if self.fade_dir == "fade_done":
             self.transfer = 0 """
 
+        self.player.reset_rect()
         self.camera.update(self.player)
         return
-    
-    def draw_map_func(self, map_img, camera):
-        self.screen.blit(map_img, camera)
 
     def draw_deprecated(self, dungeon_rooms, current_room, party, dungeon_enemies):
         """
