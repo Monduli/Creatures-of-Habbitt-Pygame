@@ -14,6 +14,8 @@ class Creature():
     def __init__(self, display, x, y, image, animation_frames):
         self.x = x
         self.y = y
+        self.x_on_screen = x
+        self.y_on_screen = y
         self.animation_frames = animation_frames
         self.current_frame = 0
         self.image = image
@@ -25,7 +27,7 @@ class Creature():
         The draw function blits an animation frame onto the screen at the specified x and y coordinates.
         Uses: self.x, self.y, self.animation_frames, self.current_frame, self.screen
         """        
-        self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [width-self.x, height-self.y])
+        self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [width-self.x_on_screen, height-self.y_on_screen])
     
     # Getters
     def get_x(self):
@@ -33,6 +35,12 @@ class Creature():
     
     def get_y(self):
         return self.y
+    
+    def get_x_on_screen(self):
+        return self.x_on_screen
+    
+    def get_y_on_screen(self):
+        return self.y_on_screen
     
     def get_animation_frames(self):
         return self.animation_frames

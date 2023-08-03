@@ -90,6 +90,7 @@ class Camera:
         :param target: The "target" parameter is an object that has a "rect" attribute. The "rect"
         attribute is a rectangle that represents the position and size of the target object. The
         "centerx" and "centery" attributes of the "rect" represent the x and y coordinates of the center
+        of the rectangle
         """
         x = -target.rect.centerx + int(WIDTH / 2)
         y = -target.rect.centery + int(HEIGHT / 2)

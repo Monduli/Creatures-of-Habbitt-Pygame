@@ -71,7 +71,7 @@ class Crawler():
             image = pygame.image.load(self.party[0].get_portrait_dungeon_name() + "_" + str(x) + ".png")
             image = pygame.transform.scale(image,(90, 160))
             animation_frames_player.append(image)
-        self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon(), animation_frames_player)
+        self.player = PlayerMap(character, self.screen, 740, 500, self.party[0].get_portrait_dungeon(), animation_frames_player)
 
         pygame.mixer.init()
         self.in_combat = pygame.mixer.Sound("audio/bgm/" + prefix + "dungeon_combat.wav")
@@ -92,7 +92,7 @@ class Crawler():
             image = pygame.image.load(self.party[0].get_portrait_dungeon_name() + "_" + str(x) + ".png")
             image = pygame.transform.scale(image,(90, 160))
             animation_frames_player.append(image)
-        self.player = PlayerMap(character, self.screen, 740, 125, self.party[0].get_portrait_dungeon(), animation_frames_player)
+        self.player = PlayerMap(character, self.screen, 900, 800, self.party[0].get_portrait_dungeon(), animation_frames_player)
         self.camera = tf.Camera(self.map.width, self.map.height)
 
     def init_enemy(self):
@@ -434,11 +434,13 @@ class Crawler():
         currently being pressed. It is used to check if any keys are pressed before executing the code
         inside the `if` statement, defaults to False (optional)
         """
-        speed = 1
-        max_speed = 4
-        print(self.player.x, self.player.y)
-        if self.player.x < 850 or self.player.y < 500:
-            max_speed = max_speed/2
+        speed = 2
+        max_speed = 6
+        reach_x = 400
+        reach_y = 200
+        n_reach_x = 1400
+        n_reach_y = 800
+        print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
@@ -451,6 +453,8 @@ class Crawler():
                         if self.speed_y < max_speed:
                             self.speed_y += speed/2
                     self.player.y += self.speed_y
+                    if self.player.y_on_screen < n_reach_y:
+                        self.player.y_on_screen += self.speed_y
                 if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
                     if self.speed_y != 0 and self.speed_x > 0:
                         self.speed_x = 0
@@ -462,6 +466,8 @@ class Crawler():
                         if self.speed_x > -max_speed:
                             self.speed_x -= speed/2
                     self.player.x += self.speed_x
+                    if self.player.x_on_screen > reach_x:
+                        self.player.x_on_screen += self.speed_x
                 if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
                     if self.speed_y != 0 and self.speed_x < 0:
                         self.speed_x = 0
@@ -473,6 +479,8 @@ class Crawler():
                         if self.speed_x < max_speed:
                             self.speed_x += speed/2
                     self.player.x += self.speed_x
+                    if self.player.x_on_screen < n_reach_x:
+                        self.player.x_on_screen += self.speed_x
                 if (keys[pygame.K_DOWN] or keys[pygame.K_s]):
                     if self.speed_x != 0 and self.speed_y > 0:
                         self.speed_y = 0
@@ -482,6 +490,8 @@ class Crawler():
                         if self.speed_y > -max_speed:
                             self.speed_y -= speed/2
                     self.player.y += self.speed_y
+                    if self.player.y_on_screen > reach_y:
+                        self.player.y_on_screen += self.speed_y
             else:
                 if key == K_q:
                     self.quit()
