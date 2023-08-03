@@ -6,6 +6,7 @@ from OpenGL.GLU import *
 import match_game as match_game
 import dungeon_layouts as dl
 from pytmx.util_pygame import load_pygame
+import pytmx
 import sys
 from os import path
 import tiled_functions as tf
@@ -434,12 +435,30 @@ class Crawler():
         currently being pressed. It is used to check if any keys are pressed before executing the code
         inside the `if` statement, defaults to False (optional)
         """
+        # TODO: Fix collision detection
+        layer_index = 0
+        for layer in self.map.tmxdata.visible_layers:
+            layer_index += 1
+            if isinstance(layer, pytmx.TiledObjectGroup):
+                if layer.name == "Obstacles":
+                    for obj in layer:
+                        if pygame.Rect(obj.x, obj.y, obj.width, obj.height).colliderect(self.player.rect) == True:
+                            print("COLLISION!")
+                            if self.speed_x > 0:
+                                self.player.x -= 10
+                            elif self.speed_x < 0:
+                                self.player.x -= -10
+                            elif self.speed_y > 0:
+                                self.player.y -= 10
+                            elif self.speed_y < 0:
+                                self.player.y -= -10
+                            
         speed = 2
         max_speed = 6
-        reach_x = 400
-        reach_y = 200
-        n_reach_x = 1400
-        n_reach_y = 800
+        reach_x_right = 600
+        reach_x_left = 1200
+        reach_y_top = 400
+        reach_y_bot = 600
         print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
@@ -453,7 +472,7 @@ class Crawler():
                         if self.speed_y < max_speed:
                             self.speed_y += speed/2
                     self.player.y += self.speed_y
-                    if self.player.y_on_screen < n_reach_y:
+                    if self.player.y_on_screen < reach_y_bot:
                         self.player.y_on_screen += self.speed_y
                 if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
                     if self.speed_y != 0 and self.speed_x > 0:
@@ -466,7 +485,7 @@ class Crawler():
                         if self.speed_x > -max_speed:
                             self.speed_x -= speed/2
                     self.player.x += self.speed_x
-                    if self.player.x_on_screen > reach_x:
+                    if self.player.x_on_screen > reach_x_right:
                         self.player.x_on_screen += self.speed_x
                 if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
                     if self.speed_y != 0 and self.speed_x < 0:
@@ -479,7 +498,7 @@ class Crawler():
                         if self.speed_x < max_speed:
                             self.speed_x += speed/2
                     self.player.x += self.speed_x
-                    if self.player.x_on_screen < n_reach_x:
+                    if self.player.x_on_screen < reach_x_left:
                         self.player.x_on_screen += self.speed_x
                 if (keys[pygame.K_DOWN] or keys[pygame.K_s]):
                     if self.speed_x != 0 and self.speed_y > 0:
@@ -490,7 +509,7 @@ class Crawler():
                         if self.speed_y > -max_speed:
                             self.speed_y -= speed/2
                     self.player.y += self.speed_y
-                    if self.player.y_on_screen > reach_y:
+                    if self.player.y_on_screen > reach_y_top:
                         self.player.y_on_screen += self.speed_y
             else:
                 if key == K_q:
