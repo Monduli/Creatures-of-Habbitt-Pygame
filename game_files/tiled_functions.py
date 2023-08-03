@@ -100,4 +100,10 @@ class Camera:
         x = max(-(self.width - WIDTH), x)
         y = max(-(self.height - HEIGHT), y)
 
+        temp = pygame.Rect(x, y, self.width, self.height)
+        if temp != self.camera:
+            ret = True
+        else:
+            ret = False
         self.camera = pygame.Rect(x, y, self.width, self.height)
+        return ret

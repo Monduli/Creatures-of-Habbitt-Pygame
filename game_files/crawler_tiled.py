@@ -436,6 +436,9 @@ class Crawler():
         """
         speed = 1
         max_speed = 4
+        print(self.player.x, self.player.y)
+        if self.player.x < 850 or self.player.y < 500:
+            max_speed = max_speed/2
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
