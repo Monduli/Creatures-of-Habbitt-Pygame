@@ -786,6 +786,19 @@ class MatchGame(object):
         return update_text
           
     def red_attack(self, player_active, enemy_active, enemy, enemy_turns):
+        """
+        The function calculates the damage dealt by a player's physical attack to an enemy and updates
+        the enemy's current health points.
+        
+        :param player_active: The parameter "player_active" refers to the active player character who is
+        performing the attack
+        :param enemy_active: The parameter "enemy_active" represents the active enemy that the player is
+        attacking
+        :param enemy: The "enemy" parameter is the enemy character that the player is attacking
+        :param enemy_turns: The parameter "enemy_turns" is likely a variable that keeps track of the
+        number of turns the enemy has taken in the battle. It could be used to determine the enemy's
+        behavior or to track the progress of the battle
+        """
         att = player_active.get_physical_attack()
         gua = enemy_active.get_guard()
         dmg = att - gua
