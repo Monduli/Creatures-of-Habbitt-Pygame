@@ -809,6 +809,15 @@ class MatchGame(object):
         self.party_text.append(update_text)
             
     def pink_support(self, player_active, party):
+        """
+        The function "pink_support" adds support points to the active player and a randomly chosen
+        player from the party, and updates the party text with the details.
+        
+        :param player_active: The `player_active` parameter represents the player who is currently
+        active or making the action
+        :param party: The `party` parameter is a list of players. Each player in the list represents a
+        member of the party
+        """
         sup_num = 10 * player_active.get_chutzpah()
         choices = []
         name = player_active.get_name()
