@@ -831,6 +831,14 @@ class MatchGame(object):
         self.party_text.append(update_text) 
 
     def blue_debuff(self, player_active, enemy):
+        """
+        The function "blue_debuff" debuffs a random enemy player's attack by 10.
+        
+        :param player_active: The parameter "player_active" is likely referring to the player character
+        or the active character controlled by the player in the game. It could be an instance of a class
+        representing the player character
+        :param enemy: The "enemy" parameter is a list of enemy objects
+        """
         debuff_num = 10
         debuff_type = "Attack"
         name = player_active.get_name()
