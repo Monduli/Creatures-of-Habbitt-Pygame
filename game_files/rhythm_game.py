@@ -847,6 +847,14 @@ class MatchGame(object):
         self.party_text.append(update_text)
     
     def orange_buff(self, player_active, party):
+        """
+        The function "orange_buff" buffs a random target in the party with an attack buff based on the
+        willpower of the active player.
+        
+        :param player_active: The parameter "player_active" represents the player who is currently
+        active and performing the orange_buff action
+        :param party: The "party" parameter is a list of objects representing the players in the game
+        """
         buff_num = player_active.get_willpower()
         buff_type = "Attack"
         target = random.choice(party)
