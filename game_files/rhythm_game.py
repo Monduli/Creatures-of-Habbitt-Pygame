@@ -863,6 +863,16 @@ class MatchGame(object):
         self.party_text.append(update_text)
 
     def purple_attack(self, player_active, enemy_active, enemy):
+        """
+        The function calculates the damage dealt by a magical attack and updates the enemy's current
+        health points.
+        
+        :param player_active: The parameter "player_active" is referring to the active player character
+        who is performing the attack
+        :param enemy_active: The parameter "enemy_active" refers to the active enemy that the player is
+        currently attacking
+        :param enemy: The "enemy" parameter is the enemy character that is being attacked
+        """
         att = player_active.get_magic_attack()
         gua = enemy_active.get_magical_guard()
         dmg = att - gua
