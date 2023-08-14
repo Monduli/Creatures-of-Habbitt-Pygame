@@ -883,6 +883,17 @@ class MatchGame(object):
         self.party_text.append(update_text)
             
     def green_heal(self, player_active, party):
+        """
+        The function `green_heal` heals a player in a party, either the player with the lowest current
+        health or the active player if their current health plus the healing amount is less than their
+        maximum health.
+        
+        :param player_active: The parameter "player_active" represents the player character who is
+        currently active and performing the healing action
+        :param party: The "party" parameter is a list of player objects. Each player object represents a
+        member of the party and has attributes such as current health points (chp), maximum health
+        points (hp), and name
+        """
         heal = player_active.get_healing()
         if player_active.get_chp() >= player_active.get_hp():
             heal_target = None
@@ -907,6 +918,18 @@ class MatchGame(object):
         self.party_text.append(update_text)
 
     def enemy_attack(self, enemy, player_active, enemy_active):
+        """
+        The function `enemy_attack` calculates the damage dealt by an enemy to a player and updates the
+        game state accordingly.
+        
+        :param enemy: The "enemy" parameter represents the enemy character or entity that is attacking
+        :param player_active: The parameter "player_active" represents the active player character who
+        is currently being attacked by the enemy
+        :param enemy_active: The parameter "enemy_active" represents the active enemy that is currently
+        attacking
+        :return: either the enemy_text if the target is still alive, "DEAD" if all party members are
+        dead, or 0 if the attack was fruitless.
+        """
         # enemy goes
         party = self.party
         e_attack = enemy_active.get_attack()
@@ -935,6 +958,12 @@ class MatchGame(object):
             return 0
         
     def pyg_wait(self, seconds):
+        """
+        The function `pyg_wait` waits for a specified number of seconds in a Pygame game loop.
+        
+        :param seconds: The "seconds" parameter is the number of seconds that the code should wait
+        before setting the "ahead" variable to 1
+        """
         last = pygame.time.get_ticks()
         ahead = 0
         while ahead == 0:
@@ -945,38 +974,6 @@ class MatchGame(object):
             now = pygame.time.get_ticks()
             if now - last > (seconds * 300):
                 ahead = 1
-
-    def enemy_thread(self):
-        timer = pygame.time.get_ticks()
-        while True:
-            if self.event.is_set():
-                break
-            now = pygame.time.get_ticks()
-            if now - timer > TIME:
-                print("Running enemy_thread")
-                enemy_active = self.enemy_turns[self.enemy_current][0]
-                target = self.player_active
-                while target.get_chp() == 0:
-                    i = party.index(target)
-                    if i+1 < len(party):
-                        target = party[i+1]
-                    else:
-                        target = party[0]
-                self.state = self.enemy_attack(party, self.enemy, target, enemy_active)
-                flash_red = party.index(target)
-                if self.state == "DEAD":
-                    self.draw(party, self.enemy, self.player_active, "Your party dead!", "Your party was wiped out...", flash_red)
-                    self.pyg_wait(5)
-                    return "DEAD"
-                
-                timer = pygame.time.get_ticks()
-                if self.enemy_current+1 < len(self.enemy_turns)-1:
-                    self.enemy_current += 1
-                else:
-                    self.enemy_current = 0
-
-                self.enemy_text.append("It is " + enemy_active.get_name() + "'s turn.")
-                print("Enemy thread finished running.")
 
     def draw_gl_scene(self, party_current, xp=None, update_text=None):
         #glLoadIdentity()
