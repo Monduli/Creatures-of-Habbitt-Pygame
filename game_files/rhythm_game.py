@@ -131,6 +131,14 @@ class Board(object):
         #print("["+row[20].shape+"]["+row[21].shape+"]["+row[22].shape+"]["+row[23].shape+"]["+row[24].shape+"]["+row[25].shape+"]["+row[26].shape+"]["+row[27].shape+"]["+row[28].shape+"]["+row[29].shape+"]")
 
     def pos(self, i, j):
+        """
+        The function `pos` returns the position of a cell in a grid given its row and column indices.
+        
+        :param i: The parameter "i" represents the column index of a 2D grid or matrix. It is used to
+        calculate the position of an element in the grid
+        :param j: The parameter "j" represents the row index of a 2D grid or matrix
+        :return: the position of a cell in a grid based on its row and column indices.
+        """
         assert(0 <= i < self.w)
         assert(0 <= j < self.h)
         return j * self.w + i
