@@ -144,6 +144,13 @@ class Board(object):
         return j * self.w + i
     
     def busy(self):
+        """
+        The function checks if the object is busy by checking if the wait time is greater than 0 or if
+        there is a need to refill or match.
+        :return: a boolean value. If the value of `self.wait` is greater than 0, it will decrement
+        `self.wait` by 1 and return `True`. If `self.wait` is 0, it will return the logical OR of
+        `self.refill` and `self.matches`.
+        """
         if self.wait > 0:
             self.wait -= 1
             return True
