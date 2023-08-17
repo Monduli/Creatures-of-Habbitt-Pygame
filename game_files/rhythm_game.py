@@ -157,6 +157,17 @@ class Board(object):
         return self.refill or self.matches
     
     def tick(self, dt, display):
+        """
+        The tick function updates the game state by handling refills and explosions.
+        
+        :param dt: The parameter "dt" stands for "delta time" and represents the time elapsed since the
+        last update. It is typically used to control the speed of animations or to synchronize game
+        logic with the frame rate
+        :param display: The `display` parameter is likely a reference to the display or screen object
+        where the game is being rendered. It is used to update the display with the changes made in the
+        `tick` method
+        :return: either None or the value of self.refill_columns().
+        """
         if self.refill or self.matches:
             self.wait = 100
         if self.refill:
