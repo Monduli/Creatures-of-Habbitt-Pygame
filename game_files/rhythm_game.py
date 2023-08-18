@@ -188,6 +188,12 @@ class Board(object):
         self.matches = self.find_matches()
 
     def draw(self, display):
+        """
+        The function draws shapes on a display using the Pygame library.
+        
+        :param display: The `display` parameter is the surface on which the game is being displayed. It
+        is typically the main game window or screen
+        """
         #display.blit(self.background, (0,0))
         for i, c in enumerate(self.board):
             x = MARGIN + SHAPE_WIDTH * (i % self.w)
