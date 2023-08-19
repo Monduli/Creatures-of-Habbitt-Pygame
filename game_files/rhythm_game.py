@@ -209,6 +209,12 @@ class Board(object):
             self.blit_image([WINDOW_WIDTH, WINDOW_HEIGHT], c.x, 800 - c.y + c.offset, c.image, 1, 1, 1)
 
     def swap_old(self, cursor):
+        """
+        The function swaps two elements in a list and then finds matches in the updated list.
+        
+        :param cursor: The `cursor` parameter is a tuple representing the current position on the game
+        board. It contains two values, the row and column indices of the cell on the board
+        """
         i = self.pos(*cursor)
         b = self.board
         b[i], b[i+1] = b[i+1], b[i]
