@@ -221,6 +221,14 @@ class Board(object):
         self.matches = self.find_matches()
 
     def swap(self, i, j):
+        """
+        The function swaps two elements in a list and updates their indices, then finds matches in the
+        updated list.
+        
+        :param i: The parameter "i" represents the index of the first element to be swapped
+        :param j: The parameter "j" represents the index of the second element that needs to be swapped
+        with the element at index "i"
+        """
         b = self.board
         b[i], b[j] = b[j], b[i]
         b[i].set_i(i)
