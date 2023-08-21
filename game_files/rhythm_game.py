@@ -238,6 +238,12 @@ class Board(object):
         self.matches = self.find_matches()
         
     def find_matches(self):
+        """
+        The function "find_matches" returns a list of matches in a board game based on a minimum match
+        requirement.
+        :return: a list of matches. Each match is represented as a list of indices of the board where
+        the matching elements are located.
+        """
         def lines():
             for j in range(self.h):
                 yield range(j * self.w, (j+1) * self.w)
@@ -258,6 +264,16 @@ class Board(object):
         return list(matches())
     
     def update_matches(self, image, display):
+        """
+        The function updates the matches on the game board by changing the image of the matched
+        positions and playing a sound effect.
+        
+        :param image: The "image" parameter is the image that will be displayed for each matched
+        position on the board. It is assigned to the "image" attribute of each position in the
+        "self.board" list
+        :param display: The "display" parameter is the surface on which the game is being displayed. It
+        is typically a pygame surface object
+        """
         for match in self.matches:
             #circle = loadify("images/circle.png")
             for position in match:
