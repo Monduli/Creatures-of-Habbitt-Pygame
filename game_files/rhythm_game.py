@@ -290,6 +290,10 @@ class Board(object):
                     #pygame.display.update()
 
     def refill_columns(self):
+        """
+        The function "refill_columns" refills the columns of a game board by moving existing tiles down
+        and generating new tiles at the top.
+        """
         self.boom_played = 0
         for i in range(self.w):
             target = self.size - i - 1
