@@ -372,6 +372,9 @@ class MatchGame(object):
  
 
     def start(self):
+        """
+        The start function initializes the board, cursor, and swap time variables.
+        """
         self.board.randomize()
         self.cursor = [0,0]
         self.swap_time = 1
