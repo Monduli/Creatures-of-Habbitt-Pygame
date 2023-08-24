@@ -380,6 +380,9 @@ class MatchGame(object):
         self.swap_time = 1
 
     def quit(self):
+        """
+        The function quits the pygame module and exits the program.
+        """
         pygame.quit()
         sys.exit()
 
