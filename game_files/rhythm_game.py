@@ -387,6 +387,27 @@ class MatchGame(object):
         sys.exit()
 
     def play(self, party, dungeon, display=screen, need_fade=0):
+        """
+        The `play` function is responsible for running the game loop and handling player input and game
+        logic.
+        
+        :param party: A list of party members participating in the game. Each party member is an object
+        with attributes such as name, HP, etc
+        :param dungeon: The `dungeon` parameter is a list that contains two elements. The first element
+        is a list of enemy objects representing the enemies in the dungeon. The second element is an
+        integer representing the amount of experience points the party will receive upon defeating the
+        enemies in the dungeon
+        :param display: The `display` parameter is an optional argument that specifies the display
+        surface on which the game will be rendered. By default, it is set to `screen`, which is the main
+        display surface. However, you can pass in a different surface if you want the game to be
+        rendered on a different display
+        :param need_fade: The `need_fade` parameter is used to determine whether a fade effect is needed
+        when transitioning between different parts of the game. If `need_fade` is set to 1, a fade
+        effect will be applied. If it is set to 0, no fade effect will be applied, defaults to 0
+        (optional)
+        :return: The code does not explicitly return anything. It appears to be a method within a class
+        that performs various actions and updates the game state.
+        """
         self.start()
         self.end_fade = need_fade
         if display != screen:
