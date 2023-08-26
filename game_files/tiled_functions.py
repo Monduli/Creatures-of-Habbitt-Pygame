@@ -1,6 +1,7 @@
 import pytmx
 import pygame
 from helpers import *
+import crawler_tiled as c
 
 WIDTH = 1600
 HEIGHT = 900
@@ -92,8 +93,8 @@ class Camera:
         "centerx" and "centery" attributes of the "rect" represent the x and y coordinates of the center
         of the rectangle
         """
-        x = -target.rect.centerx + int(WIDTH / 2)
-        y = -target.rect.centery + int(HEIGHT / 2)
+        x = -target.rect.centerx + int(WIDTH/2)
+        y = -target.rect.centery + int(HEIGHT/2)
 
         # limit scrolling to map size
         x = min(0, x)
@@ -108,3 +109,10 @@ class Camera:
             ret = False
         self.camera = pygame.Rect(x, y, self.width, self.height)
         return ret
+    
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode((width, height),
+                                    pygame.DOUBLEBUF)
+    crawl = c.Crawler(screen)
+    crawl.run_ind(crawl)

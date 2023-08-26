@@ -455,8 +455,9 @@ class Crawler():
                             
         speed = 2
         max_speed = 6
-        reach_x_right = 600
-        reach_x_left = 1200
+        dist = 300
+        reach_x_right = 900 - dist
+        reach_x_left = 900 + dist
         reach_y_top = 400
         reach_y_bot = 600
         print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
@@ -694,7 +695,16 @@ class Crawler():
             self.transfer = 0 """
 
         self.player.reset_rect()
-        self.camera.update(self.player)
+        ret = self.camera.update(self.player)
+        if ret:
+            if self.speed_x > 4:
+                self.speed_x -= 1
+            if self.speed_y > 4:
+                self.speed_y -= 1
+            if self.speed_x < -4:
+                self.speed_x += 1
+            if self.speed_y < -4:
+                self.speed_y += 1
         return
 
     def draw_deprecated(self, dungeon_rooms, current_room, party, dungeon_enemies):
@@ -1263,17 +1273,19 @@ class Crawler():
         glGenerateMipmap(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, 0)
 
+    def run_ind(self, crawl):
+        # Create party and dungeon
+        party = fill_party()
+        party = boost_party(party)
+        dungeon = "cave"
+
+        # Start game
+        state = crawl.play(party, get_dungeon(dungeon), dungeon)
+        print("Your final result was: " + state)
+
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((width, height),
-                                              pygame.DOUBLEBUF)
-
-
-    # Create party and dungeon
-    party = fill_party()
-    party = boost_party(party)
-    dungeon = "cave"
-
-    # Start game
-    state = Crawler(screen).play(party, get_dungeon(dungeon), dungeon)
-    print("Your final result was: " + state)
+                                    pygame.DOUBLEBUF)
+    crawl = Crawler(screen)
+    crawl.run_ind(crawl)
