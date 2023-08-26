@@ -445,13 +445,13 @@ class Crawler():
                         if pygame.Rect(obj.x, obj.y, obj.width, obj.height).colliderect(self.player.rect) == True:
                             print("COLLISION!")
                             if self.speed_x > 0:
-                                self.player.x -= 1
+                                self.speed_x = 0
                             elif self.speed_x < 0:
-                                self.player.x -= -1
+                                self.speed_x = 0
                             elif self.speed_y > 0:
-                                self.player.y -= 1
+                                self.speed_y = 0
                             elif self.speed_y < 0:
-                                self.player.y -= -1
+                                self.speed_y = 0
                             
         speed = 2
         max_speed = 6
@@ -696,15 +696,7 @@ class Crawler():
 
         self.player.reset_rect()
         ret = self.camera.update(self.player)
-        if ret:
-            if self.speed_x > 4:
-                self.speed_x -= 1
-            if self.speed_y > 4:
-                self.speed_y -= 1
-            if self.speed_x < -4:
-                self.speed_x += 1
-            if self.speed_y < -4:
-                self.speed_y += 1
+        self.update_speed_if_camera_moving(ret)
         return
 
     def draw_deprecated(self, dungeon_rooms, current_room, party, dungeon_enemies):
@@ -1282,6 +1274,20 @@ class Crawler():
         # Start game
         state = crawl.play(party, get_dungeon(dungeon), dungeon)
         print("Your final result was: " + state)
+
+    def update_speed_if_camera_moving(self, ret):
+        threshold = 4
+        speed_reduction = 2
+        
+        if ret:
+            if self.speed_x > threshold:
+                self.speed_x -= speed_reduction
+            if self.speed_y > threshold:
+                self.speed_y -= speed_reduction
+            if self.speed_x < -threshold:
+                self.speed_x += speed_reduction
+            if self.speed_y < -threshold:
+                self.speed_y += speed_reduction
 
 if __name__ == '__main__':
     pygame.init()

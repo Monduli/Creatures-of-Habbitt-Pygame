@@ -5,6 +5,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 import match_game as match_game
 from classes import *
+import crawler_tiled as c
 
 size = width, height = 1600, 900
 FPS = 60
@@ -20,7 +21,7 @@ class Creature():
         self.current_frame = 0
         self.image = image
         self.display = display
-        self.rect = pygame.Rect(self.x, self.y, 96, 96)
+        self.rect = pygame.Rect(self.x_on_screen, self.y_on_screen, 24, 24)
 
     def draw(self):
         """
@@ -28,6 +29,7 @@ class Creature():
         Uses: self.x, self.y, self.animation_frames, self.current_frame, self.screen
         """        
         self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [width-self.x_on_screen, height-self.y_on_screen])
+        self.display.blit(pygame.image.load("images/black.png"), self.rect)
     
     # Getters
     def get_x(self):
@@ -106,14 +108,14 @@ class Creature():
         The function sets the rectangle attribute of an object using the x and y coordinates and a fixed
         width and height.
         """
-        self.rect = pygame.Rect(self.x, self.y, 96, 96)
+        self.rect = pygame.Rect(self.x-72, self.y-72, 24, 24)
 
     def reset_rect(self):
         """
         The function sets the rectangle attribute of an object using the x and y coordinates and a fixed
         width and height.
         """
-        self.rect = pygame.Rect(width-self.x, height-self.y, 96, 96)
+        self.rect = pygame.Rect(width-self.x-72, height-self.y-72, 24, 24)
 
 
 class PlayerMap(Creature):
@@ -125,3 +127,11 @@ class EnemyMap(Creature):
     def __init__(self, display, x, y, image, animation_frames):
         super().__init__(display, x, y, image, animation_frames)
         self.can_chase = 1
+
+
+if __name__ == "__main__":
+    pygame.init()
+    screen = pygame.display.set_mode((width, height),
+                                    pygame.DOUBLEBUF)
+    crawl = c.Crawler(screen)
+    crawl.run_ind(crawl)
