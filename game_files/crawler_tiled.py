@@ -444,15 +444,11 @@ class Crawler():
                     for obj in layer:
                         if pygame.Rect(obj.x, obj.y, obj.width, obj.height).colliderect(self.player.rect) == True:
                             print("COLLISION!")
-                            if self.speed_x > 0:
+                            if self.speed_x != 0:
                                 self.speed_x = 0
-                            elif self.speed_x < 0:
-                                self.speed_x = 0
-                            elif self.speed_y > 0:
+                            elif self.speed_y != 0:
                                 self.speed_y = 0
-                            elif self.speed_y < 0:
-                                self.speed_y = 0
-                            
+
         speed = 2
         max_speed = 6
         dist = 300
