@@ -17,6 +17,8 @@ class Creature():
         self.y = y
         self.x_on_screen = x
         self.y_on_screen = y
+        self.x_adjust = -36
+        self.y_adjust = -140
         self.animation_frames = animation_frames
         self.current_frame = 0
         self.image = image
@@ -28,8 +30,8 @@ class Creature():
         The draw function blits an animation frame onto the screen at the specified x and y coordinates.
         Uses: self.x, self.y, self.animation_frames, self.current_frame, self.screen
         """        
-        self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [width-self.x_on_screen, height-self.y_on_screen])
-        self.display.blit(pygame.image.load("images/black.png"), self.rect)
+        self.display.blit(self.animation_frames[self.current_frame].convert_alpha(), [self.rect.left-36, self.rect.top-140])
+        #self.display.blit(pygame.image.load("images/black.png"), self.rect)
     
     # Getters
     def get_x(self):
@@ -108,14 +110,14 @@ class Creature():
         The function sets the rectangle attribute of an object using the x and y coordinates and a fixed
         width and height.
         """
-        self.rect = pygame.Rect(self.x-72, self.y-72, 24, 24)
+        self.rect = pygame.Rect(self.x-self.x_adjust, self.y-self.y_adjust, 24, 24)
 
     def reset_rect(self):
         """
         The function sets the rectangle attribute of an object using the x and y coordinates and a fixed
         width and height.
         """
-        self.rect = pygame.Rect(width-self.x-72, height-self.y-72, 24, 24)
+        self.rect = pygame.Rect(width-self.x-self.x_adjust, height-self.y-self.y_adjust, 24, 24)
 
 
 class PlayerMap(Creature):

@@ -436,18 +436,7 @@ class Crawler():
         inside the `if` statement, defaults to False (optional)
         """
         # TODO: Fix collision detection
-        layer_index = 0
-        for layer in self.map.tmxdata.visible_layers:
-            layer_index += 1
-            if isinstance(layer, pytmx.TiledObjectGroup):
-                if layer.name == "Obstacles":
-                    for obj in layer:
-                        if pygame.Rect(obj.x, obj.y, obj.width, obj.height).colliderect(self.player.rect) == True:
-                            print("COLLISION!")
-                            if self.speed_x != 0:
-                                self.speed_x = 0
-                            elif self.speed_y != 0:
-                                self.speed_y = 0
+        
 
         # speed of player
         speed = 2
@@ -468,6 +457,44 @@ class Crawler():
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
+                layer_index = 0
+                for layer in self.map.tmxdata.visible_layers:
+                    layer_index += 1
+                    if isinstance(layer, pytmx.TiledObjectGroup):
+                        if layer.name == "Obstacles":
+                            for obj in layer:
+                                if pygame.Rect(obj.x, obj.y, obj.width, obj.height).colliderect(self.player.rect) == True:
+                                    print("COLLISION!")
+
+                                    # y
+                                    # down = subtract (0 at bottom)
+                                    # up = add (0 at top)
+                                    # x
+                                    # right = subtract (0 at right)
+                                    # left = add (0 at left)
+
+                                    # rebound strength
+                                    r_s = 5
+
+                                    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) or (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+                                        # right
+                                        if self.speed_x < 0:
+                                            self.player.x += r_s
+                                        # left
+                                        elif self.speed_x > 0:
+                                            print("LEFT")
+                                            self.player.x -= r_s
+                                    elif (keys[pygame.K_UP] or keys[pygame.K_w]) or (keys[pygame.K_DOWN] or keys[pygame.K_s]):
+                                        # up
+                                        if self.speed_y < 0:
+                                            print("UP")
+                                            self.player.y -= r_s
+                                        # down
+                                        elif self.speed_y > 0:
+                                            print("DOWN")
+                                            self.player.y -= r_s
+                                    return
+                                
                 if (keys[pygame.K_UP] or keys[pygame.K_w]):
                     if self.speed_x != 0 and self.speed_y < 0:
                         self.speed_y = 0
