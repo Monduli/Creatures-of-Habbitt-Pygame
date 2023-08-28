@@ -449,13 +449,21 @@ class Crawler():
                             elif self.speed_y != 0:
                                 self.speed_y = 0
 
+        # speed of player
         speed = 2
+        # max speed of player
         max_speed = 6
+        # distance between left and right barriers for camera movement /2
         dist = 300
+        # right reach of camera rect
         reach_x_right = 900 - dist
+        # left reach of camera rect
         reach_x_left = 900 + dist
+        # top reach of camera rect
         reach_y_top = 400
+        # bottom reach of camera rect
         reach_y_bot = 600
+ 
         print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
