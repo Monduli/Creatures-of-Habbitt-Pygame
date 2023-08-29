@@ -449,9 +449,9 @@ class Crawler():
         # left reach of camera rect
         reach_x_left = 900 + dist
         # top reach of camera rect
-        reach_y_top = 400
+        reach_y_top = 200
         # bottom reach of camera rect
-        reach_y_bot = 600
+        reach_y_bot = 800
  
         print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
