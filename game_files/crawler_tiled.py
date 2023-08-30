@@ -474,7 +474,7 @@ class Crawler():
                                     # left = add (0 at left)
 
                                     # rebound strength
-                                    r_s = 5
+                                    r_s = 12
 
                                     if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) or (keys[pygame.K_LEFT] or keys[pygame.K_a]):
                                         # right
@@ -488,7 +488,7 @@ class Crawler():
                                         # up
                                         if self.speed_y < 0:
                                             print("UP")
-                                            self.player.y -= r_s
+                                            self.player.y += r_s
                                         # down
                                         elif self.speed_y > 0:
                                             print("DOWN")
