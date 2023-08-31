@@ -429,11 +429,14 @@ class Crawler():
         The function takes keyboard input and moves the player character accordingly, with additional
         functionality for quitting the game and toggling fullscreen mode.
         
-        :param key: The `key` parameter represents the key that was pressed on the keyboard. It is an
-        optional parameter and its default value is `None`
-        :param pressed: The `pressed` parameter is a boolean value that indicates whether any keys are
-        currently being pressed. It is used to check if any keys are pressed before executing the code
-        inside the `if` statement, defaults to False (optional)
+        CONTROLS
+        W/Up Arrow: Move up
+        A/Left Arrow: Move left
+        S/Down Arrow: Move down
+        D/Right Arrow: Move right
+
+        Q: Quits the game
+        F: Toggles fullscreen mode
         """
         # TODO: Fix collision detection
         
