@@ -12,7 +12,7 @@
 
 from helpers import *
 
-def get_dungeon_layout(dungeon_name):
+def get_dungeon(dungeon_name):
     """
     The function "get_dungeon_layout" returns the layout and enemies of a specified dungeon.
     
@@ -24,17 +24,10 @@ def get_dungeon_layout(dungeon_name):
     if dungeon_name == "cave":
         return [cave, cave_enemies]
     if dungeon_name == "cavetiled":
-        return [cavetiled, cave_enemies]
+        return [cave_tiled, cave_enemies]
 
 cave = [
             ["testroom.png", 1, 2, 1, None], 
-            ["testroom2.png", 0, 3, 0, None],
-            ["testroom3.png", None, None, None, 0], 
-            ["testroom4.png", None, "END", None, 1]
-            ]
-
-cavetiled = [
-            ["cave1.png", 1, 2, 1, None], 
             ["testroom2.png", 0, 3, 0, None],
             ["testroom3.png", None, None, None, 0], 
             ["testroom4.png", None, "END", None, 1]
@@ -56,6 +49,16 @@ cave_enemies = [
     [None], None
     ]
 ]
+
+cave_tiled = [
+    "cave1.tmx",
+    [
+        "cave1.tmx", 
+        [900, 839, "exit"],
+        [0, 0, "cave2.tmx"]
+    ]
+]
+
 
 if __name__ == "__main__":
     print("This is a database file. Do not run this directly.")

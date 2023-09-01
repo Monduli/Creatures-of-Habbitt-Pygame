@@ -24,6 +24,7 @@ class Crawler():
         # Speed of the player character
         self.speed_x = 0
         self.speed_y = 0
+        self.collided = 0
 
         # Font being used
         self.font = pygame.font.Font('font/VCR.001.ttf', 36)
@@ -124,19 +125,20 @@ class Crawler():
         pygame.quit()
         sys.exit()
 
-    def load_data(self):
+    def load_data(self, map_name="cave1.tmx"):
         """
         The function loads a TiledMap file and creates an image and rectangle for the map.
         """
         self.game_folder = path.dirname(__file__)
         self.map_folder = path.join(self.game_folder, 'data\\tmx')
-        self.map = tf.TiledMap(path.join(self.map_folder, 'cave1.tmx'))
+        self.map = tf.TiledMap(path.join(self.map_folder, map_name))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
     def play(self, party, dungeon, prefix, fade_in=False):
+        map_name = dungeon[0]
         self.load_data()
-        d = dl.get_dungeon_layout(prefix + "tiled")
+        d = dungeon
         dungeon_rooms = d[0]
         dungeon_enemies = d[1]
         self.draw_map = 1
@@ -261,15 +263,17 @@ class Crawler():
 
             # collisions with objects / doorways
             
-            """
+            
             if self.enemy.get_rect().collidepoint(self.player.get_rect().x, self.player.get_rect().y) and in_play == 0:
                 in_play = 1
                 self.into_combat_transfer = 1  
 
-            if left_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
+            if door1.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][1] != None:
                 self.fade_dir = "fade_left"
                 direction = "left"
                 self.transfer = 1
+
+            """
             if top_door.collidepoint(self.player.get_rect().x, self.player.get_rect().y) and self.transfer == 0 and dungeon_rooms[current_room][2] != None:
                 self.fade_dir = "fade_up"
                 direction = "up"
@@ -359,6 +363,8 @@ class Crawler():
                     animation_timer = now
                 self.input(None, pressed)
             else:
+                if self.collided == 1:
+                    self.collided = 0
                 if self.speed_x > 0:
                     if self.speed_x == 1:
                         self.speed_x -= 1
@@ -395,8 +401,8 @@ class Crawler():
                     if event.button == 1:
                         pos = pygame.mouse.get_pos()
                         print(pos)
-                        # if left_door.collidepoint(pos):
-                        #    print("Clicked on Left Door")
+                        if door1.collidepoint(pos):
+                           print("Clicked on Door 1")
                         # if right_door.collidepoint(pos):
                         #    print("Clicked on Right Door")
                         # if top_door.collidepoint(pos):
@@ -461,6 +467,8 @@ class Crawler():
             if pressed != False:
                 keys = pressed  #checking pressed keys
                 layer_index = 0
+                if self.collided == 1: 
+                    return
                 for layer in self.map.tmxdata.visible_layers:
                     layer_index += 1
                     if isinstance(layer, pytmx.TiledObjectGroup):
@@ -480,8 +488,11 @@ class Crawler():
                                     r_s = 12
 
                                     if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) or (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+                                        #if (keys[pygame.K_UP] or keys[pygame.K_w]) or (keys[pygame.K_DOWN] or keys[pygame.K_s]):
+                                        #    self.speed_x = 0
                                         # right
                                         if self.speed_x < 0:
+                                            print("RIGHT")
                                             self.player.x += r_s
                                         # left
                                         elif self.speed_x > 0:
@@ -496,9 +507,12 @@ class Crawler():
                                         elif self.speed_y > 0:
                                             print("DOWN")
                                             self.player.y -= r_s
+                                    self.collided = 1
                                     return
                                 
                 if (keys[pygame.K_UP] or keys[pygame.K_w]):
+                    if (keys[pygame.K_DOWN] or keys[pygame.K_s]):
+                        self.speed_y = 0
                     if self.speed_x != 0 and self.speed_y < 0:
                         self.speed_y = 0
                     if self.speed_y < 0:
@@ -510,6 +524,8 @@ class Crawler():
                     if self.player.y_on_screen < reach_y_bot:
                         self.player.y_on_screen += self.speed_y
                 if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
+                    if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+                        self.speed_x = 0
                     if self.speed_y != 0 and self.speed_x > 0:
                         self.speed_x = 0
                     if self.speed_x == speed/2:
@@ -523,6 +539,8 @@ class Crawler():
                     if self.player.x_on_screen > reach_x_right:
                         self.player.x_on_screen += self.speed_x
                 if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+                    if (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
+                        self.speed_x = 0
                     if self.speed_y != 0 and self.speed_x < 0:
                         self.speed_x = 0
                     if self.speed_x == -speed/2:
@@ -536,6 +554,8 @@ class Crawler():
                     if self.player.x_on_screen < reach_x_left:
                         self.player.x_on_screen += self.speed_x
                 if (keys[pygame.K_DOWN] or keys[pygame.K_s]):
+                    if (keys[pygame.K_UP] or keys[pygame.K_w]):
+                        self.speed_y = 0
                     if self.speed_x != 0 and self.speed_y > 0:
                         self.speed_y = 0
                     if self.speed_y > 0:
@@ -1303,10 +1323,10 @@ class Crawler():
         # Create party and dungeon
         party = fill_party()
         party = boost_party(party)
-        dungeon = "cave"
+        dungeon = "cavetiled"
 
         # Start game
-        state = crawl.play(party, get_dungeon(dungeon), dungeon)
+        state = crawl.play(party, dl.get_dungeon(dungeon), dungeon)
         print("Your final result was: " + state)
 
     def update_speed_if_camera_moving(self, ret):
