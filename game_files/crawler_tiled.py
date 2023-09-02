@@ -145,7 +145,7 @@ class Crawler():
 
         accel_x, accel_y = 0, 0
 
-        chase = 1
+        chase = 0
 
         self.party = party
         enemy_port_name = dungeon_rooms[0][1]
