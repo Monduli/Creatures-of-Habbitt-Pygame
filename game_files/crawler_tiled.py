@@ -136,6 +136,21 @@ class Crawler():
         self.map_rect = self.map_img.get_rect()
 
     def play(self, party, dungeon, prefix, fade_in=False):
+        """
+        This function represents the gameplay loop for a dungeon-crawling game, handling player
+        movement, enemy behavior, collisions, and transitions between rooms.
+        
+        :param party: The "party" parameter is a list that represents the player's party. It contains
+        the characters that are currently in the party. Each character is represented by an object or a
+        value that represents the character's information
+        :param dungeon: The `dungeon` parameter is a list that contains information about the dungeon.
+        It has two elements:
+        :param prefix: The prefix parameter is a string that represents the prefix for the audio files
+        that will be played during the game. It is used to load the appropriate audio files for the game
+        :param fade_in: The `fade_in` parameter is a boolean value that determines whether the game
+        screen should fade in when the `play` method is called. If `fade_in` is `True`, the screen will
+        fade in. If `fade_in` is `False`, the screen will not fade in, defaults to False (optional)
+        """
         map_name = dungeon[0]
         self.load_data()
         d = dungeon
