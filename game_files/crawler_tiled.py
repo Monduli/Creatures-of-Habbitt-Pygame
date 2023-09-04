@@ -158,6 +158,8 @@ class Crawler():
         dungeon_enemies = d[1]
         self.draw_map = 1
 
+        door1 = None
+
         accel_x, accel_y = 0, 0
 
         chase = 0
