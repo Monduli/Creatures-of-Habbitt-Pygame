@@ -158,7 +158,7 @@ class Crawler():
         dungeon_enemies = d[1]
         self.draw_map = 1
 
-        door1 = None
+        door1 = pygame.Rect(0, 0, 0, 0)
 
         accel_x, accel_y = 0, 0
 
@@ -478,8 +478,8 @@ class Crawler():
         reach_y_top = 200
         # bottom reach of camera rect
         reach_y_bot = 800
- 
-        print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
+
+
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
             if pressed != False:
                 keys = pressed  #checking pressed keys
@@ -518,11 +518,11 @@ class Crawler():
                                     elif (keys[pygame.K_UP] or keys[pygame.K_w]) or (keys[pygame.K_DOWN] or keys[pygame.K_s]):
                                         # up
                                         if self.speed_y < 0:
-                                            print("UP")
+                                            print("DOWN COLLISION")
                                             self.player.y += r_s
                                         # down
                                         elif self.speed_y > 0:
-                                            print("DOWN")
+                                            print("UP COLLISION")
                                             self.player.y -= r_s
                                     self.collided = 1
                                     return
@@ -605,6 +605,8 @@ class Crawler():
                         self.display = pygame.display.set_mode((width, height),
                                                     pygame.DOUBLEBUF|pygame.OPENGL)
                         self.fullscreen = 0
+                elif key == K_p:
+                    print("X: " + str(self.player.x) + " | Y: " + str(self.player.y) + " | X_ON_SCREEN: " + str(self.player.x_on_screen) + " | Y_ON_SCREEN: " + str(self.player.y_on_screen))
             
 
     def check_for_movement_keys_being_pressed(self, keys):
