@@ -477,7 +477,7 @@ class Crawler():
         # top reach of camera rect
         reach_y_top = 200
         # bottom reach of camera rect
-        reach_y_bot = 800
+        reach_y_bot = 700
 
 
         if self.into_combat_transfer != 1 and self.end_fade_transfer != 1:
