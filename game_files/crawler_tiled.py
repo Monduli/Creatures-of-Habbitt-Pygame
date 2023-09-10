@@ -460,6 +460,7 @@ class Crawler():
 
         Q: Quits the game
         F: Toggles fullscreen mode
+        R: [check what this does]
         """
         # TODO: Fix collision detection
         
