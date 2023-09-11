@@ -460,7 +460,7 @@ class Crawler():
 
         Q: Quits the game
         F: Toggles fullscreen mode
-        R: [check what this does]
+        P: Print coordinates
         """
         # TODO: Fix collision detection
         
