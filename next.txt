@@ -7,8 +7,6 @@ Implement difficulty options in the Options menu
     Smooth, Groovy, Bodacious, Chaos
 
 Remake dungeons
-    Implement camera system
-    Use tiled to make template dungeons
     Replace tiles in tiled with Ally's tilesets when she makes them 
 
     New 4/24
@@ -17,6 +15,8 @@ Remake dungeons
         Given up for now, will come back later and try to understand OpenGL better
     New 5/17
         Tilemap still flickers. Does not flicker when it's the only thing rendered.
+    New 9/12 (earlier actually)
+        Tilemap works without using OpenGL. Will need to port whole thing to Unity.
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
