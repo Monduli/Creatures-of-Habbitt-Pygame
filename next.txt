@@ -17,6 +17,9 @@ Remake dungeons
         Tilemap still flickers. Does not flicker when it's the only thing rendered.
     New 9/12 (earlier actually)
         Tilemap works without using OpenGL. Will need to port whole thing to Unity.
+    New 9/13
+        Beginning transfer of project to Godot.
+        Not using Unity because of new subscription by downloads model.
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
