@@ -20,6 +20,8 @@ Remake dungeons
     New 9/13
         Beginning transfer of project to Godot.
         Not using Unity because of new subscription by downloads model.
+    New 9/14
+        Taking day off. May continue trying to port to Godot.
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
