@@ -21,7 +21,9 @@ Remake dungeons
         Beginning transfer of project to Godot.
         Not using Unity because of new subscription by downloads model.
     New 9/14
-        Taking day off. May continue trying to port to Godot.
+        Continued porting to Godot. Got character movement working and some dialog.
+    New 9/15
+        Continuing port. Will continue dialog tutorial
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
