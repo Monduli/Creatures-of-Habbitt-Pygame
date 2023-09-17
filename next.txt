@@ -26,6 +26,8 @@ Remake dungeons
         Continuing port. Will continue dialog tutorial
     New 9/16
         Day off BG3
+    New 9/17
+        Continuing port. Will continue dialog tutorial
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
