@@ -24,6 +24,8 @@ Remake dungeons
         Continued porting to Godot. Got character movement working and some dialog.
     New 9/15
         Continuing port. Will continue dialog tutorial
+    New 9/16
+        Day off BG3
 
 Smithing System
     Use items dropped in dungeons to make better weapons / armor
