@@ -1,10 +1,16 @@
 # Creatures of Habbitt
+Match 3 game where you have a party of up to 4 characters who fight enemies like an RPG, in coordination with your matches.  
+Will include dialog between party members a la Fire Emblem. 
+
 This is the original version of Creatures of Habbitt, a puzzle game I have been developing with my wife since February 2023.
 I am still developing this game, but the gameplay has drastically changed and I have ported it to Godot, so this version will now be public.
-I will remove the art assets though, so it won't be able to run. This is just a demonstration of my work in Python now.
+I will remove the art assets though, so it won't be able to run. This is just a demonstration of my work in Python now. 
 
-Match 3 game where you have a party of up to 4 characters who fight enemies like an RPG, in coordination with your matches.  
-Will include dialog between party members a la Fire Emblem.  
+Tech used:
+Python (pygame)
+OpenGL
+numpy
+pickle (for saving/loading)
   
 1/27/2023  
 Allows you to name your character, select a class (supports Fighter and Paladin at the moment), and roll stats.  
