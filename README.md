@@ -12,7 +12,6 @@ OpenGL
 numpy
 pickle (for saving/loading)
 
-===================================
 CHANGE LOG
 ===================================
   
@@ -69,15 +68,8 @@ Significant progress since last update. Features:
 5/3/2023
 Fixed match.py not working since player attacks would return instead of checking for dead enemies.
 
-TO-DO:
-- Enemy rect for collision is not positionally correct w/ the image being shown
-
 5/4/2023
 Added Lam'baste, Sunny, and Hollow as playable characters.
-
-TO-DO:
-For the new additions:
-Stats pictures are not aligned. Dialog pictures are not implemented.
 
 5/5/2023
 Retroactively updated yesterday's additions to this document
@@ -130,8 +122,6 @@ Equipment Menu
 5/31
 Brainstormed
 
-================
-
 6/1 - 6/24
 Added docstrings and comments to many functions
 
@@ -145,8 +135,6 @@ Fixed party being dead and the game not processing it right (crashing)
 6/28 - 7/1
 Added dialog options but not the actual dialog structures
 Created background music for conversations
-
-================
 
 7/2
 Worked on writeup in OneNote, updated this README significantly for the last months
@@ -173,7 +161,6 @@ Added more character to bond conversations
 7/11
 Added to Dane's bond dialogs. (Day off)
 
-======================
 TO-DO (outdated)
 ======================
 
