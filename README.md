@@ -11,6 +11,10 @@ Python (pygame)
 OpenGL
 numpy
 pickle (for saving/loading)
+
+===================================
+CHANGE LOG
+===================================
   
 1/27/2023  
 Allows you to name your character, select a class (supports Fighter and Paladin at the moment), and roll stats.  
@@ -53,8 +57,6 @@ Would like to implement:
 Overhaul. Found that it was impossible to keep the game running smoothly using just pygame, as pygame uses the RAM and CPU and not the GPU. Switched to PyOpenGL, which uses OpenGL (using C) but translated into Python for my ease of use, thankfully. 
 - Created half of the UI in PyOpenGL. Have not made it to inserting proper text yet, nor have I got the "jewels" rendering and following the cursor yet. That is next on the list.  
   
-=======  
-  
 5/2/2023
 Significant progress since last update. Features:
 - Dungeon crawling gameplay. Run into enemies and it takes you into a match 3 battle. Taking any party member works and leveling up is implemented. No abilities yet.
@@ -63,15 +65,6 @@ Significant progress since last update. Features:
 - Menu options for Smithy and Haberdasher implemented, though the actual systems are not.
 - Intro complete (not proofread though), from MC being kicked out to Bear taking them in and going through the first dungeon, recruiting Henrietta and leaving off for free roam.
 - Classes overhauled. Each character has their own class while MC will be able to swap classes. Maybe future where other party members can as well.
-
-TO-DO:
-- Smithy and Haberdasher. Both involve using enemy drops to craft better equipment, so both basically use the same system.
-- Enemy drops that are relevant to Smithy/Haberdasher crafting requirements
-- Crawler cannot use tilesets and is currently restricted to tiny rooms. Attempted to fix, but did not take.
-- Less than half of the characters are implemented. Create classes for the remaining ones that I have assets for.
-- Voice acting system. Don't need actual voice clips yet, but need to framework to insert them.
-- More story once all the frameworks are in place.
-- Ranch. Need to speak to Ally about this
 
 5/3/2023
 Fixed match.py not working since player attacks would return instead of checking for dead enemies.
@@ -179,3 +172,14 @@ Added more character to bond conversations
 
 7/11
 Added to Dane's bond dialogs. (Day off)
+
+======================
+TO-DO (outdated)
+======================
+
+- Smithy and Haberdasher. Both involve using enemy drops to craft better equipment, so both basically use the same system.
+- Enemy drops that are relevant to Smithy/Haberdasher crafting requirements
+- Crawler cannot use tilesets and is currently restricted to tiny rooms. Attempted to fix, but did not take.
+- Less than half of the characters are implemented. Create classes for the remaining ones that I have assets for.
+- Voice acting system. Don't need actual voice clips yet, but need to framework to insert them.
+- More story once all the frameworks are in place.
